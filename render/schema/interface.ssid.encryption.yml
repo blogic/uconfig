@@ -45,3 +45,7 @@ properties:
       PMKSA created through EAP authentication and RSN preauthentication can be cached.
     type: boolean
     default: true
+  radius-server:
+    description:
+      The name of the radius server that shall be used. The settings reside inside the configurations block of the config.
+    type: string

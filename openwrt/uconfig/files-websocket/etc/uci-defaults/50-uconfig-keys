@@ -1,0 +1,4 @@
+[ -f /etc/uconfig/keys/ca.pem ] && exit 0
+mkdir /etc/uconfig/keys/
+pkgen -s CN=OpenWrt ca /etc/uconfig/keys/ca.pem
+pkgen -s CN=OpenWrt cert /etc/uconfig/keys/ca.pem /etc/uconfig/keys/server.pem

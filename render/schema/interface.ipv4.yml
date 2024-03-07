@@ -63,9 +63,11 @@ properties:
          - 192.168.0.0/16
          - 172.16.0.0/12
          - 10.0.0.0/8
-  dhcp:
-    $ref: "https://uconfig.org/schema/v1/interface/ipv4/dhcp/"
+  dhcp-pool:
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ipv4/dhcp-pool/"
   dhcp-leases:
-    type: array
-    items:
-      $ref: "https://uconfig.org/schema/v1/interface/ipv4/dhcp-lease/"
+    type: object
+    patternProperties:
+      ".+":
+        $ref: "https://uconfig.openwrt.org/schema/v1/interface/ipv4/dhcp-lease/"
+        additionalProperties: false

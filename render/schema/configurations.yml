@@ -1,0 +1,36 @@
+description:
+  A device has certain global properties that are used to derive parts of
+  the final configuration that gets applied.
+type: object
+properties:
+  ipv4-network:
+    description:
+      Define the IPv4 range that is delegatable to the downstream interfaces
+      This is described as a CIDR block. (192.168.0.0/16, 172.16.128/17)
+    type: string
+    format: uc-cidr4
+    examples:
+    - 192.168.0.0/16
+  ipv6-network:
+    description:
+      Define the IPv6 range that is delegatable to the downstream interfaces
+      This is described as a CIDR block. (fdca:1234:4567::/48)
+    type: string
+    format: uc-cidr6
+    examples:
+    - fdca:1234:4567::/48
+  ntp-servers:
+    description:
+      This is an array of URL/IP of the upstream NTP servers that the unit shall use to
+      acquire its current time.
+    type: array
+    items:
+      type: string
+      format: uc-host
+    examples:
+    - 0.openwrt.pool.ntp.org
+  radius-servers:
+    type: object
+    patternProperties:
+      ".+":
+        $ref: "https://uconfig.openwrt.org/schema/v1/configurations/radius-servers/"

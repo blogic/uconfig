@@ -16,6 +16,7 @@
 %}
 
 # Configure SSH
+add dropbear dropbear
 set dropbear.@dropbear[-1].enable={{ b(enable) }}
 set dropbear.@dropbear[-1].Port={{ s(ssh.port) }}
 set dropbear.@dropbear[-1].PasswordAuth={{ s(ssh.password_authentication ? 'on' : 'off') }}
@@ -23,7 +24,7 @@ set dropbear.@dropbear[-1].RootPasswordAuth={{ s(ssh.password_authentication ? '
 {%
 	/* open the port on all interfaces that select ssh */
 	for (let interface in interfaces):
-		let name = ethernet.calculate_name(interface);
+		let name = interface.name;
 %}
 
 # Configure SSH Firewall

@@ -3,10 +3,6 @@ description:
   They all share the same physical properties.
 type: object
 properties:
-  disable:
-    description:
-      Allow disabling the radio.
-    type: boolean
   band:
     description:
       Specifies the wireless band to configure the radio for. Available radio device
@@ -28,19 +24,6 @@ properties:
         minimum: 1
       - type: string
         const: auto
-  valid-channels:
-    description:
-      Pass a list of valid-channels that can be used during ACS.
-    type: array
-    items:
-      type: integer
-      maximum: 196
-      minimum: 1
-  allow-dfs:
-    description:
-      This property defines whether a radio may use DFS channels.
-    type: boolean
-    default: true
   channel-mode:
     description:
       Define the ideal channel mode that the radio shall use. This can be 802.11n, 802.11ac
@@ -63,8 +46,22 @@ properties:
     - 40
     - 80
     - 160
+    - 320
     - 8080
     default: 80
+  valid-channels:
+    description:
+      Pass a list of valid-channels that can be used during ACS.
+    type: array
+    items:
+      type: integer
+      maximum: 196
+      minimum: 1
+  allow-dfs:
+    description:
+      This property defines whether a radio may use DFS channels.
+    type: boolean
+    default: true
   require-mode:
     description:
       Stations that do no fulfill these HT modes will be rejected.
@@ -73,55 +70,27 @@ properties:
     - HT
     - VHT
     - HE
-  mimo:
-    description:
-      This option allows configuring the antenna pairs that shall be used.
-      This is just a hint for the AP. If the requested value is not supported
-      then the AP will use the highest common denominator.
-    type: string
-    enum:
-    - 1x1
-    - 2x2
-    - 3x3
-    - 4x4
-    - 5x5
-    - 6x6
-    - 7x7
-    - 8x8
   tx-power:
     description:
       This option specifies the transmission power in dBm
     type: integer
     maximum: 30
     minimum: 0
+  rates:
+    $ref: "https://uconfig.openwrt.org/schema/v1/radio/rates/"
   legacy-rates:
     description:
       Allow legacy 802.11b data rates.
     type: boolean
     default: false
-  beacon-interval:
-    description:
-      Beacon interval in kus (1.024 ms).
-    type: integer
-    default: 100
-    maximum: 65535
-    minimum: 15
-  dtim-period:
-    description:
-      Set the DTIM (delivery traffic information message) period. There will
-      be one DTIM per this many beacon frames. This may be set between 1 and
-      255. This option only has an effect on ap wifi-ifaces.
-    type: integer
-    default: 2
-    maximum: 255
-    minimum: 1
   maximum-clients:
     description:
       Set the maximum number of clients that may connect to this radio. This
       value is accumulative for all attached VAP interfaces.
     type: integer
     example: 64
-  rates:
-    $ref: "https://uconfig.org/schema/v1/radio/rates/"
-  he-settings:
-    $ref: "https://uconfig.org/schema/v1/radio/he/"
+  he-multiple-bssid:
+    description:
+      Enabling this option will make the PHY broadcast its BSSs using the multiple BSSID beacon IE.
+    type: boolean
+    default: false

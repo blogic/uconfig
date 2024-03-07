@@ -49,4 +49,4 @@ properties:
     maximum: 64
     minimum: 0
   dhcpv6:
-    $ref: "https://uconfig.org/schema/v1/interface/ipv6/dhcpv6/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ipv6/dhcpv6/"

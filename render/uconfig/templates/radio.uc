@@ -111,41 +111,6 @@
 	}
 
 	/**
-	 * helper function to match the best mimo mode
-	 */
-	function match_mimo(available_ant, wanted_mimo) {
-		/* if no mimo is requested, use all available antennas */
-		if (!radio.mimo)
-			return available_ant;
-
-		/* some PHYs will use the 4 upper bits to select antennas */
-		let shift = ((available_ant & 0xf0) == available_ant) ? 4 : 0;
-
-		/* make sure that the requested mimo has the correct syntax */
-		let m = match(wanted_mimo, /^([0-9]+)x([0-9]+$)/);
-		if (!m) {
-			warn("Failed to parse MIMO mode, falling back to %d", available_ant);
-
-			return available_ant;
-		}
-
-		/* make sure that the HW supports the requested mimo mode */
-		let use_ant = 0;
-		for (let i = 0; i < m[1]; i++)
-			use_ant += 1 << i;
-
-		if (!use_ant || (use_ant << shift) > available_ant) {
-			warn("Invalid or unsupported MIMO mode %s specified, falling back to %d",
-				wanted_mimo || 'none', available_ant);
-
-			return available_ant;
-		}
-
-		/* all good */
-		return use_ant << shift;
-	}
-
-	/**
 	 * convert the requeste HT mode to what UCI expects
 	 */
 	function match_require_mode(require_mode) {
@@ -162,9 +127,6 @@ set wireless.{{ phy.section }}.disabled=0
 set wireless.{{ phy.section }}.uconfig_path={{ s(location) }}
 set wireless.{{ phy.section }}.htmode={{ htmode }}
 set wireless.{{ phy.section }}.channel={{ match_channel(phy, radio) }}
-set wireless.{{ phy.section }}.txantenna={{ match_mimo(phy.antenna_tx, radio.mimo) }}
-set wireless.{{ phy.section }}.rxantenna={{ match_mimo(phy.antenna_rx, radio.mimo) }}
-set wireless.{{ phy.section }}.beacon_int={{ radio.beacon_interval }}
 set wireless.{{ phy.section }}.country={{ s(state.country_code) }}
 set wireless.{{ phy.section }}.require_mode={{ s(match_require_mode(radio.require_mode)) }}
 set wireless.{{ phy.section }}.txpower={{ radio.tx_power }}
@@ -179,7 +141,7 @@ add_list wireless.{{ phy.section }}.channels={{ channel }}
 {% endfor %}
 {%  if (radio.he_settings && phy.he_mac_capa && match(htmode, /HE.*/)): %}
 set wireless.{{ phy.section }}.he_bss_color={{ radio.he_settings.bss_color }}
-set wireless.{{ phy.section }}.multiple_bssid={{ b(radio.he_settings.multiple_bssid) }}
+set wireless.{{ phy.section }}.multiple_bssid={{ b(radio.he_multiple_bssid) }}
 set wireless.{{ phy.section }}.ema={{ b(radio.he_settings.ema) }}
 {%  endif %}
 {%  if (radio.rates): %}

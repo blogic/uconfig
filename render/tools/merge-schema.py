@@ -10,7 +10,7 @@ def schema_filename(list):
     return file[0].replace("/", ".") + "yml"
 
 def entity_name(uri):
-    name = uri.replace("https://uconfig.org/" + sys.argv[1] + "/v1/", "").rstrip("/")
+    name = uri.replace("https://uconfig.openwrt.org/schema/v1/", "").rstrip("/")
     return name.replace("/", ".")
 
 def schema_load(filename):
@@ -47,7 +47,7 @@ def schema_compile(input, output, definitions):
     return output
 
 def schema_generate():
-    with open("./schema-generated/" + sys.argv[3], 'w') as outfile:
+    with open(sys.argv[3], 'w') as outfile:
         defs = {}
         schema = schema_compile(schema_load(sys.argv[2]), {}, defs)
         schema["$defs"] = defs

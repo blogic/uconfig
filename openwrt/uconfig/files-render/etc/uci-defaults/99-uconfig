@@ -1,39 +1,73 @@
 #!/bin/sh
 
-[ -d /etc/uconfig/shadow/ ] && exit 0
-
 . /lib/functions.sh
 
 uci commit
 
-cp -r /etc/config/ /etc/uconfig/shadow/
+SHADOW=/etc/uconfig/shadow
+rm -rf $SHADOW
+mkdir -p $SHADOW
+
+touch $SHADOW/network $SHADOW/dropbear $SHADOW/dhcpsnoop $SHADOW/ratelimit $SHADOW/ieee8021x $SHADOW/radius $SHADOW/qosify
 
 section_del() {
-        uci -c /etc/uconfig/shadow delete $2.$1
+        uci -c $SHADOW delete $2.$1
 }
 
-config_load network
-config_foreach section_del interface network
-config_foreach section_del bridge-vlan network
-config_foreach section_del device network
-
-config_load dhcp
-config_foreach section_del dhcp dhcp
-
-config_load firewall
-config_foreach section_del rule firewall
-config_foreach section_del zone firewall
-config_foreach section_del forwarding firewall
+mkdir -p /var/run/uci
+touch /var/run/uci/wireless
+wifi config
+mv /var/run/uci/wireless $SHADOW/wireless
 
 config_load wireless
 config_foreach section_del wifi-iface wireless
 
+uci -c $SHADOW batch <<EOF
+set network.globals=globals
+set network.globals.ula_prefix=$(uci get network.globals.ula_prefix)
+EOF
+
+cat > $SHADOW/dhcp <<EOF
+config dnsmasq
+	option domainneeded	1
+	option boguspriv	1
+	option filterwin2k	0
+	option localise_queries	1
+	option rebind_protection 1
+	option rebind_localhost 1
+
+	option local	'/lan/'
+	option domain	'lan'
+	option expandhosts	1
+	option nonegcache	0
+	option cachesize	1000
+	option authoritative	1
+	option readethers	1
+	option leasefile	'/tmp/dhcp.leases'
+	option resolvfile	'/tmp/resolv.conf.d/resolv.conf.auto'
+	option nonwildcard	1
+	option localservice	1
+	option ednspacket_max	1232
+	option filter_aaaa	0
+	option filter_a		0
+EOF
+
+cat > $SHADOW/firewall <<EOF
+config defaults
+	option syn_flood    1
+	option input        REJECT
+	option output       ACCEPT
+	option forward      REJECT
+	option flow_offloading 1
+EOF
+
+uci -c $SHADOW commit
+
 hname=$(cat /etc/board.json  | jsonfilter -e '@.system.label_macaddr')
 [ -z "$hname" ] && hname=$(cat /sys/class/net/eth0/address)
 hname=$(echo $hname | tr -d : | awk '{print tolower($0)}')
-uci -c /etc/uconfig/shadow set system.@system[-1].hostname=$hname
-
-uci -c /etc/uconfig/shadow commit
+uci set system.@system[-1].hostname=$hname
+uci commit
 
 /usr/libexec/uconfig/capabilities.uc
 
@@ -41,7 +75,13 @@ uci -c /etc/uconfig/shadow commit
 	mkdir -p /etc/uconfig/certificates/
 	/usr/bin/pkgen -s CN=$hname,O=OpenWrt ca /etc/uconfig/certificates/ca.pem
 	/usr/bin/pkgen -s CN=$hname,O=OpenWrt cert /etc/uconfig/certificates/ca.pem /etc/uconfig/certificates/cert.pem
+	uci set radius.@radius[0].ca_cert='/etc/uconfig/certificates/ca.pem'
+	uci set radius.@radius[0].cert='/etc/uconfig/certificates/cert.key'
+	uci set radius.@radius[0].key='/etc/uconfig/certificates/key.pem'
+	uci add_list radius.@radius[0].network='lan'
+	uci commit radius
 }
 
-render_config -q /etc/uconfig/uconfig.active
+uconfig_apply -n /etc/uconfig/uconfig.active
+
 exit 0

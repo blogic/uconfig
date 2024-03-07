@@ -2,7 +2,7 @@
 
 An intend based configuration wrapper using JSON files. The data model is based on jsonschema.
 
-    root@openwrt:~# render_config /etc/uconfig/examples/dumb-ap.json
+    root@openwrt:~# uconfig_apply /etc/uconfig/examples/dumb-ap.json
  
  There are several examples located in "render/example/*.json"
  

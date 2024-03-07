@@ -9,11 +9,12 @@ properties:
       need to be told explicitly if egress traffic shall be tagged.
     type: integer
     maximum: 4050
-  proto:
-    decription:
-      The L2 vlan tag that shall be added (1q,1ad)
-    type: string
-    enum:
-      - 802.1ad
-      - 802.1q
-    default: 802.1q
+  trunks:
+    description:
+      Upstream interfaces can prOvide NAT for downstream interfaces that have a
+      different VLAN Id
+    type: array
+    items:
+      type: number
+      maximum: 4050
+      minimum: 1

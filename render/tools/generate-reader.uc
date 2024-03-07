@@ -464,8 +464,7 @@ let GeneratorProto = {
 
 	read_schema: function(path)
 	{
-		let fd = fs.open(path, "r");
-
+		let fd = fs.open(ARGV[0] + path, "r");
 		if (!fd)
 			return {};
 
@@ -571,6 +570,7 @@ let GeneratorProto = {
 			this.print(indent, '	' + line);
 
 		this.print(indent, '}\n');
+		this.print(indent, 'global.%s = %s;\n', functionName, functionName);
 	},
 
 	emit_include_validation_function: function(propertyName, valueSpec)
@@ -616,17 +616,14 @@ let GeneratorProto = {
 		return functionName;
 	},
 
-	generate: function(file)
+	generate: function()
 	{
 		let indent = '';
-
-		file = replace(file, '-', '_');
-
 		this.schema = this.read_schema(this.path);
 
-		this.output = fs.open(`ureader/${file}.uc`, 'w');
+		this.output = fs.open(ARGV[0] + `ureader/schema.uc`, 'w');
 
-		this.print(indent, '// Automatically ureader from %s - do not edit!', this.path);
+		this.print(indent, '// Automatically ureader from schema.json - do not edit!');
 		this.print(indent, '"use strict";\n');
 
 		for (let formatName, formatCode in this.format_validators)
@@ -654,7 +651,7 @@ let GeneratorProto = {
 		let indent = '';
 
 		this.schema = modules[module];
-		this.output = fs.open('ureader-modules/' + to_method_name('schema', module) + '.uc', 'w');
+		this.output = fs.open(ARGV[0] + 'ureader-modules/' + to_method_name('schema', module) + '.uc', 'w');
 
 		let functionName = this.emit_spec_validation_function(indent, 'module', module, this.schema);
 
@@ -672,8 +669,9 @@ function instantiateGenerator(path) {
 	return proto({ path }, GeneratorProto);
 }
 
-let generator = instantiateGenerator('./schema-generated/' + ARGV[0]);
-generator.generate(split(ARGV[0], '.')[0]);
-
-for (let module in keys(modules))
+ARGV[0] ??= '';
+let generator = instantiateGenerator('schema-generated/schema.json');
+generator.generate();
+for (let module in keys(modules)) {
 	generator.module(module);
+}

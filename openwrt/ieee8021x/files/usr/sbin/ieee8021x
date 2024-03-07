@@ -42,7 +42,7 @@ function netifd_handle_iface(name, auth_status, vlan) {
 				name: wan,
 				vlan: [ `${vlan}:t` ]
 			};
-			ubus.call('network.interface.up_none', 'add_device', msg);
+			ubus.call('network.interface.wan_none', 'add_device', msg);
 		}
 	}
 	ifaces[name].authenticated = auth_status;

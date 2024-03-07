@@ -2,10 +2,7 @@
 	"uuid": 2,
 
 	"unit": {
-                "name": "test config AP",
-                "location": "Office",
-                "timezone": "CET-1",
-		"leds-active": true
+                "timezone": "Europe/Berlin"
         },
 
 	"country-code": "DE",
@@ -45,7 +42,7 @@
 			"ipv4": {
 				"addressing": "static",
 				"subnet": "192.168.11.1/24",
-				"dhcp": {
+				"dhcp-pool": {
 					"lease-first": 10,
 					"lease-count": 100,
 					"lease-time": "6h"
