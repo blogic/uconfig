@@ -66,7 +66,7 @@ define Package/uconfig/install
 	$(CP) $(PKG_BUILD_DIR)/render/lib/* $(1)/usr/share/ucode/uconfig
 	$(CP) $(PKG_BUILD_DIR)/render/system/*.uc $(1)/usr/libexec/uconfig
 	$(CP) $(PKG_BUILD_DIR)/render/examples $(1)/etc/uconfig
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/render/render_config $(1)/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/render/uconfig_apply $(1)/sbin
 	$(CP) ./files-render/* $(1)
 endef
 

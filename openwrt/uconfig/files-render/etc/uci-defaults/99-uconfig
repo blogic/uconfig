@@ -43,5 +43,6 @@ uci -c /etc/uconfig/shadow commit
 	/usr/bin/pkgen -s CN=$hname,O=OpenWrt cert /etc/uconfig/certificates/ca.pem /etc/uconfig/certificates/cert.pem
 }
 
-render_config -q /etc/uconfig/uconfig.active
+uconfig_apply -n /etc/uconfig/uconfig.active
+
 exit 0
