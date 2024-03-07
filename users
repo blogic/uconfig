@@ -1,0 +1,26 @@
+{
+	"lan": {
+		"john": {
+			"key": "bbbbbbbb",
+			"mpsk": "true",
+			"rate": {
+				"tx": 25,
+				"rx": 25
+			},
+			"macs": {
+				"80:B9:89:1D:77:3E": true
+			}
+		},
+		"tara": {
+			"key": "cccccccc",
+			"mpsk": "false",
+			"rate": {
+				"tx": 25,
+				"rx": 25
+			},
+			"macs": {
+				"11:22:33:44:55:66": true
+			}
+		}
+	}
+}

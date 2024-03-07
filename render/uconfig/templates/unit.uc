@@ -1,4 +1,15 @@
 {%
+	/* load zoneinfo from json */
+	let zoneinfo = json(fs.readfile('/usr/share/ucode/uconfig/zoneinfo.json') || '{}');
+
+	/* resolve zoneinfo name to TZ */
+	if (unit.timezone) {
+		if (zoneinfo[unit.timezone])
+			unit.timezone = zoneinfo[unit.timezone].iso2;
+		else
+			warn('timezone is unknown');
+	}
+
 	/* set the password */
 	shell.password(unit.password);
 
@@ -8,14 +19,8 @@
 -%}
 # Configure the unit/system
 set system.@system[-1].ttylogin={{ b(unit.tty_login) }}
-{%	if (unit.name): %}
-set system.@system[-1].description={{ s(unit.name) }}
-{%	endif;
-	if (unit.hostname): %}
+{%	if (unit.hostname): %}
 set system.@system[-1].hostname={{ s(unit.hostname) }}
-{%	endif;
-	if (unit.location): %}
-set system.@system[-1].notes={{ s(unit.location) }}
 {%	endif;
 	if (unit.timezone): %}
 set system.@system[-1].timezone={{ s(unit.timezone) }}

@@ -1,0 +1,902 @@
+{
+	"Africa/Abidjan": {
+		"iso2": "TG",
+		"cc": "Africa/Lome",
+		"tz": "GMT0"
+	},
+	"Africa/Accra": {
+		"iso2": "GH",
+		"cc": "Africa/Accra",
+		"tz": "GMT0"
+	},
+	"Africa/Addis Ababa": {
+		"iso2": "ET",
+		"cc": "Africa/Addis Ababa",
+		"tz": "EAT-3"
+	},
+	"Africa/Algiers": {
+		"iso2": "DZ",
+		"cc": "Africa/Algiers",
+		"tz": "CET-1"
+	},
+	"Africa/Asmara": {
+		"iso2": "ER",
+		"cc": "Africa/Asmara",
+		"tz": "EAT-3"
+	},
+	"Africa/Bissau": {
+		"iso2": "GW",
+		"cc": "Africa/Bissau",
+		"tz": "GMT0"
+	},
+	"Africa/Cairo": {
+		"iso2": "EG",
+		"cc": "Africa/Cairo",
+		"tz": "EET-2EEST,M4.5.5/0,M10.5.4/24"
+	},
+	"Africa/Casablanca": {
+		"iso2": "MA",
+		"cc": "Africa/Rabat",
+		"tz": "<+01>-1"
+	},
+	"Africa/Dar es Salaam": {
+		"iso2": "TZ",
+		"cc": "Africa/Dodoma",
+		"tz": "EAT-3"
+	},
+	"Africa/Djibouti": {
+		"iso2": "DJ",
+		"cc": "Africa/Djibouti",
+		"tz": "EAT-3"
+	},
+	"Africa/El Aaiun": {
+		"iso2": "EH",
+		"cc": "Africa/El-Aaiun",
+		"tz": "<+01>-1"
+	},
+	"Africa/Johannesburg": {
+		"iso2": "SZ",
+		"cc": "Africa/Mbabane",
+		"tz": "SAST-2"
+	},
+	"Africa/Kampala": {
+		"iso2": "UG",
+		"cc": "Africa/Kampala",
+		"tz": "EAT-3"
+	},
+	"Africa/Khartoum": {
+		"iso2": "SD",
+		"cc": "Africa/Khartoum",
+		"tz": "CAT-2"
+	},
+	"Africa/Lagos": {
+		"iso2": "CG",
+		"cc": "Africa/Brazzaville",
+		"tz": "WAT-1"
+	},
+	"Africa/Maputo": {
+		"iso2": "ZW",
+		"cc": "Africa/Harare",
+		"tz": "CAT-2"
+	},
+	"Africa/Mogadishu": {
+		"iso2": "SO",
+		"cc": "Africa/Mogadishu",
+		"tz": "EAT-3"
+	},
+	"Africa/Monrovia": {
+		"iso2": "LR",
+		"cc": "Africa/Monrovia",
+		"tz": "GMT0"
+	},
+	"Africa/Nairobi": {
+		"iso2": "KE",
+		"cc": "Africa/Nairobi",
+		"tz": "EAT-3"
+	},
+	"Africa/Ndjamena": {
+		"iso2": "TD",
+		"cc": "Africa/N'Djamena",
+		"tz": "WAT-1"
+	},
+	"Africa/Tripoli": {
+		"iso2": "LY",
+		"cc": "Africa/Tripolis",
+		"tz": "EET-2"
+	},
+	"Africa/Tunis": {
+		"iso2": "TN",
+		"cc": "Africa/Tunis",
+		"tz": "CET-1"
+	},
+	"Africa/Windhoek": {
+		"iso2": "NA",
+		"cc": "Africa/Windhoek",
+		"tz": "CAT-2"
+	},
+	"America/Antigua": {
+		"iso2": "AG",
+		"cc": "North America/St. John's",
+		"tz": "AST4"
+	},
+	"America/Argentina": {
+		"iso2": "AR",
+		"cc": "South America/Buenos Aires",
+		"tz": "<-03>3"
+	},
+	"America/Asuncion": {
+		"iso2": "PY",
+		"cc": "South America/Asuncion",
+		"tz": "<-03>3"
+	},
+	"America/Barbados": {
+		"iso2": "BB",
+		"cc": "North America/Bridgetown",
+		"tz": "AST4"
+	},
+	"America/Belize": {
+		"iso2": "BZ",
+		"cc": "North America/Belmopan",
+		"tz": "CST6"
+	},
+	"America/Bogota": {
+		"iso2": "CO",
+		"cc": "South America/Bogota",
+		"tz": "<-05>5"
+	},
+	"America/Caracas": {
+		"iso2": "VE",
+		"cc": "South America/Caracas",
+		"tz": "<-04>4"
+	},
+	"America/Cayman": {
+		"iso2": "KY",
+		"cc": "North America/George Town",
+		"tz": "EST5"
+	},
+	"America/Costa Rica": {
+		"iso2": "CR",
+		"cc": "North America/San Jose",
+		"tz": "CST6"
+	},
+	"America/Curacao": {
+		"iso2": "SX",
+		"cc": "North America/Philipsburg",
+		"tz": "AST4"
+	},
+	"America/El Salvador": {
+		"iso2": "SV",
+		"cc": "North America/San Salvador",
+		"tz": "CST6"
+	},
+	"America/Grand Turk": {
+		"iso2": "TC",
+		"cc": "North America/Cockburn Town",
+		"tz": "EST5EDT,M3.2.0,M11.1.0"
+	},
+	"America/Guatemala": {
+		"iso2": "GT",
+		"cc": "North America/Guatemala City",
+		"tz": "CST6"
+	},
+	"America/Guayaquil": {
+		"iso2": "EC",
+		"cc": "South America/Quito",
+		"tz": "<-05>5"
+	},
+	"America/Guyana": {
+		"iso2": "GY",
+		"cc": "South America/Georgetown",
+		"tz": "<-04>4"
+	},
+	"America/Havana": {
+		"iso2": "CU",
+		"cc": "North America/Havana",
+		"tz": "CST5CDT,M3.2.0/0,M11.1.0/1"
+	},
+	"America/Jamaica": {
+		"iso2": "JM",
+		"cc": "North America/Kingston",
+		"tz": "EST5"
+	},
+	"America/La Paz": {
+		"iso2": "BO",
+		"cc": "South America/Sucre",
+		"tz": "<-04>4"
+	},
+	"America/Lima": {
+		"iso2": "PE",
+		"cc": "South America/Lima",
+		"tz": "<-05>5"
+	},
+	"America/Managua": {
+		"iso2": "NI",
+		"cc": "North America/Managua",
+		"tz": "CST6"
+	},
+	"America/Mexico City": {
+		"iso2": "MX",
+		"cc": "North America/Mexico City",
+		"tz": "CST6"
+	},
+	"America/Miquelon": {
+		"iso2": "PM",
+		"cc": "North America/Saint-Pierre",
+		"tz": "<-03>3<-02>,M3.2.0,M11.1.0"
+	},
+	"America/Montevideo": {
+		"iso2": "UY",
+		"cc": "South America/Montevideo",
+		"tz": "<-03>3"
+	},
+	"America/Nassau": {
+		"iso2": "BS",
+		"cc": "North America/Nassau",
+		"tz": "EST5EDT,M3.2.0,M11.1.0"
+	},
+	"America/New York": {
+		"iso2": "US",
+		"cc": "North America/Washington",
+		"tz": "EST5EDT,M3.2.0,M11.1.0"
+	},
+	"America/Panama": {
+		"iso2": "PA",
+		"cc": "North America/Panama City",
+		"tz": "EST5"
+	},
+	"America/Paramaribo": {
+		"iso2": "SR",
+		"cc": "South America/Paramaribo",
+		"tz": "<-03>3"
+	},
+	"America/Port of Spain": {
+		"iso2": "VI",
+		"cc": "North America/Charlotte Amalie",
+		"tz": "AST4"
+	},
+	"America/Port-au-Prince": {
+		"iso2": "HT",
+		"cc": "North America/Port-au-Prince",
+		"tz": "EST5EDT,M3.2.0,M11.1.0"
+	},
+	"America/Santiago": {
+		"iso2": "CL",
+		"cc": "South America/Santiago",
+		"tz": "<-04>4<-03>,M9.1.6/24,M4.1.6/24"
+	},
+	"America/Sao Paulo": {
+		"iso2": "BR",
+		"cc": "South America/Brasilia",
+		"tz": "<-03>3"
+	},
+	"America/Tegucigalpa": {
+		"iso2": "HN",
+		"cc": "North America/Tegucigalpa",
+		"tz": "CST6"
+	},
+	"America/Toronto": {
+		"iso2": "CA",
+		"cc": "North America/Ottawa",
+		"tz": "EST5EDT,M3.2.0,M11.1.0"
+	},
+	"Antarctica/Troll": {
+		"iso2": "AQ",
+		"cc": "Antarctica/",
+		"tz": "<+00>0<+02>-2,M3.5.0/1,M10.5.0/3"
+	},
+	"Asia/Aden": {
+		"iso2": "YE",
+		"cc": "Asia/Sanaa",
+		"tz": "<+03>-3"
+	},
+	"Asia/Almaty": {
+		"iso2": "KZ",
+		"cc": "Asia/Astana",
+		"tz": "<+05>-5"
+	},
+	"Asia/Amman": {
+		"iso2": "JO",
+		"cc": "Asia/Amman",
+		"tz": "<+03>-3"
+	},
+	"Asia/Ashgabat": {
+		"iso2": "TM",
+		"cc": "Asia/Ashgabat",
+		"tz": "<+05>-5"
+	},
+	"Asia/Baghdad": {
+		"iso2": "IQ",
+		"cc": "Asia/Baghdad",
+		"tz": "<+03>-3"
+	},
+	"Asia/Bahrain": {
+		"iso2": "BH",
+		"cc": "Asia/Manama",
+		"tz": "<+03>-3"
+	},
+	"Asia/Baku": {
+		"iso2": "AZ",
+		"cc": "Asia/Baku",
+		"tz": "<+04>-4"
+	},
+	"Asia/Bangkok": {
+		"iso2": "TH",
+		"cc": "Asia/Bangkok",
+		"tz": "<+07>-7"
+	},
+	"Asia/Beirut": {
+		"iso2": "LB",
+		"cc": "Asia/Beirut",
+		"tz": "EET-2EEST,M3.5.0/0,M10.5.0/0"
+	},
+	"Asia/Bishkek": {
+		"iso2": "KG",
+		"cc": "Asia/Bishkek",
+		"tz": "<+06>-6"
+	},
+	"Asia/Brunei": {
+		"iso2": "BN",
+		"cc": "Asia/Bandar Seri Begawan",
+		"tz": "<+08>-8"
+	},
+	"Asia/Colombo": {
+		"iso2": "LK",
+		"cc": "Asia/Colombo",
+		"tz": "<+0530>-5:30"
+	},
+	"Asia/Damascus": {
+		"iso2": "SY",
+		"cc": "Asia/Damascus",
+		"tz": "<+03>-3"
+	},
+	"Asia/Dhaka": {
+		"iso2": "BD",
+		"cc": "Asia/Dhaka",
+		"tz": "<+06>-6"
+	},
+	"Asia/Dili": {
+		"iso2": "TL",
+		"cc": "Oceania/Dili",
+		"tz": "<+09>-9"
+	},
+	"Asia/Dubai": {
+		"iso2": "AE",
+		"cc": "Asia/Abu Dhabi",
+		"tz": "<+04>-4"
+	},
+	"Asia/Dushanbe": {
+		"iso2": "TJ",
+		"cc": "Asia/Dushanbe",
+		"tz": "<+05>-5"
+	},
+	"Asia/Hebron": {
+		"iso2": "PS",
+		"cc": "Asia/East Jerusalem",
+		"tz": "EET-2EEST,M3.4.4/50,M10.4.4/50"
+	},
+	"Asia/Ho Chi Minh": {
+		"iso2": "VN",
+		"cc": "Asia/Hanoi",
+		"tz": "<+07>-7"
+	},
+	"Asia/Hong Kong": {
+		"iso2": "HK",
+		"cc": "Asia/Hong Kong",
+		"tz": "HKT-8"
+	},
+	"Asia/Jakarta": {
+		"iso2": "ID",
+		"cc": "Asia/Jakarta",
+		"tz": "WIB-7"
+	},
+	"Asia/Jerusalem": {
+		"iso2": "IL",
+		"cc": "Asia/Jerusalem",
+		"tz": "IST-2IDT,M3.4.4/26,M10.5.0"
+	},
+	"Asia/Kabul": {
+		"iso2": "AF",
+		"cc": "Asia/Kabul",
+		"tz": "<+0430>-4:30"
+	},
+	"Asia/Karachi": {
+		"iso2": "PK",
+		"cc": "Asia/Islamabad",
+		"tz": "PKT-5"
+	},
+	"Asia/Kathmandu": {
+		"iso2": "NP",
+		"cc": "Asia/Kathmandu",
+		"tz": "<+0545>-5:45"
+	},
+	"Asia/Kolkata": {
+		"iso2": "IN",
+		"cc": "Asia/New Delhi",
+		"tz": "IST-5:30"
+	},
+	"Asia/Kuala Lumpur": {
+		"iso2": "MY",
+		"cc": "Asia/Kuala Lumpur",
+		"tz": "<+08>-8"
+	},
+	"Asia/Kuwait": {
+		"iso2": "KW",
+		"cc": "Asia/Kuwait City",
+		"tz": "<+03>-3"
+	},
+	"Asia/Macau": {
+		"iso2": "MO",
+		"cc": "Asia/Macao",
+		"tz": "CST-8"
+	},
+	"Asia/Manila": {
+		"iso2": "PH",
+		"cc": "Asia/Manila",
+		"tz": "PST-8"
+	},
+	"Asia/Muscat": {
+		"iso2": "OM",
+		"cc": "Asia/Muscat",
+		"tz": "<+04>-4"
+	},
+	"Asia/Nicosia": {
+		"iso2": "CY",
+		"cc": "Europe/Nicosia",
+		"tz": "EET-2EEST,M3.5.0/3,M10.5.0/4"
+	},
+	"Asia/Phnom Penh": {
+		"iso2": "KH",
+		"cc": "Asia/Phnom Penh",
+		"tz": "<+07>-7"
+	},
+	"Asia/Pyongyang": {
+		"iso2": "KP",
+		"cc": "Asia/Pyongyang",
+		"tz": "KST-9"
+	},
+	"Asia/Qatar": {
+		"iso2": "QA",
+		"cc": "Asia/Doha",
+		"tz": "<+03>-3"
+	},
+	"Asia/Riyadh": {
+		"iso2": "SA",
+		"cc": "Asia/Riyadh",
+		"tz": "<+03>-3"
+	},
+	"Asia/Seoul": {
+		"iso2": "KR",
+		"cc": "Asia/Seoul",
+		"tz": "KST-9"
+	},
+	"Asia/Shanghai": {
+		"iso2": "CN",
+		"cc": "Asia/Beijing",
+		"tz": "CST-8"
+	},
+	"Asia/Singapore": {
+		"iso2": "SG",
+		"cc": "Asia/Singapore",
+		"tz": "<+08>-8"
+	},
+	"Asia/Taipei": {
+		"iso2": "TW",
+		"cc": "Asia/Taipei",
+		"tz": "CST-8"
+	},
+	"Asia/Tashkent": {
+		"iso2": "UZ",
+		"cc": "Asia/Tashkent",
+		"tz": "<+05>-5"
+	},
+	"Asia/Tbilisi": {
+		"iso2": "GE",
+		"cc": "Asia/Tbilisi",
+		"tz": "<+04>-4"
+	},
+	"Asia/Tehran": {
+		"iso2": "IR",
+		"cc": "Asia/Tehran",
+		"tz": "<+0330>-3:30"
+	},
+	"Asia/Thimphu": {
+		"iso2": "BT",
+		"cc": "Asia/Thimphu",
+		"tz": "<+06>-6"
+	},
+	"Asia/Tokyo": {
+		"iso2": "JP",
+		"cc": "Asia/Tokyo",
+		"tz": "JST-9"
+	},
+	"Asia/Ulaanbaatar": {
+		"iso2": "MN",
+		"cc": "Asia/Ulan Bator",
+		"tz": "<+08>-8"
+	},
+	"Asia/Vientiane": {
+		"iso2": "LA",
+		"cc": "Asia/Vientiane",
+		"tz": "<+07>-7"
+	},
+	"Asia/Yerevan": {
+		"iso2": "AM",
+		"cc": "Asia/Yerevan",
+		"tz": "<+04>-4"
+	},
+	"Atlantic/Bermuda": {
+		"iso2": "BM",
+		"cc": "North America/Hamilton",
+		"tz": "AST4ADT,M3.2.0,M11.1.0"
+	},
+	"Atlantic/Cape Verde": {
+		"iso2": "CV",
+		"cc": "Africa/Praia",
+		"tz": "<-01>1"
+	},
+	"Atlantic/Faroe": {
+		"iso2": "FO",
+		"cc": "Europe/Torshavn",
+		"tz": "WET0WEST,M3.5.0/1,M10.5.0"
+	},
+	"Atlantic/Reykjavik": {
+		"iso2": "IS",
+		"cc": "Europe/Reykjavik",
+		"tz": "GMT0"
+	},
+	"Atlantic/Stanley": {
+		"iso2": "FK",
+		"cc": "South America/Stanley",
+		"tz": "<-03>3"
+	},
+	"Australia/Sydney": {
+		"iso2": "AU",
+		"cc": "Oceania/Canberra",
+		"tz": "AEST-10AEDT,M10.1.0,M4.1.0/3"
+	},
+	"Europe/Amsterdam": {
+		"iso2": "NL",
+		"cc": "Europe/Amsterdam",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Andorra": {
+		"iso2": "AD",
+		"cc": "Europe/Andorra la Vella",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Athens": {
+		"iso2": "GR",
+		"cc": "Europe/Athens",
+		"tz": "EET-2EEST,M3.5.0/3,M10.5.0/4"
+	},
+	"Europe/Belgrade": {
+		"iso2": "SI",
+		"cc": "Europe/Ljubljana",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Berlin": {
+		"iso2": "DE",
+		"cc": "Europe/Berlin",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Brussels": {
+		"iso2": "BE",
+		"cc": "Europe/Brussels",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Bucharest": {
+		"iso2": "RO",
+		"cc": "Europe/Bucharest",
+		"tz": "EET-2EEST,M3.5.0/3,M10.5.0/4"
+	},
+	"Europe/Budapest": {
+		"iso2": "HU",
+		"cc": "Europe/Budapest",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Chisinau": {
+		"iso2": "MD",
+		"cc": "Europe/Chisinau",
+		"tz": "EET-2EEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Copenhagen": {
+		"iso2": "DK",
+		"cc": "Europe/Copenhagen",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Dublin": {
+		"iso2": "IE",
+		"cc": "Europe/Dublin",
+		"tz": "IST-1GMT0,M10.5.0,M3.5.0/1"
+	},
+	"Europe/Gibraltar": {
+		"iso2": "GI",
+		"cc": "Europe/Gibraltar",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Helsinki": {
+		"iso2": "FI",
+		"cc": "Europe/Helsinki",
+		"tz": "EET-2EEST,M3.5.0/3,M10.5.0/4"
+	},
+	"Europe/Istanbul": {
+		"iso2": "TR",
+		"cc": "Asia/Ankara",
+		"tz": "<+03>-3"
+	},
+	"Europe/Kyiv": {
+		"iso2": "UA",
+		"cc": "Europe/Kyiv",
+		"tz": "EET-2EEST,M3.5.0/3,M10.5.0/4"
+	},
+	"Europe/Lisbon": {
+		"iso2": "PT",
+		"cc": "Europe/Lisbon",
+		"tz": "WET0WEST,M3.5.0/1,M10.5.0"
+	},
+	"Europe/London": {
+		"iso2": "GB",
+		"cc": "Europe/London",
+		"tz": "GMT0BST,M3.5.0/1,M10.5.0"
+	},
+	"Europe/Luxembourg": {
+		"iso2": "LU",
+		"cc": "Europe/Luxembourg",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Madrid": {
+		"iso2": "ES",
+		"cc": "Europe/Madrid",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Malta": {
+		"iso2": "MT",
+		"cc": "Europe/Valletta",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Minsk": {
+		"iso2": "BY",
+		"cc": "Europe/Minsk",
+		"tz": "<+03>-3"
+	},
+	"Europe/Monaco": {
+		"iso2": "MC",
+		"cc": "Europe/Monaco",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Moscow": {
+		"iso2": "RU",
+		"cc": "Europe/Moscow",
+		"tz": "MSK-3"
+	},
+	"Europe/Oslo": {
+		"iso2": "SJ",
+		"cc": "Europe/Longyearbyen",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Paris": {
+		"iso2": "FR",
+		"cc": "Europe/Paris",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Prague": {
+		"iso2": "SK",
+		"cc": "Europe/Bratislava",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Riga": {
+		"iso2": "LV",
+		"cc": "Europe/Riga",
+		"tz": "EET-2EEST,M3.5.0/3,M10.5.0/4"
+	},
+	"Europe/Rome": {
+		"iso2": "VA",
+		"cc": "Europe/Vatican City",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Sofia": {
+		"iso2": "BG",
+		"cc": "Europe/Sofia",
+		"tz": "EET-2EEST,M3.5.0/3,M10.5.0/4"
+	},
+	"Europe/Stockholm": {
+		"iso2": "SE",
+		"cc": "Europe/Stockholm",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Tallinn": {
+		"iso2": "EE",
+		"cc": "Europe/Tallinn",
+		"tz": "EET-2EEST,M3.5.0/3,M10.5.0/4"
+	},
+	"Europe/Tirane": {
+		"iso2": "AL",
+		"cc": "Europe/Tirana",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Vienna": {
+		"iso2": "AT",
+		"cc": "Europe/Vienna",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Vilnius": {
+		"iso2": "LT",
+		"cc": "Europe/Vilnius",
+		"tz": "EET-2EEST,M3.5.0/3,M10.5.0/4"
+	},
+	"Europe/Warsaw": {
+		"iso2": "PL",
+		"cc": "Europe/Warsaw",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Europe/Zurich": {
+		"iso2": "CH",
+		"cc": "Europe/Berne",
+		"tz": "CET-1CEST,M3.5.0,M10.5.0/3"
+	},
+	"Indian/Antananarivo": {
+		"iso2": "MG",
+		"cc": "Africa/Antananarivo",
+		"tz": "EAT-3"
+	},
+	"Indian/Chagos": {
+		"iso2": "IO",
+		"cc": "Asia/Diego Garcia",
+		"tz": "<+06>-6"
+	},
+	"Indian/Christmas": {
+		"iso2": "CX",
+		"cc": "Asia/Flying Fish Cove",
+		"tz": "<+07>-7"
+	},
+	"Indian/Cocos": {
+		"iso2": "CC",
+		"cc": "Asia/West Island",
+		"tz": "<+0630>-6:30"
+	},
+	"Indian/Comoro": {
+		"iso2": "KM",
+		"cc": "Africa/Moroni",
+		"tz": "EAT-3"
+	},
+	"Indian/Mahe": {
+		"iso2": "SC",
+		"cc": "Africa/Victoria",
+		"tz": "<+04>-4"
+	},
+	"Indian/Maldives": {
+		"iso2": "MV",
+		"cc": "Asia/Male",
+		"tz": "<+05>-5"
+	},
+	"Indian/Mauritius": {
+		"iso2": "MU",
+		"cc": "Africa/Port Louis",
+		"tz": "<+04>-4"
+	},
+	"Indian/Mayotte": {
+		"iso2": "YT",
+		"cc": "Africa/Mamoudzou",
+		"tz": "EAT-3"
+	},
+	"Indian/Reunion": {
+		"iso2": "RE",
+		"cc": "Africa/Saint-Denis",
+		"tz": "<+04>-4"
+	},
+	"Pacific/Apia": {
+		"iso2": "WS",
+		"cc": "Oceania/Apia",
+		"tz": "<+13>-13"
+	},
+	"Pacific/Auckland": {
+		"iso2": "NZ",
+		"cc": "Oceania/Wellington",
+		"tz": "NZST-12NZDT,M9.5.0,M4.1.0/3"
+	},
+	"Pacific/Efate": {
+		"iso2": "VU",
+		"cc": "Oceania/Port Vila",
+		"tz": "<+11>-11"
+	},
+	"Pacific/Fakaofo": {
+		"iso2": "TK",
+		"cc": "Oceania/",
+		"tz": "<+13>-13"
+	},
+	"Pacific/Fiji": {
+		"iso2": "FJ",
+		"cc": "Oceania/Suva",
+		"tz": "<+12>-12"
+	},
+	"Pacific/Funafuti": {
+		"iso2": "TV",
+		"cc": "Oceania/Funafuti",
+		"tz": "<+12>-12"
+	},
+	"Pacific/Guadalcanal": {
+		"iso2": "SB",
+		"cc": "Oceania/Honiara",
+		"tz": "<+11>-11"
+	},
+	"Pacific/Guam": {
+		"iso2": "GU",
+		"cc": "Oceania/Hagatna",
+		"tz": "ChST-10"
+	},
+	"Pacific/Majuro": {
+		"iso2": "MH",
+		"cc": "Oceania/Majuro",
+		"tz": "<+12>-12"
+	},
+	"Pacific/Nauru": {
+		"iso2": "NR",
+		"cc": "Oceania/Yaren",
+		"tz": "<+12>-12"
+	},
+	"Pacific/Niue": {
+		"iso2": "NU",
+		"cc": "Oceania/Alofi",
+		"tz": "<-11>11"
+	},
+	"Pacific/Noumea": {
+		"iso2": "NC",
+		"cc": "Oceania/Noumea",
+		"tz": "<+11>-11"
+	},
+	"Pacific/Pago Pago": {
+		"iso2": "AS",
+		"cc": "Oceania/Pago Pago",
+		"tz": "SST11"
+	},
+	"Pacific/Palau": {
+		"iso2": "PW",
+		"cc": "Oceania/Melekeok",
+		"tz": "<+09>-9"
+	},
+	"Pacific/Pitcairn": {
+		"iso2": "PN",
+		"cc": "Oceania/Adamstown",
+		"tz": "<-08>8"
+	},
+	"Pacific/Pohnpei": {
+		"iso2": "FM",
+		"cc": "Oceania/Palikir",
+		"tz": "<+11>-11"
+	},
+	"Pacific/Port Moresby": {
+		"iso2": "PG",
+		"cc": "Oceania/Port Moresby",
+		"tz": "<+10>-10"
+	},
+	"Pacific/Rarotonga": {
+		"iso2": "CK",
+		"cc": "Oceania/Avarua",
+		"tz": "<-10>10"
+	},
+	"Pacific/Saipan": {
+		"iso2": "MP",
+		"cc": "Oceania/Saipan",
+		"tz": "ChST-10"
+	},
+	"Pacific/Tahiti": {
+		"iso2": "PF",
+		"cc": "Oceania/Papeete",
+		"tz": "<-10>10"
+	},
+	"Pacific/Tarawa": {
+		"iso2": "KI",
+		"cc": "Oceania/Tarawa",
+		"tz": "<+12>-12"
+	},
+	"Pacific/Tongatapu": {
+		"iso2": "TO",
+		"cc": "Oceania/Nuku'alofa",
+		"tz": "<+13>-13"
+	},
+	"Pacific/Wallis": {
+		"iso2": "WF",
+		"cc": "Oceania/Mata Utu",
+		"tz": "<+12>-12"
+	}
+}

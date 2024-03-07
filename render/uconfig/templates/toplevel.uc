@@ -6,6 +6,11 @@
 		return;
 	}
 
+	/* remove all disabled interfaces */
+	for (let i, interface in state.interfaces)
+		if (interface.disable)
+			delete state.interfaces[i];
+
 	/* reject the config if there is no valid upstream configuration */
 	let upstream;
 	for (let i, interface in state.interfaces) {
@@ -59,8 +64,12 @@
 			push(vlans, interface.vlan.id);
 			if (interface.role == 'upstream')
 				push(vlans_upstream, interface.vlan.id);
-		} else
-			interface.vlan = { id: 0 };
+		} else {
+			interface.vlan ??= { };
+			interface.vlan.id = 0;
+		}
+		for (let vlan in interface.vlan?.trunks)
+			push(vlans_upstream, vlan);
 	}
 
 	/* dynamically assigned vlans start at 4090 counting backwards */
@@ -98,20 +107,26 @@
 	/* render the basic UCI setup */
 	include('base.uc');
 
+	/* setup default unit configuration */
+	state.unit ??= {
+		leds_active: true,
+		tty_login: false,
+	};
+
+	/* try loading the local static config */
+	let local = json(fs.readfile('/etc/uconfig/data/local.json') || '{}');
+	for (let k, v in local)
+		state.unit[k] = v;
+
 	/* render the unit configuration */
-	if (!state.unit)
-		state.unit = {
-			leds_active: true,
-			tty_login: false,
-			password: false,
-		};
 	include('unit.uc', { location: '/unit', unit: state.unit });
 
 	state.services ??= {};
 	for (let service in services.lookup_services())
 		tryinclude('services/' + service + '.uc', {
 			location: '/services/' + service,
-			[service]: state.services[service] || {}
+			[service]: state.services[service] || {},
+			state,
 		});
 
 	/* render the ethernet port configuration */

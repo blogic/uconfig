@@ -11,60 +11,49 @@ properties:
     enum:
     - upstream
     - downstream
-  isolate-hosts:
+  disable:
     description:
-      This option makes sure that any traffic leaving this interface is isolated
-      and all local IP ranges are blocked. It essentially enforces "guest network"
-      firewall settings.
+      Allows disabling an SSID from the UI.
     type: boolean
-  metric:
-    description:
-      The routing metric of this logical interface. Lower values have higher
-      priority.
-    type: integer
-    maximum: 4294967295
-    minimum: 0
-  mtu:
-    description:
-      The MTU of this logical interface.
-    type: integer
-    maximum: 1500
-    minimum: 1280
-  services:
-    description:
-      The services that shall be offered on this logical interface. These are
-      just strings such as "ssh", "lldp", "mdns"
-    type: array
-    items:
-      type: string
-      examples:
-      - ssh
-      - lldp
+  ipv4:
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ipv4/"
+  ipv6:
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ipv6/"
   vlan:
-    $ref: "https://uconfig.org/schema/v1/interface/vlan/"
-  bridge:
-    $ref: "https://uconfig.org/schema/v1/interface/bridge/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/vlan/"
+  ssids:
+    type: object
+    patternProperties:
+      ".+":
+        $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/"
+        additionalProperties: false
   ports:
     type: object
     patternProperties:
       ".+":
-        $ref: "https://uconfig.org/schema/v1/interface/ports/"
+        $ref: "https://uconfig.openwrt.org/schema/v1/interface/ports/"
   ieee8021x-ports:
     description:
       The list of physical network devices that shall serve .1x for this interface.u
     type: object
     patternProperties:
       ".+":
-        $ref: "https://uconfig.org/schema/v1/interface/ports/"
-  ipv4:
-    $ref: "https://uconfig.org/schema/v1/interface/ipv4/"
-  ipv6:
-    $ref: "https://uconfig.org/schema/v1/interface/ipv6/"
-  ssids:
-    type: object
-    patternProperties:
-      ".+":
-        $ref: "https://uconfig.org/schema/v1/interface/ssid/"
-        additionalProperties: false
-  tunnel:
-    $ref: "https://uconfig.org/schema/v1/interface/tunnel/"
+        $ref: "https://uconfig.openwrt.org/schema/v1/interface/ports/"
+  isolate-hosts:
+    description:
+      This option makes sure that any traffic leaving this interface is isolated
+      and all local IP ranges are blocked. It essentially enforces "guest network"
+      firewall settings.
+    type: boolean
+  quality-of-service:
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/quality-of-service/"
+  services:
+    description:
+      The services that shall be offered on this logical interface. These are
+      just strings such as "ssh", "mdns"
+    type: array
+    items:
+      type: string
+      examples:
+      - ssh
+      - mdns

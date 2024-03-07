@@ -3,15 +3,15 @@ description:
   Each service is then referenced via its name inside an interface, ssid, ...
 type: object
 properties:
-  ssh:
-    $ref: "https://uconfig.org/schema/v1/service/ssh/"
-  mdns:
-    $ref: "https://uconfig.org/schema/v1/service/mdns/"
-  lldp:
-    $ref: "https://uconfig.org/schema/v1/service/lldp/"
-  ntp:
-    $ref: "https://uconfig.org/schema/v1/service/ntp/"
-  log:
-    $ref: "https://uconfig.org/schema/v1/service/log/"
+  adguardhome:
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/adguardhome/"
   ieee8021x:
-    $ref: "https://uconfig.org/schema/v1/service/ieee8021x/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/ieee8021x/"
+  lldp:
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/lldp/"
+  log:
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/log/"
+  mdns:
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/mdns/"
+  ssh:
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/ssh/"

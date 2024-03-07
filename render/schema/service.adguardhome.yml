@@ -1,0 +1,29 @@
+$module: uconfig-mod-adguardhome
+type: object
+description:
+  This section can be used to setup the AdguardHome service
+properties:
+  webui-port:
+    description:
+      The port that the WebUI will run on.
+    type: number
+    maximum: 65535
+    minimum: 100
+    default: 3000
+  dns-intercept:
+    description:
+      Intercept/redirect all DNS traffic on enabled interfaces
+    type: boolean
+  servers:
+    description:
+      A list of upstream servers the requests get forwarded to
+    type: array
+    items:
+      type: string
+      format: uc-ip
+  password:
+    description:
+      The password hash used for admin login. The default password is 'abc123'.
+      The hash is generated using htpasswd - htpasswd -B -C 10 -n -b <USERNAME> <PASSWORD>
+    type: string
+    default: $2y$10$0wB5dH8ol.JGwwAnR9H.oeaqn3c.I7cTSeRLjNhm.AZNUz8U9oVsS

@@ -1,0 +1,102 @@
+#!/usr/bin/env ucode
+'use strict';
+import { basename, readfile, writefile, unlink, symlink, rename } from "fs";
+let uconfig = require('uconfig.uconfig');
+let ret = -1;
+let opts = {};
+const opt_flags = {
+	n: "no_apply",
+	v: "verbose",
+	t: "test",
+	u: "keep_uuid",
+	r: "rollback",
+};
+
+const uconfig_dir = '/etc/uconfig/configs/';
+const pending_path = uconfig_dir + '/uconfig.pending';
+const active_path = uconfig_dir + '/uconfig.active';
+const prev_path = uconfig_dir + '/uconfig.prev';
+
+const usage_message = `Usage: ${basename(sourcepath())} [<options>] <file>
+
+Options:
+  -n:		Do not overwrite /etc/uconfig/configs/uconfig.active, apply only
+  -t:		Only test rendering of config, do not apply
+  -u:		Do not modify config uuid
+  -v:		Verbose output
+  -r:		Rollback if applying the config fails
+
+`;
+
+function usage() {
+	warn(usage_message);
+	exit(1);
+}
+
+while (substr(ARGV[0], '-', 1) == '-') {
+	let opt = shift(ARGV);
+	opt = split(opt, "");
+	shift(opt);
+	for (let flag in opt) {
+		flag = opt_flags[flag];
+		if (!flag)
+			usage();
+		opts[flag] = true;
+	}
+}
+
+if (opts.test) {
+	opts.no_apply = true;
+	opts.rollback = false;
+}
+
+let file = shift(ARGV);
+if (file == null || length(ARGV) > 0)
+	usage();
+
+if (!opts.no_apply) {
+	try {
+		let config_data = json(readfile(file));
+		if (!opts.keep_uuid || type(config_data.uuid) != "int")
+			config_data.uuid = time();
+		let uuid = config_data.uuid;
+		file = sprintf('/etc/uconfig/configs/uconfig.cfg.%010d', uuid);
+		writefile(file, sprintf("%.J\n", config_data));
+		unlink(pending_path);
+		symlink(basename(file), pending_path);
+	} catch (e) {
+		warn(`Error copying configuration data: ${e}\n${e.stacktrace[0].context}`);
+		exit(1);
+	}
+}
+
+try {
+	ret = uconfig.generate(file, opts.verbose, opts.test, opts.no_apply);
+} catch (e) {
+	warn('Fatal error while generating UCI: ', e, '\n');
+	warn(e.stacktrace[0].context, '\n');
+	ret = 1;
+}
+
+if (ret) {
+	if (opts.rollback) {
+		try {
+			uconfig.generate(active_path, false, false);
+		} catch (e) {
+			warn(`Fatal error while rolling back to previous config: ${e}\n${e.stacktrace[0].context}\n`);
+		}
+	}
+	exit(ret);
+}
+
+if (!opts.no_apply) {
+	try {
+		unlink(pending_path);
+		unlink(prev_path);
+		rename(active_path, prev_path);
+		symlink(basename(file), active_path);
+	} catch (e) {
+		warn(`Error marking config as active: ${e}\n${e.stacktrace[0].context}\n`);
+		exit(1);
+	}
+}

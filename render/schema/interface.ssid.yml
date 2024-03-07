@@ -3,6 +3,10 @@ description:
   These properties are described inside this object.
 type: object
 properties:
+  disable:
+    description:
+      Allows disabling an SSID from the UI.
+    type: boolean
   purpose:
     description:
       An SSID can have a special purpose such as the hidden on-boarding BSS.
@@ -12,13 +16,25 @@ properties:
     - user-defined
     - system-defaults
     default: user-defined
-  ssid:
+  template:
     description:
-      The broadcasted SSID of the wireless network and for for managed mode
-      the SSID of the network you’re connecting to
+      The configuration/behaviour template used by the BSS.
     type: string
-    maxLength: 32
-    minLength: 1
+    enum:
+    - manual
+    - open
+    - encrypted
+    - enterprise
+    - batman
+    default: manual
+  security:
+    description:
+      The encryption strength used by this BSS when a template is selected.
+    type: string
+    enum:
+    - compatibility
+    - maximum
+    default: maximum
   wifi-radios:
     description:
       The list of radios hat the SSID should be broadcasted on. The configuration layer
@@ -38,6 +54,15 @@ properties:
     - wds-sta
     - wds-repeater
     default: ap
+  ssid:
+    description:
+      The broadcasted SSID of the wireless network and for for managed mode
+      the SSID of the network you’re connecting to
+    type: string
+    maxLength: 32
+    minLength: 1
+  encryption:
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/encryption/"
   bssid:
     description:
       Override the BSSID of the network, only applicable in adhoc or sta mode.
@@ -52,100 +77,28 @@ properties:
     description:
       Isolates wireless clients from each other on this BSS.
     type: boolean
-  power-save:
-    description:
-      Unscheduled Automatic Power Save Delivery.
-    type: boolean
-    default: true
-  rts-threshold:
-    description:
-      Set the RTS/CTS threshold of the BSS.
-    type: integer
-    maximum: 65535
-    minimum: 1
-  broadcast-time:
-    description:
-      This option will make the unit braodcast the time inside its beacons.
-    type: boolean
   unicast-conversion:
     description:
       Convert multicast traffic to unicast on this BSS.
     type: boolean
-  services:
-    description:
-      The services that shall be offered on this logical interface. These are
-      just strings such as "wifi-steering"
-    type: array
-    items:
-      type: string
-      examples:
-      - wifi-steering
-  proxy-arp:
-    description:
-      Proxy ARP is the technique in which the host router, answers ARP requests
-      intended for another machine.
-    type: boolean
-    default: false
-  disassoc-low-ack:
-    decription:
-      Disassociate stations based on excessive transmission failures or other
-      indications of connection loss.
-    type: boolean
-    default: false
   vendor-elements:
     decription:
       This option allows embedding custom vendor specific IEs inside the beacons of
       a BSS in AP mode.
     type: string
-  fils-discovery-interval:
-    description:
-      The maximum interval for FILS discovery announcement frames. This is a condensed
-      beacon used in 6GHz channels for passive BSS discovery.
-    type: integer
-    default: 20
-    maximum: 20
-  dtim-period:
-    description:
-      Set the DTIM (delivery traffic information message) period. There will
-      be one DTIM per this many beacon frames. This may be set between 1 and
-      255. This option only has an effect on ap wifi-ifaces.
-    type: integer
-    default: 2
-    maximum: 255
-    minimum: 1
-  encryption:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/encryption/"
   multi-psk:
-    type: array
-    items:
-      $ref: "https://uconfig.org/schema/v1/interface/ssid/multi-psk/"
-  rrm:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/rrm/"
+    type: object
+    patternProperties:
+      ".+":
+        $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/multi-psk/"
   rate-limit:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/rate-limit/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/rate-limit/"
   roaming:
     anyOf:
-      - $ref: "https://uconfig.org/schema/v1/interface/ssid/roaming/"
+      - $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/roaming/"
       - description:
           Enable 802.11r Fast Roaming for this BSS. This will enable "auto" mode
           which will work for most scenarios.
         type: boolean
-  radius:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/radius/"
   access-control-list:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/acl/"
-  hostapd-bss-raw:
-    description:
-      This array allows passing raw hostapd.conf lines.
-    type: array
-    items:
-      type: string
-      examples:
-      - 'ap_table_expiration_time=3600'
-      - 'device_type=6-0050F204-1'
-      - 'ieee80211h=1'
-      - 'rssi_ignore_probe_request=-75'
-      - 'time_zone=EST5'
-      - 'uuid=12345678-9abc-def0-1234-56789abcdef0'
-      - 'venue_url=1:http://www.example.com/info-eng'
-      - 'wpa_deny_ptk0_rekey=0'
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/acl/"

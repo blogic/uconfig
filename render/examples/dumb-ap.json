@@ -2,10 +2,7 @@
 	"uuid": 2,
 
 	"unit": {
-                "name": "test config AP",
-                "location": "Office",
-                "timezone": "CET-1",
-		"leds-active": true
+                "timezone": "Europe/Berlin"
         },
 
 	"country-code": "DE",
@@ -38,13 +35,13 @@
 			},
 			"ssids": {
 				"main": {
+					"template": "encrypted",
+					"security": "compatibility",
 					"ssid": "OpenWrt",
 					"wifi-radios": [
-						"2G", "5G"
+						"5G"
 					],
-					"bss-mode": "ap",
 					"encryption": {
-						"proto": "sae-mixed",
 						"key": "aaaaaaaa"
 					}
 				}

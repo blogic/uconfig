@@ -1,6 +1,6 @@
 {%
-let name = ethernet.calculate_name(interface);
-let dhcp = ipv4.dhcp || { ignore: 1 };
+let name = interface.name;
+let dhcp = ipv4.dhcp_pool || { ignore: 1 };
 let dhcpv6 = ipv6.dhcpv6 || {};
 
 function use_dns() {
@@ -58,8 +58,9 @@ set dhcp.{{ name }}.ra={{ has_downstream_relays ? 'relay' : 'disabled' }}
 set dhcp.{{ name }}.dhcpv6={{ has_downstream_relays ? 'relay' : 'disabled' }}
 set dhcp.{{ name }}.ndp={{ has_downstream_relays ? 'relay' : 'disabled' }}
 {%	endif
-	for (let lease in interface.ipv4.dhcp_leases): %}
+	for (let host, lease in interface.ipv4.dhcp_leases): %}
 add dhcp host
+set dhcp.@host[-1].name={{ host }}
 set dhcp.@host[-1].hostname={{ lease.hostname }}
 set dhcp.@host[-1].mac={{ lease.macaddr }}
 set dhcp.@host[-1].ip={{ lease.static_lease_offset }}

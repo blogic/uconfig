@@ -9,7 +9,18 @@ import * as renderer from 'uconfig.renderer';
 import * as files from 'uconfig.files';
 import * as services from 'uconfig.services';
 
-function generate(file, verbose, test) {
+function stdout(txt) {
+	fs.stdout.write('\-\-\- ' + txt + '\n');
+}
+
+function log_output(verbose, logs, batch) {
+	if (length(logs))
+		stdout('Log messages:\n' + join('\n', logs) + '\n');
+	if (verbose && batch)
+		stdout('UCI batch output:\n' + batch);
+}
+
+function generate(file, verbose, test, no_apply) {
 	/* flush previous state */
 	files.init();
 	services.init();
@@ -26,13 +37,17 @@ function generate(file, verbose, test) {
 		system(cmd);
 
 	/* validate the configuration */
+	stdout('validating config');
 	let state = reader.validate(cfgjson, logs);
 
 	/* die if the reader failed to validate the config */
-	if (!state)
-		die(logs);
+	if (!state) {
+		log_output(verbose, logs);
+		return -1;
+	}
 
 	/* generate the UCI batch sequence */
+	stdout('generating config');
 	let batch = renderer.generate(state, logs, { files, services });
 
 	if (state.strict && length(logs)) {
@@ -42,10 +57,7 @@ function generate(file, verbose, test) {
 	}
 
 	/* print some debug output */
-	if (verbose) {
-		fs.stdout.write('Log messages:\n' + join('\n', logs) + '\n\n');
-		fs.stdout.write('UCI batch output:\n' + batch + '\n');
-	}
+	log_output(verbose, logs, batch);
 
 	files.write('/tmp/uconfig.logs', join('\n', logs));
 
@@ -60,29 +72,35 @@ function generate(file, verbose, test) {
 
 	/* preapre the sanitized shadow config */
 	for (let cmd in [ 'rm -rf /tmp/uconfig-shadow',
-			  'cp -r /etc/uconfig/shadow /tmp/uconfig-shadow' ])
+			  'cp -r /etc/uconfig/shadow /tmp/uconfig-shadow',
+			  'cp -r /etc/config/system /tmp/uconfig-shadow/' ])
 		system(cmd);
 
 	/* import the UCI batch file */
-	files.popen('/sbin/uci -q -c /tmp/uconfig-shadow batch', batch);
+	stdout('writing config');
+	files.popen('/sbin/uci -q -c /tmp/uconfig-shadow -C "" batch' + (!verbose ? ' > /dev/null' : '') , batch);
 
 	/* write all dynamically generated files */
 	files.generate(logs);
 
 	/* disable all none used services */
-	services.stop();
+	stdout('stopping services');
+	services.stop(no_apply);
 
 	/* copy generated shadow config to /etc/config/ and reload the configuration */
-	for (let cmd in [ 'uci -q -c /tmp/uconfig-shadow commit',
-			  'cp /tmp/uconfig-shadow/* /etc/config/',
+	for (let cmd in [ 'uci -q -c /tmp/uconfig-shadow -C "" commit',
+			  'cp /tmp/uconfig-shadow/* /var/run/uci/',
 			  'rm -rf /tmp/uconfig-shadow' ])
 		system(cmd);
 
-	system('reload_config');
-
+	if (!no_apply) {
+		stdout('applying config');
+		system('reload_config');
+	}
 
 	/* enable all used services */
-	services.start();
+	stdout('starting services');
+	services.start(no_apply);
 
 	return 0;
 }

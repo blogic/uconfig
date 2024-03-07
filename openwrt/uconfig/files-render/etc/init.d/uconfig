@@ -1,9 +1,22 @@
 #!/bin/sh /etc/rc.common
 
 START=10
+BOOT=0
 
-PROG=/usr/bin/ucode
+start() {
+	[ -f /etc/uconfig/capabilities.json ] || /usr/libexec/uconfig/capabilities.uc
+
+	mkdir -p /var/run/uci
+	uconfig_apply -n /etc/uconfig/configs/uconfig.active
+	[ $BOOT -eq 0 ] && reload_config
+}
 
 boot() {
-	[ -f /etc/urender/capabilities.json ] || /usr/share/urender/capabilities.uc
+	BOOT=1
+	start
+}
+
+stop() {
+	rm -rf /var/run/uci
+	reload_config
 }

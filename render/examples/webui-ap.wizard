@@ -1,0 +1,96 @@
+{
+	"unit": {
+                "timezone": "Europe/Berlin",
+		"hostname": "ap",
+        	"leds-active": true
+	},
+
+	"country-code": "DE",
+
+	"radios": {
+		"2G": {
+			"channel-mode": "HE",
+			"channel-width": 20
+		},
+		"5G": {
+			"channel-mode": "HE",
+			"channel-width": 80,
+			"channel": 36
+		}
+	},
+
+	"interfaces": {
+		"lan": {
+			"role": "upstream",
+			"services": [ "mdns", "ssh", "webui", "fingerprint" ],
+			"ports": {
+				"wan*": "auto",
+				"lan*": "auto"
+			},
+			"ipv4": {
+				"addressing": "dynamic"
+			},
+			"ipv6": {
+				"addressing": "dynamic"
+			},
+			"ssids": {
+				"main": {
+					"template": "encrypted",
+					"security": "compatibility",
+					"ssid": "OpenWrt",
+					"wifi-radios": [
+						"2G", "5G"
+					],
+					"encryption": {
+						"key": "aaaaaaaa"
+					}
+				},
+				"mesh": {
+					"disable": true,
+					"template": "batman",
+					"ssid": "MeshUplink",
+					"wifi-radios": [
+						"5G"
+					],
+					"bss-mode": "mesh",
+					"encryption": {
+						"key": "aaaaaaaa",
+						"ieee80211w": "required"
+					}
+				}
+			}
+		},
+		"guest": {
+			"role": "upstream",
+			"ports": {
+				"wan*": "auto",
+				"lan*": "auto"
+			},
+			"vlan": {
+				"id": 100
+			},
+			"ipv4": {
+				"addressing": "none"
+			},
+			"ssids": {
+				"guest": {
+					"template": "encrypted",
+					"security": "compatibility",
+					"ssid": "OpenWrt-Guest",
+					"wifi-radios": [
+						"2G", "5G"
+					],
+					"encryption": {
+						"key": "aaaaaaaa"
+					}
+				}
+			}
+		}
+	},
+
+	"services": {
+		"ssh": {
+			"port": 22
+		}
+	}
+}

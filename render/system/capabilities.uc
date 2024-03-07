@@ -13,11 +13,23 @@ let capa = {
 let board = fs.readfile('/etc/board.json');
 board = json(board);
 
+let initial;
+if (fs.stat('/etc/uconfig/examples/webui-setup.json'))
+	initial = fs.readfile('/etc/uconfig/examples/webui-setup.json');
+else
+	initial = fs.readfile('/etc/uconfig/examples/initial.json');
+initial = json(initial);
+
+initial.uuid = time();
+initial.unit = {
+	hostname: uci.get('system', '@system[-1]', 'hostname'),
+	timezone: 'Europe/Berlin',
+};
+
 capa.compatible = board.model.id;
 capa.model = board.model.name;
 
 capa.network = {};
-capa.serial = uci.get('system', '@system[-1]', 'serial');
 let macs = {};
 for (let k, v in board.network) {
 	if (!board.network.wan && k == 'lan')
@@ -40,8 +52,21 @@ if (board.system?.label_macaddr)
 
 if (length(wiphy.phys)) {
 	capa.wifi = [ ];
-	for (let k, v in wiphy.phys)
+	for (let k, v in wiphy.phys) {
 		push(capa.wifi, { phy: k, ...v });
+		for (let band, data in v.bands) {
+			band = uc(band);
+			initial.radios[band] = {
+        	                'channel-mode': 'HE',
+                	        'channel-width': (band == '2G') ? 20 : 80,
+				channel: data.default_channel,
+	                };
+		}
+	}
 }
 
 fs.writefile('/etc/uconfig/capabilities.json', capa);
+
+let path = '/etc/uconfig/configs/uconfig.cfg.' + initial.uuid;
+fs.writefile(path, initial);
+fs.symlink(path, '/etc/uconfig/configs/uconfig.active');

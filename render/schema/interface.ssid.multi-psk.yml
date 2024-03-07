@@ -4,8 +4,10 @@ description:
   specific MAC or be a wildcard.
 properties:
   mac:
-    type: string
-    format: uc-mac
+    type: array
+    items:
+      type: string
+      format: uc-mac
   key:
     description:
       The Pre Shared Key (PSK) that is used for encryption on the BSS when

@@ -1,0 +1,61 @@
+#!/usr/bin/ucode
+
+import * as fs from 'fs';
+
+function load_config() {
+	let config = fs.readfile('/tmp/upgrade.json');
+	if (config)
+		config = json(config);
+	return config;
+}
+
+function download_config() {
+	let config = fs.readfile('/etc/uconfig/upgrade.json');
+	if (config)
+		config = json(config);
+	if (!config?.url) {
+		printf('failed to get upgrade server URL\n');
+		exit(-1);
+	}
+
+	let board = replace(replace(fs.readfile('/tmp/sysinfo/board_name'), '\n', ''), ',', '_');
+	system(`wget -q ${config.url}/${board}.json -O /tmp/upgrade.json`);
+
+	let config = load_config();
+
+	for (let key in [ 'uuid', 'sha256', 'url', 'revision' ]) {
+		if (exists(config, key))
+			continue;
+		printf(`the downloaded config is missing the "${key}" property\n`);
+		exit(-1);
+	}
+
+	let build_time = fs.readfile('/etc/uconfig/build_time');
+	if (config.uuid <= +build_time) {
+		printf('the current firmware is up to date\n');
+		exit(-1);
+	}
+	printf('a newer firmware is available\n');
+	exit(0);
+}
+
+function download_firmware() {
+	let config = load_config();
+
+	if (system(`wget -q ${config.url} -O /tmp/sysupgrade.bin`))
+		exit(-1);
+	
+
+	
+}
+
+switch(ARGV[0]) {
+case 'check':
+	download_config();
+	break;
+
+case 'download':
+	download_firmware();
+	break;
+
+}
