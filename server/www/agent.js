@@ -194,6 +194,36 @@ function sendset()
 	}
 	document.getElementById("set").addEventListener("click", sendset);
 
+function sendclients()
+	{
+		sendmsg({
+			uconfig: 1,
+			action: 'get',
+			method: 'clients',
+		});
+	}
+	document.getElementById("clients").addEventListener("click", sendclients);
+
+function sendports()
+	{
+		sendmsg({
+			uconfig: 1,
+			action: 'get',
+			method: 'ports',
+		});
+	}
+	document.getElementById("ports").addEventListener("click", sendports);
+
+function sendssids()
+	{
+		sendmsg({
+			uconfig: 1,
+			action: 'get',
+			method: 'ssids',
+		});
+	}
+	document.getElementById("ssids").addEventListener("click", sendssids);
+
 function sendapply()
 	{
 		sendmsg({
