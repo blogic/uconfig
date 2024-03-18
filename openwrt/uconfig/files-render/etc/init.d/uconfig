@@ -1,0 +1,9 @@
+#!/bin/sh /etc/rc.common
+
+START=10
+
+PROG=/usr/bin/ucode
+
+boot() {
+	[ -f /etc/urender/capabilities.json ] || /usr/share/urender/capabilities.uc
+}

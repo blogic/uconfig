@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cp /etc/config/umdns /etc/uconfig/shadow/
+uci -c /etc/uconfig/shadow/ delete umdns.@umdns[0].network
+uci -c /etc/uconfig/shadow/ commit umdns

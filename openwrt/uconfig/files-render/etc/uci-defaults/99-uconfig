@@ -1,0 +1,47 @@
+#!/bin/sh
+
+[ -d /etc/uconfig/shadow/ ] && exit 0
+
+. /lib/functions.sh
+
+hname=$(cat /etc/board.json  | jsonfilter -e '@.system.label_macaddr')
+[ -z "$hname" ] && hname=$(cat /sys/class/net/eth0/address)
+hname=$(echo $hname | tr -d : | awk '{print tolower($0)}')
+uci set system.@system[-1].hostname=$hname
+uci set uDevice.config.serial=$hname
+
+uci commit
+
+cp -r /etc/config/ /etc/uconfig/shadow/
+
+section_del() {
+        uci -c /etc/uconfig/shadow delete $2.$1
+}
+
+config_load network
+config_foreach section_del interface network
+config_foreach section_del bridge-vlan network
+config_foreach section_del device network
+
+config_load dhcp
+config_foreach section_del dhcp dhcp
+
+config_load firewall
+config_foreach section_del rule firewall
+config_foreach section_del zone firewall
+config_foreach section_del forwarding firewall
+
+config_load wireless
+config_foreach section_del wifi-iface wireless
+
+hname=$(cat /etc/board.json  | jsonfilter -e '@.system.label_macaddr')
+[ -z "$hname" ] && hname=$(cat /sys/class/net/eth0/address)
+hname=$(echo $hname | tr -d : | awk '{print tolower($0)}')
+uci -c /etc/uconfig/shadow set system.@system[-1].hostname=$hname
+uci -c /etc/uconfig/shadow set urender.config.serial=$hname
+
+uci -c /etc/uconfig/shadow commit
+
+/usr/libexec/uconfig/capabilities.uc
+
+render_config -q /etc/uconfig/uconfig.active

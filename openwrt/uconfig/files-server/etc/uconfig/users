@@ -1,0 +1,1 @@
+{ "admin": { "acl": { "get": true, "system": true, "config": true, "user": true, "action": true, "event": true }, "crypt": "$5$0K6x5vmnln23B7v5$gzfdax2MjxGDNw2jk9gAgXMAq70v9vsm47Yq/nWsJu9" } }
