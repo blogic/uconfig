@@ -8,7 +8,7 @@ SHADOW=/etc/uconfig/shadow
 rm -rf $SHADOW
 mkdir -p $SHADOW
 
-touch $SHADOW/network $SHADOW/dhcpsnoop $SHADOW/ratelimit $SHADOW/ieee8021x
+touch $SHADOW/network $SHADOW/dhcpsnoop $SHADOW/ratelimit $SHADOW/ieee8021x $SHADOW/radius
 
 section_del() {
         uci -c $SHADOW delete $2.$1
@@ -61,11 +61,13 @@ config defaults
 	option flow_offloading 1
 EOF
 
+uci -c $SHADOW commit
+
 hname=$(cat /etc/board.json  | jsonfilter -e '@.system.label_macaddr')
 [ -z "$hname" ] && hname=$(cat /sys/class/net/eth0/address)
 hname=$(echo $hname | tr -d : | awk '{print tolower($0)}')
-uci -c $SHADOW set system.@system[-1].hostname=$hname
-uci -c $SHADOW commit
+uci set system.@system[-1].hostname=$hname
+uci commit
 
 /usr/libexec/uconfig/capabilities.uc
 
@@ -73,6 +75,11 @@ uci -c $SHADOW commit
 	mkdir -p /etc/uconfig/certificates/
 	/usr/bin/pkgen -s CN=$hname,O=OpenWrt ca /etc/uconfig/certificates/ca.pem
 	/usr/bin/pkgen -s CN=$hname,O=OpenWrt cert /etc/uconfig/certificates/ca.pem /etc/uconfig/certificates/cert.pem
+	uci set radius.@radius[0].ca_cert='/etc/uconfig/certificates/ca.pem'
+	uci set radius.@radius[0].cert='/etc/uconfig/certificates/cert.key'
+	uci set radius.@radius[0].key='/etc/uconfig/certificates/key.pem'
+	uci add_list radius.@radius[0].network='lan'
+	uci commit radius
 }
 
 uconfig_apply -n /etc/uconfig/uconfig.active

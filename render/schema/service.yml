@@ -13,5 +13,9 @@ properties:
     $ref: "https://uconfig.org/schema/v1/service/ntp/"
   log:
     $ref: "https://uconfig.org/schema/v1/service/log/"
+  webui:
+    $ref: "https://uconfig.org/schema/v1/service/webui/"
   ieee8021x:
     $ref: "https://uconfig.org/schema/v1/service/ieee8021x/"
+  adguardhome:
+    $ref: "https://uconfig.org/schema/v1/service/adguardhome/"

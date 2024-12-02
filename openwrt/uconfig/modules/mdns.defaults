@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cat > /etc/uconfig/shadow/mdns <<EOF
+cat > /etc/uconfig/shadow/umdns <<EOF
 config umdns
 	option jail 1
 EOF

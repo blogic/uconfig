@@ -5,7 +5,7 @@ let uconfig = require('uconfig.uconfig');
 let ret = -1;
 let opts = {};
 const opt_flags = {
-	n: "no_save",
+	n: "no_apply",
 	v: "verbose",
 	t: "test",
 	u: "keep_uuid",
@@ -46,7 +46,7 @@ while (substr(ARGV[0], '-', 1) == '-') {
 }
 
 if (opts.test) {
-	opts.no_save = true;
+	opts.no_apply = true;
 	opts.rollback = false;
 }
 
@@ -54,7 +54,7 @@ let file = shift(ARGV);
 if (file == null || length(ARGV) > 0)
 	usage();
 
-if (!opts.no_save) {
+if (!opts.no_apply) {
 	try {
 		let config_data = json(readfile(file));
 		if (!opts.keep_uuid || type(config_data.uuid) != "int")
@@ -71,7 +71,7 @@ if (!opts.no_save) {
 }
 
 try {
-	ret = uconfig.generate(file, opts.verbose, opts.test);
+	ret = uconfig.generate(file, opts.verbose, opts.test, opts.no_apply);
 } catch (e) {
 	warn('Fatal error while generating UCI: ', e, '\n');
 	warn(e.stacktrace[0].context, '\n');
@@ -89,7 +89,7 @@ if (ret) {
 	exit(ret);
 }
 
-if (!opts.no_save) {
+if (!opts.no_apply) {
 	try {
 		unlink(pending_path);
 		unlink(prev_path);

@@ -8,7 +8,7 @@ set network.@bridge-vlan[-1].vlan={{ this_vid }}
 add_list network.@bridge-vlan[-1].ports={{ port }}{{ ethernet.port_vlan(interface, eth_ports[port]) }}
 {%  endfor %}
 {# add the batman interface to the bridge if the interface has mesh support #}
-{% if (interface.tunnel && interface.tunnel.proto == "mesh-batman"): -%}
+{% if (batman): -%}
 add_list network.@bridge-vlan[-1].ports=batman{{ ethernet.has_vlan(interface) ? "." + this_vid + ":t" : '' }}
 {% endif -%}
 {% if (interface.bridge): %}

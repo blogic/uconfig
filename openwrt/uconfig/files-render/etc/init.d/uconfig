@@ -3,7 +3,7 @@
 START=10
 
 start() {
-	/usr/libexec/uconfig/capabilities.uc
+	[ -f /etc/uconfig/capabilities.json ] || /usr/libexec/uconfig/capabilities.uc
 
 	mkdir -p /var/run/uci
 	uconfig_apply -n /etc/uconfig/uconfig.active

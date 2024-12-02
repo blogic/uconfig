@@ -16,6 +16,8 @@ properties:
     $ref: "https://uconfig.org/schema/v1/unit/"
   globals:
     $ref: "https://uconfig.org/schema/v1/globals/"
+  configurations:
+    $ref: "https://uconfig.org/schema/v1/configurations/"
   ethernet:
     $ref: "https://uconfig.org/schema/v1/ethernet/"
   country-code:

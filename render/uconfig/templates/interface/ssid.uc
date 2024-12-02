@@ -29,10 +29,51 @@
 			};
 		}
 	}
+	
+	if (ssid.template != 'manual') {
+		let new = {
+			ssid: ssid.ssid,
+			wifi_radios: ssid.wifi_radios,
+			bss_mode: ssid.bss_mode,
+			encryption: {},
+		};
+
+		switch (ssid.template) {
+		case 'open':
+			new.encryption.proto = 'none';
+			break;
+
+		case 'encrypted':
+			new.encryption.proto = (ssid.security == compatibility) ? 'sae-mixed' : 'sae';
+			new.encryption.key = ssid.encryption?.key;
+			new.ieee80211w = 'optional';
+			new.roaming = true;
+			break;
+
+		case 'enterprise':
+			new.encryption.proto = (ssid.security == compatibility) ? 'wpa3-mixed' : 'wpa3';
+			break;
+		
+		case 'batman':
+			new.wifi_radios = [ '5G' ];
+			new.bss_mode = 'mesh';
+			new.hidden = true;
+			new.encryption.proto = 'psk2';
+			new.encryption.key = ssid.encryption?.key;
+			new.encryption.ieee80211w = 'required';
+			break;
+		}
+
+		ssid = new;
+	}
+
+	if (state.configurations?.radius_servers)
+		ssid.radius = state.configurations?.radius_servers[ssid.encryption?.radius_server];
 
 	if (type(ssid.roaming) == 'bool')
 		ssid.roaming = {
-			message_exchange: 'air'
+			message_exchange: 'air',
+			generate_psk: false,
 		};
 
 	if (ssid.roaming && ssid.encryption.proto in [ "wpa", "psk", "none" ]) {
@@ -196,7 +237,6 @@ set wireless.{{ section }}.bssid={{ ssid.bssid }}
 set wireless.{{ section }}.wds='{{ b(match_wds()) }}'
 set wireless.{{ section }}.wpa_disable_eapol_key_retries='{{ b(ssid.wpa_disable_eapol_key_retries) }}'
 set wireless.{{ section }}.vendor_elements='{{ ssid.vendor_elements }}'
-set wireless.{{ section }}.disassoc_low_ack='{{ b(ssid.disassoc_low_ack) }}'
 set wireless.{{ section }}.auth_cache='{{ b(ssid.encryption?.key_caching) }}'
 {%   endif %}
 
@@ -268,13 +308,9 @@ set wireless.{{ section }}.identity='OpenWrt'
 {%   if (bss_mode == 'ap'): %}
 set wireless.{{ section }}.proxy_arp={{ b(length(network) ? ssid.proxy_arp : false) }}
 set wireless.{{ section }}.hidden={{ b(ssid.hidden_ssid) }}
-set wireless.{{ section }}.time_advertisement={{ ssid.broadcast_time ? 2 : 0 }}
 set wireless.{{ section }}.isolate={{ b(ssid.isolate_clients || interface.isolate_hosts) }}
 set wireless.{{ section }}.bridge_isolate={{ b(interface.isolate_hosts) }}
-set wireless.{{ section }}.uapsd={{ b(ssid.power_save) }}
-set wireless.{{ section }}.rts_threshold={{ ssid.rts_threshold }}
 set wireless.{{ section }}.multicast_to_unicast={{ b(ssid.unicast_conversion) }}
-set wireless.{{ section }}.dtim_period={{ ssid.dtim_period }}
 
 {%     if (ssid.rate_limit): %}
 set wireless.{{ section }}.ratelimit=1
@@ -285,15 +321,6 @@ set wireless.{{ section }}.macfilter={{ s(ssid.access_control_list.mode) }}
 {%       for (let mac in ssid.access_control_list.mac_address): %}
 add_list wireless.{{ section }}.maclist={{ s(mac) }}
 {%       endfor %}
-{%     endif %}
-
-{%     if (ssid.rrm): %}
-set wireless.{{ section }}.ieee80211k={{ b(ssid.rrm.neighbor_reporting) }}
-set wireless.{{ section }}.ftm_responder={{ b(ssid.rrm.ftm_responder) }}
-set wireless.{{ section }}.stationary_ap={{ b(ssid.rrm.stationary_ap) }}
-set wireless.{{ section }}.lci={{ b(ssid.rrm.lci) }}
-set wireless.{{ section }}.civic={{ ssid.rrm.civic }}
-set wireless.{{ section }}.rnr={{ b(ssid.rrm.reduced_neighbor_reporting) }}
 {%     endif %}
 
 {%     if (ssid.roaming): %}

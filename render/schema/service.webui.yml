@@ -1,0 +1,9 @@
+$module: uconfig-mod-mdns
+type: object
+description:
+  This section can be used to setup the uConfig WebUI
+properties:
+  tls-only:
+    description:
+      Only open up the TLS ports
+    type: boolean

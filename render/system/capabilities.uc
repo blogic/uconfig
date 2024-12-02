@@ -12,6 +12,10 @@ let capa = {
 
 let board = fs.readfile('/etc/board.json');
 board = json(board);
+let initial = fs.readfile('/etc/uconfig/examples/initial.json');
+initial = json(initial);
+
+initial.uuid = time();
 
 capa.compatible = board.model.id;
 capa.model = board.model.name;
@@ -40,8 +44,21 @@ if (board.system?.label_macaddr)
 
 if (length(wiphy.phys)) {
 	capa.wifi = [ ];
-	for (let k, v in wiphy.phys)
+	for (let k, v in wiphy.phys) {
 		push(capa.wifi, { phy: k, ...v });
+		for (let band, data in v.bands) {
+			band = uc(band);
+			initial.radios[band] = {
+        	                'channel-mode': 'HE',
+                	        'channel-width': (band == '2G') ? 20 : 80,
+				channel: data.default_channel,
+	                };
+		}
+	}
 }
 
 fs.writefile('/etc/uconfig/capabilities.json', capa);
+
+let path = '/etc/uconfig/uconfig.cfg.' + initial.uuid;
+fs.writefile(path, initial);
+fs.symlink(path, '/etc/uconfig/uconfig.active');

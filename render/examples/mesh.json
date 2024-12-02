@@ -29,32 +29,28 @@
 			"ipv6": {
 				"addressing": "dynamic"
 			},
-			"tunnel": {
-				"proto": "mesh-batman"
-			},
 			"ssids": {
 				"mesh": {
-		                        "ssid": "mesh",
+		                        "template": "mesh",
+					"ssid": "mesh",
 		                        "wifi-radios": [
 		                                "5G"
                 		        ],
 		                        "bss-mode": "mesh",
                 		        "encryption": {
-                                		"proto": "psk2",
-		                                "key": "meshmesh",
-                		                "ieee80211w": "required"
+		                                "key": "meshmesh"
 		                        }
 				},
 				"main": {
+		                        "template": "encrypted",
+					"security": "compatibility",
 					"ssid": "OpenWrt",
 					"wifi-radios": [
 						"2G", "5G"
 					],
 					"bss-mode": "ap",
 					"encryption": {
-						"proto": "sae-mixed",
-		                                "key": "aaaaaaaa",
-						"ieee80211w": "optional"
+		                                "key": "aaaaaaaa"
 					}
 				}
 			}

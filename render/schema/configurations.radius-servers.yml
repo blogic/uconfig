@@ -14,7 +14,7 @@ properties:
     type: boolean
     default: false
   local:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/radius/local/"
+    $ref: "https://uconfig.org/schema/v1/configurations/radius-servers/local/"
   dynamic-authorization:
     description:
       Dynamic Authorization Extensions (DAE) is an extension to Radius.
@@ -43,9 +43,16 @@ properties:
         - secret
   authentication:
     allOf:
-      - $ref: "https://uconfig.org/schema/v1/interface/ssid/radius/server/"
+      - $ref: "https://uconfig.org/schema/v1/configurations/radius-servers/server/"
       - type: object
         properties:
+          port:
+            description:
+              The network port of our Radius server.
+            type: integer
+            maximum: 65535
+            minimum: 1024
+            default: 1812
           mac-filter:
             description:
               Should the radius server be used for MAC address ACL.
@@ -53,9 +60,16 @@ properties:
             default: false
   accounting:
     allOf:
-      - $ref: "https://uconfig.org/schema/v1/interface/ssid/radius/server/"
+      - $ref: "https://uconfig.org/schema/v1/configurations/radius-servers/server/"
       - type: object
         properties:
+          port:
+            description:
+              The network port of our Radius server.
+            type: integer
+            maximum: 65535
+            minimum: 1024
+            default: 1813
           interval:
             description:
               The interim accounting update interval. This value is defined in seconds.

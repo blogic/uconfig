@@ -125,7 +125,7 @@ export function is_single_config(interface) {
 export function calculate_name(interface) {
 	let vid = interface.vlan.id;
 
-	return (interface.role == 'upstream' ? 'up' : 'down') + interface.index + 'v' + vid;
+	return (interface.role == 'upstream' ? 'br-wan' : 'br-lan') + interface.index + 'v' + vid;
 };
 
 export function calculate_names(interface) {
@@ -151,20 +151,24 @@ export function has_vlan(interface) {
 };
 
 export function port_vlan(interface, port) {
-	if (port == "tagged")
+	if (port == "tagged" && has_vlan(interface))
 		return ':t';
 
 	if (port == "un-tagged")
 		return '';
 
-	return ((interface.role == 'upstream') && has_vlan(interface)) ? ':t' : '';
+	return has_vlan(interface) ? ':t' : '';
 };
 
 export function find_interface(role, vid) {
-	for (let name, interface in state.interfaces)
-		if (interface.role == role &&
-		    interface.vlan?.id == vid)
+	for (let name, interface in state.interfaces) {
+		if (interface.role == role)
+			continue;
+		if (interface.vlan?.id == vid)
 			return interface.name;
+		if (vid in interface.vlan_trunks)
+			return interface.name;
+	}
 	return '';
 };
 

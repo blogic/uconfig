@@ -15,6 +15,23 @@
 		}
 	},
 
+	"configurations": {
+		"radius-servers": {
+			"radius": {
+				"authentication": {
+					"host": "192.168.42.78",
+					"port": 1812,
+					"secret": "secret"
+				},
+				"accounting": {
+					"host": "192.168.42.78",
+					"port": 1813,
+					"secret": "secret"
+				}
+			}
+		}
+	},
+
 	"interfaces": {
 		"wan": {
 			"role": "upstream",
@@ -37,20 +54,9 @@
 					],
 					"bss-mode": "ap",
 					"encryption": {
-						"proto": "wpa2"
-					},
-					"radius": {
-                                                "authentication": {
-                                                        "host": "192.168.178.5",
-                                                        "port": 1812,
-                                                        "secret": "secret"
-                                                },
-                                                "accounting": {
-                                                        "host": "192.168.178.5",
-                                                        "port": 1813,
-                                                        "secret": "secret"
-                                                }
-                                        }
+						"proto": "wpa2",
+						"radius-server": "radius"
+					}
 				}
 			}
 		}

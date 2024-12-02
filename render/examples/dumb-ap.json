@@ -38,13 +38,13 @@
 			},
 			"ssids": {
 				"main": {
+					"template": "encrypted",
+					"security": "compatibility",
 					"ssid": "OpenWrt",
 					"wifi-radios": [
-						"2G", "5G"
+						"5G"
 					],
-					"bss-mode": "ap",
 					"encryption": {
-						"proto": "sae-mixed",
 						"key": "aaaaaaaa"
 					}
 				}

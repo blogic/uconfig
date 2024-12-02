@@ -42,6 +42,15 @@ properties:
       - lldp
   vlan:
     $ref: "https://uconfig.org/schema/v1/interface/vlan/"
+  vlan-trunks:
+    description:
+      Upstream interfaces can prOvide NAT for downstream interfaces that have a
+      different VLAN Id
+    type: array
+    items:
+      type: number
+      maximum: 4096
+      minimum: 1
   bridge:
     $ref: "https://uconfig.org/schema/v1/interface/bridge/"
   ports:
@@ -66,5 +75,3 @@ properties:
       ".+":
         $ref: "https://uconfig.org/schema/v1/interface/ssid/"
         additionalProperties: false
-  tunnel:
-    $ref: "https://uconfig.org/schema/v1/interface/tunnel/"

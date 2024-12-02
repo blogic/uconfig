@@ -61,6 +61,8 @@
 				push(vlans_upstream, interface.vlan.id);
 		} else
 			interface.vlan = { id: 0 };
+		for (let vlan in interface.vlan_trunks)
+			push(vlans_upstream, vlan);
 	}
 
 	/* dynamically assigned vlans start at 4090 counting backwards */

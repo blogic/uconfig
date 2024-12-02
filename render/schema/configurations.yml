@@ -1,0 +1,10 @@
+description:
+  A device has certain global properties that are used to derive parts of
+  the final configuration that gets applied.
+type: object
+properties:
+  radius-servers:
+    type: object
+    patternProperties:
+      ".+":
+        $ref: "https://uconfig.org/schema/v1/configurations/radius-servers/"

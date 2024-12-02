@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 2.6)
+
+PROJECT(utils C)
+INCLUDE(GNUInstallDirs)
+ADD_DEFINITIONS(-Os -ggdb -Wall -Werror --std=gnu99 -pedantic)
+
+SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+
+ADD_LIBRARY(utils SHARED utils.c)
+SET_TARGET_PROPERTIES(utils PROPERTIES PREFIX "")
+TARGET_LINK_LIBRARIES(utils ubox)
+INSTALL(TARGETS utils LIBRARY DESTINATION lib)

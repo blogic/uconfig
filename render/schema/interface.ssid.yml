@@ -12,6 +12,25 @@ properties:
     - user-defined
     - system-defaults
     default: user-defined
+  template:
+    description:
+      The configuration/behaviour template used by the BSS.
+    type: string
+    enum:
+    - manual
+    - open
+    - encrypted
+    - enterprise
+    - batman
+    default: manual
+  security:
+    description:
+      The encryption strength used by this BSS.
+    type: string
+    enum:
+    - compatibility
+    - maximum
+    default: maximum
   ssid:
     description:
       The broadcasted SSID of the wireless network and for for managed mode
@@ -52,21 +71,6 @@ properties:
     description:
       Isolates wireless clients from each other on this BSS.
     type: boolean
-  power-save:
-    description:
-      Unscheduled Automatic Power Save Delivery.
-    type: boolean
-    default: true
-  rts-threshold:
-    description:
-      Set the RTS/CTS threshold of the BSS.
-    type: integer
-    maximum: 65535
-    minimum: 1
-  broadcast-time:
-    description:
-      This option will make the unit braodcast the time inside its beacons.
-    type: boolean
   unicast-conversion:
     description:
       Convert multicast traffic to unicast on this BSS.
@@ -86,12 +90,6 @@ properties:
       intended for another machine.
     type: boolean
     default: false
-  disassoc-low-ack:
-    decription:
-      Disassociate stations based on excessive transmission failures or other
-      indications of connection loss.
-    type: boolean
-    default: false
   vendor-elements:
     decription:
       This option allows embedding custom vendor specific IEs inside the beacons of
@@ -104,23 +102,12 @@ properties:
     type: integer
     default: 20
     maximum: 20
-  dtim-period:
-    description:
-      Set the DTIM (delivery traffic information message) period. There will
-      be one DTIM per this many beacon frames. This may be set between 1 and
-      255. This option only has an effect on ap wifi-ifaces.
-    type: integer
-    default: 2
-    maximum: 255
-    minimum: 1
   encryption:
     $ref: "https://uconfig.org/schema/v1/interface/ssid/encryption/"
   multi-psk:
     type: array
     items:
       $ref: "https://uconfig.org/schema/v1/interface/ssid/multi-psk/"
-  rrm:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/rrm/"
   rate-limit:
     $ref: "https://uconfig.org/schema/v1/interface/ssid/rate-limit/"
   roaming:
@@ -130,8 +117,6 @@ properties:
           Enable 802.11r Fast Roaming for this BSS. This will enable "auto" mode
           which will work for most scenarios.
         type: boolean
-  radius:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/radius/"
   access-control-list:
     $ref: "https://uconfig.org/schema/v1/interface/ssid/acl/"
   hostapd-bss-raw:

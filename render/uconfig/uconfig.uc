@@ -9,7 +9,13 @@ import * as renderer from 'uconfig.renderer';
 import * as files from 'uconfig.files';
 import * as services from 'uconfig.services';
 
-function generate(file, verbose, test) {
+function log_output(logs, batch) {
+	fs.stdout.write('Log messages:\n' + join('\n', logs) + '\n\n');
+	if (batch)
+		fs.stdout.write('UCI batch output:\n' + batch + '\n');
+}
+
+function generate(file, verbose, test, no_apply) {
 	/* flush previous state */
 	files.init();
 	services.init();
@@ -29,8 +35,10 @@ function generate(file, verbose, test) {
 	let state = reader.validate(cfgjson, logs);
 
 	/* die if the reader failed to validate the config */
-	if (!state)
-		die(logs);
+	if (!state) {
+		log_output(logs);
+		return -1;
+	}
 
 	/* generate the UCI batch sequence */
 	let batch = renderer.generate(state, logs, { files, services });
@@ -42,10 +50,8 @@ function generate(file, verbose, test) {
 	}
 
 	/* print some debug output */
-	if (verbose) {
-		fs.stdout.write('Log messages:\n' + join('\n', logs) + '\n\n');
-		fs.stdout.write('UCI batch output:\n' + batch + '\n');
-	}
+	if (verbose)
+		log_output(logs, batch);
 
 	files.write('/tmp/uconfig.logs', join('\n', logs));
 
@@ -60,7 +66,8 @@ function generate(file, verbose, test) {
 
 	/* preapre the sanitized shadow config */
 	for (let cmd in [ 'rm -rf /tmp/uconfig-shadow',
-			  'cp -r /etc/uconfig/shadow /tmp/uconfig-shadow' ])
+			  'cp -r /etc/uconfig/shadow /tmp/uconfig-shadow',
+			  'cp -r /etc/config/system /tmp/uconfig-shadow/' ])
 		system(cmd);
 
 	/* import the UCI batch file */
@@ -70,7 +77,7 @@ function generate(file, verbose, test) {
 	files.generate(logs);
 
 	/* disable all none used services */
-	services.stop();
+	services.stop(no_apply);
 
 	/* copy generated shadow config to /etc/config/ and reload the configuration */
 	for (let cmd in [ 'uci -q -c /tmp/uconfig-shadow -C "" commit',
@@ -78,10 +85,11 @@ function generate(file, verbose, test) {
 			  'rm -rf /tmp/uconfig-shadow' ])
 		system(cmd);
 
-	system('reload_config');
+	if (!no_apply)
+		system('reload_config');
 
 	/* enable all used services */
-	services.start();
+	services.start(no_apply);
 
 	return 0;
 }

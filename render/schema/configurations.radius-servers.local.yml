@@ -13,4 +13,4 @@ properties:
       Specifies a collection of local EAP user/psk/vid triplets.
     type: array
     items:
-      $ref: "https://uconfig.org/schema/v1/interface/ssid/radius/local-user/"
+      $ref: "https://uconfig.org/schema/v1/configurations/radius-servers/local-user/"

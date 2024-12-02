@@ -1,0 +1,20 @@
+'use strict';
+
+import * as datamodel from "cli.datamodel";
+
+let model = datamodel.new({
+        status_msg: (msg) => {
+                warn(msg + "\n");
+        },
+});
+
+model.add_modules();
+let ctx = model.context();
+model.init();
+
+ctx = ctx.select([ 'uconfig' ]);
+printf('%.J\n', ctx.call([ 'status' ]));
+ctx = ctx.select([ 'edit' ]);
+printf('%.J\n', ctx.call([ 'radios', '2G', 'show' ]));
+
+printf('%.J\n', ctx.complete([ 'radios', '' ]));

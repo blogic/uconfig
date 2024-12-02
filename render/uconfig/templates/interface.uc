@@ -89,7 +89,7 @@
 
 	/* compute unique logical name and netdev name to use */
 	let name = interface.name;
-	let bridgedev = interface.role == "upstream" ? 'up' : 'down';
+	let bridgedev = interface.role == "upstream" ? 'br-wan' : 'br-lan';
 	let netdev = ethernet.calculate_name(interface);
 	let network = name;
 
@@ -106,9 +106,6 @@
 	if (!interface.metric)
 		interface.metric = (interface.role == 'upstream') ? 5 : 10;
 
-	/* if this interface is a tunnel, we need to create the interface in a different way */
-	let tunnel_proto = interface.tunnel?.proto || '';
-
 	/* make sure bridge settings are applied when isolate-hosts is enabled */
 	if (interface.isolate_hosts)
 		interface.bridge ??= {};
@@ -117,16 +114,20 @@
 	 * generate the actual UCI sections
 	 */
 
-	/* some tunnel overlays require two additional interface sections */
-	if (tunnel_proto in [ 'mesh-batman' ])
-		include('interface/' + tunnel_proto + '.uc', { interface, name, eth_ports, location, netdev, ipv4_mode, ipv6_mode, this_vid });
+	/* Do we have a batman mesh ? */
+	let batman = false;
+	for (let k, v in interface.ssids)
+		if (v.template == 'batman' || v.bss_mode == 'mesh')
+			batman = true;
+	if (batman)	
+		include('interface/mesh-batman.uc', { interface, name, eth_ports, location, netdev, ipv4_mode, ipv6_mode, this_vid });
 
-	if (!interface.ports && length(interface.ssids) == 1 && !tunnel_proto)
-		/* interfaces with a single ssid and no tunnel do not need a bridge */
+	if (!interface.ports && length(interface.ssids) == 1 && !batman)
+		/* interfaces with a single ssid and no mesh do not need a bridge */
 		netdev = '';
 	else
 		/* anything else requires a bridge-vlan */
-		include('interface/bridge-vlan.uc', { interface, netdev, eth_ports, this_vid, bridgedev });
+		include('interface/bridge-vlan.uc', { interface, netdev, eth_ports, this_vid, bridgedev, batman });
 
 	/* generate UCI common to all interfaces */
 	include('interface/common.uc', {

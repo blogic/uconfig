@@ -18,7 +18,7 @@ function moduleServiceIeee8021x(location, value, errors) {
 
 		function parseUsers(location, value, errors) {
 			if (type(value) == "array") {
-				return map(value, (item, i) => instantiateInterfaceSsidRadiusLocalUser(location + "/" + i, item, errors));
+				return map(value, (item, i) => instantiateConfigurationsRadiusServersLocalUser(location + "/" + i, item, errors));
 			}
 
 			if (type(value) != "array")
