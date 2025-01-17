@@ -88,9 +88,9 @@
 	}
 
 	/* compute unique logical name and netdev name to use */
-	let name = ethernet.calculate_name(interface);
+	let name = interface.name;
 	let bridgedev = interface.role == "upstream" ? 'up' : 'down';
-	let netdev = name;
+	let netdev = ethernet.calculate_name(interface);
 	let network = name;
 
 	/* determine the IPv4 and IPv6 configuration modes and figure out if we
@@ -126,7 +126,7 @@
 		netdev = '';
 	else
 		/* anything else requires a bridge-vlan */
-		include('interface/bridge-vlan.uc', { interface, name, eth_ports, this_vid, bridgedev });
+		include('interface/bridge-vlan.uc', { interface, netdev, eth_ports, this_vid, bridgedev });
 
 	/* generate UCI common to all interfaces */
 	include('interface/common.uc', {

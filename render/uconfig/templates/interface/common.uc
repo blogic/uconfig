@@ -3,12 +3,12 @@
 {# interfaces that have IPv4 and IPv6 require a dummy interface with proto:none #}
 {% if (length(afnames) >= 2): %}
 # Configure an interface
-set network.{{ netdev }}=interface
-set network.{{ netdev }}.uconfig_name={{ s(interface.name) }}
-set network.{{ netdev }}.uconfig_path={{ s(location) }}
-set network.{{ netdev }}.ifname={{ netdev }}
-set network.{{ netdev }}.metric={{ interface.metric }}
-set network.{{ netdev }}.proto=none
+set network.{{ name }}=interface
+set network.{{ name }}.uconfig_name={{ s(interface.name) }}
+set network.{{ name }}.uconfig_path={{ s(location) }}
+set network.{{ name }}.device={{ netdev }}
+set network.{{ name }}.metric={{ interface.metric }}
+set network.{{ name }}.proto=none
 {% endif %}
 {# create the per address family interface section #}
 {% for (let afidx, afname in afnames): %}

@@ -129,19 +129,19 @@ export function calculate_name(interface) {
 };
 
 export function calculate_names(interface) {
-	let name = calculate_name(interface);
+	let name = interface.name;
 
 	return is_single_config(interface) ? [ name ] : [ name + '_4', name + '_6' ];
 };
 
 export function calculate_ipv4_name(interface) {
-	let name = calculate_name(interface);
+	let name = interface.name;
 
 	return is_single_config(interface) ? name : name + '_4';
 };
 
 export function calculate_ipv6_name(interface) {
-	let name = calculate_name(interface);
+	let name = interface.name;
 
 	return is_single_config(interface) ? name : name + '_6';
 };
@@ -164,7 +164,7 @@ export function find_interface(role, vid) {
 	for (let name, interface in state.interfaces)
 		if (interface.role == role &&
 		    interface.vlan?.id == vid)
-			return calculate_name(interface);
+			return interface.name;
 	return '';
 };
 
