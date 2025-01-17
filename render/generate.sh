@@ -1,5 +1,6 @@
 #!/bin/sh
 
+mkdir -p schema-generated
 ./tools/merge-schema.py schema uconfig.yml schema.json
 
 ./tools/generate-reader.uc schema.json
