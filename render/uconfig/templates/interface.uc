@@ -89,7 +89,7 @@
 
 	/* compute unique logical name and netdev name to use */
 	let name = interface.name;
-	let bridgedev = interface.role == "upstream" ? 'up' : 'down';
+	let bridgedev = interface.bridge_name;
 	let netdev = ethernet.calculate_name(interface);
 	let network = name;
 
@@ -108,10 +108,6 @@
 
 	/* if this interface is a tunnel, we need to create the interface in a different way */
 	let tunnel_proto = interface.tunnel?.proto || '';
-
-	/* make sure bridge settings are applied when isolate-hosts is enabled */
-	if (interface.isolate_hosts)
-		interface.bridge ??= {};
 
 	/**
 	 * generate the actual UCI sections

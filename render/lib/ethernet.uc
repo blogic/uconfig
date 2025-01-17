@@ -123,9 +123,7 @@ export function is_single_config(interface) {
 };
 
 export function calculate_name(interface) {
-	let vid = interface.vlan.id;
-
-	return (interface.role == 'upstream' ? 'up' : 'down') + interface.index + 'v' + vid;
+	return interface.bridge_name + interface.index;
 };
 
 export function calculate_names(interface) {

@@ -45,36 +45,46 @@
 			ethernet.reserve_port(port);
 	}
 
-	/* assign an index to each interface */
-	let idx = 0;
-	for (let name, interface in state.interfaces)
-		interface.index = idx++;
-
-	/* find out which vlans are used and which should be assigned dynamically */
-	let vlans = [];
-	let vlans_upstream = [];
+	let bridges = {};
 	for (let name, interface in state.interfaces) {
 		interface.name = name;
-		if (ethernet.has_vlan(interface)) {
-			push(vlans, interface.vlan.id);
-			if (interface.role == 'upstream')
-				push(vlans_upstream, interface.vlan.id);
-		} else
+
+		let brname = "sw";
+		if (interface.bridge && interface.bridge.name)
+			brname = interface.bridge.name;
+		interface.bridge_name = brname;
+
+		let br = bridges[brname];
+		if (!br) {
+			br = bridges[brname] = {
+				vlans: [],
+				index: 0,
+				vid: 4090,
+			};
+			tryinclude('bridge.uc', { name: brname });
+		}
+
+		if (ethernet.has_vlan(interface))
+			push(br.vlans, interface.vlan.id);
+		else
 			interface.vlan = { id: 0 };
+
+		interface.index = br.index++;
 	}
 
 	/* dynamically assigned vlans start at 4090 counting backwards */
-	let vid = 4090;
-	function next_free_vid() {
-		while (vid in vlans)
-			vid--;
-		return vid--;
+	function next_free_vid(br) {
+		while (br.vid in br.vlans)
+			br.vid--;
+		return br.vid--;
 	}
 
 	/* dynamically assign vlan ids to all interfaces that have none yet */
-	for (let i, interface in state.interfaces)
+	for (let i, interface in state.interfaces) {
+		let br = bridges[interface.bridge_name];
 		if (!interface.vlan.id)
-			interface.vlan.dyn_id = next_free_vid();
+			interface.vlan.dyn_id = next_free_vid(br);
+	}
 
 	/* check if there is a system default for the country code */
 	if (board.wlan.defaults)

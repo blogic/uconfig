@@ -2,6 +2,11 @@ description:
   This section describes the bridge behaviour of a logical network interface.
 type: object
 properties:
+  name:
+    description:
+      The name of the bridge that shall be used by the network interface.
+    type: string
+    default: sw
   mtu:
     description:
       The MTU that shall be used by the network interface.
