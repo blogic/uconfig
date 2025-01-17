@@ -2,8 +2,15 @@
 
 START=10
 
-PROG=/usr/bin/ucode
+start() {
+	/usr/libexec/uconfig/capabilities.uc
 
-boot() {
-	[ -f /etc/urender/capabilities.json ] || /usr/share/urender/capabilities.uc
+	mkdir -p /var/run/uci
+	uconfig_apply -n /etc/uconfig/uconfig.active
+	reload_config
+}
+
+stop() {
+	rm -rf /var/run/uci
+	reload_config
 }

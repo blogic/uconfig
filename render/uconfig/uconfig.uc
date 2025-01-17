@@ -64,7 +64,7 @@ function generate(file, verbose, test) {
 		system(cmd);
 
 	/* import the UCI batch file */
-	files.popen('/sbin/uci -q -c /tmp/uconfig-shadow batch', batch);
+	files.popen('/sbin/uci -q -c /tmp/uconfig-shadow -C "" batch', batch);
 
 	/* write all dynamically generated files */
 	files.generate(logs);
@@ -73,13 +73,12 @@ function generate(file, verbose, test) {
 	services.stop();
 
 	/* copy generated shadow config to /etc/config/ and reload the configuration */
-	for (let cmd in [ 'uci -q -c /tmp/uconfig-shadow commit',
-			  'cp /tmp/uconfig-shadow/* /etc/config/',
+	for (let cmd in [ 'uci -q -c /tmp/uconfig-shadow -C "" commit',
+			  'cp /tmp/uconfig-shadow/* /var/run/uci/',
 			  'rm -rf /tmp/uconfig-shadow' ])
 		system(cmd);
 
 	system('reload_config');
-
 
 	/* enable all used services */
 	services.start();
