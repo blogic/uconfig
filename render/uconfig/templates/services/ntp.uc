@@ -14,7 +14,7 @@ add_list system.ntp.server={{ s(server) }}
 
 	/* open the port on all interfaces that select ssh */
 	for (let interface in interfaces):
-		let name = ethernet.calculate_name(interface);
+		let name = interface.name;
 %}
 add firewall rule
 set firewall.@rule[-1].name='Allow-ntp-{{ name }}'

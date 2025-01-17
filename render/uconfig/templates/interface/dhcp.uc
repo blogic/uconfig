@@ -1,5 +1,5 @@
 {%
-let name = ethernet.calculate_name(interface);
+let name = interface.name;
 let dhcp = ipv4.dhcp || { ignore: 1 };
 let dhcpv6 = ipv6.dhcpv6 || {};
 
