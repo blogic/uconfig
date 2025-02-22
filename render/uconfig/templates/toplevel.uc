@@ -59,9 +59,11 @@
 			push(vlans, interface.vlan.id);
 			if (interface.role == 'upstream')
 				push(vlans_upstream, interface.vlan.id);
-		} else
-			interface.vlan = { id: 0 };
-		for (let vlan in interface.vlan_trunks)
+		} else {
+			interface.vlan ??= { };
+			interface.vlan.id = 0;
+		}
+		for (let vlan in interface.vlan?.trunks)
 			push(vlans_upstream, vlan);
 	}
 

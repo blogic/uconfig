@@ -17,8 +17,6 @@ set network.{{ afname }}=interface
 set network.{{ afname }}.uconfig_name={{ s(interface.name) }}
 set network.{{ afname }}.uconfig_path={{ s(location) }}
 set network.{{ afname }}.ifname={{ netdev }}
-set network.{{ afname }}.metric={{ interface.metric }}
-set network.{{ afname }}.mtu={{ interface.mtu }}
 set network.{{ afname }}.type={{ interface.type }}
 {%	if (ipv4_mode == 'static' || ipv6_mode == 'static'): %}
 set network.{{ afname }}.proto=static

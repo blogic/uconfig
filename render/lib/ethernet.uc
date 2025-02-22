@@ -162,11 +162,11 @@ export function port_vlan(interface, port) {
 
 export function find_interface(role, vid) {
 	for (let name, interface in state.interfaces) {
-		if (interface.role == role)
+		if (interface.role != role)
 			continue;
 		if (interface.vlan?.id == vid)
 			return interface.name;
-		if (vid in interface.vlan_trunks)
+		if (vid in interface.vlan?.trunks)
 			return interface.name;
 	}
 	return '';

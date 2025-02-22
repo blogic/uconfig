@@ -89,10 +89,10 @@ export function generate_prefix(state, template, ipv6) {
 	let prefix = match(template, /^(auto|[0-9a-fA-F:.]+)\/([0-9]+)$/);
 
 	if (prefix && prefix[1] == 'auto') {
-		assert(state.globals && state.globals[ipv6 ? 'ipv6_network' : 'ipv4_network'],
+		assert(state.configurations && state.configurations[ipv6 ? 'ipv6_network' : 'ipv4_network'],
 			"No global prefix pool configured");
 
-		let pool = match(state.globals[ipv6 ? 'ipv6_network' : 'ipv4_network'], /^([0-9a-fA-F:.]+)\/([0-9]+)$/);
+		let pool = match(state.configurations[ipv6 ? 'ipv6_network' : 'ipv4_network'], /^([0-9a-fA-F:.]+)\/([0-9]+)$/);
 
 		assert(prefix[2] >= pool[2],
 			"Interface " + (ipv6 ? "IPv6" : "IPv4") + " prefix size exceeds available allocation pool size");

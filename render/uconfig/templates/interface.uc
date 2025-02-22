@@ -106,10 +106,6 @@
 	if (!interface.metric)
 		interface.metric = (interface.role == 'upstream') ? 5 : 10;
 
-	/* make sure bridge settings are applied when isolate-hosts is enabled */
-	if (interface.isolate_hosts)
-		interface.bridge ??= {};
-
 	/**
 	 * generate the actual UCI sections
 	 */

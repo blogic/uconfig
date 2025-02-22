@@ -240,10 +240,6 @@ set wireless.{{ section }}.vendor_elements='{{ ssid.vendor_elements }}'
 set wireless.{{ section }}.auth_cache='{{ b(ssid.encryption?.key_caching) }}'
 {%   endif %}
 
-{% if ('6G' in phy.band && bss_mode == 'ap' ): %}
-set wireless.{{ section }}.fils_discovery_max_interval={{ ssid.fils_discovery_interval }}
-{%   endif %}
-
 # Crypto settings
 set wireless.{{ section }}.ieee80211w={{ match_ieee80211w(phy) }}
 set wireless.{{ section }}.sae_pwe={{ match_sae_pwe(phy) }}
@@ -306,9 +302,8 @@ set wireless.{{ section }}.identity='OpenWrt'
 
 # AP specific setings
 {%   if (bss_mode == 'ap'): %}
-set wireless.{{ section }}.proxy_arp={{ b(length(network) ? ssid.proxy_arp : false) }}
 set wireless.{{ section }}.hidden={{ b(ssid.hidden_ssid) }}
-set wireless.{{ section }}.isolate={{ b(ssid.isolate_clients || interface.isolate_hosts) }}
+set wireless.{{ section }}.isolate={{ b(ssid.isolate_clients) }}
 set wireless.{{ section }}.bridge_isolate={{ b(interface.isolate_hosts) }}
 set wireless.{{ section }}.multicast_to_unicast={{ b(ssid.unicast_conversion) }}
 
@@ -330,23 +325,18 @@ set wireless.{{ section }}.ft_psk_generate_local={{ b(ssid.roaming.generate_psk)
 set wireless.{{ section }}.mobility_domain={{ ssid.roaming.domain_identifier }}
 {%     endif %}
 
-{%  for (let raw in ssid.hostapd_bss_raw): %}
-add_list wireless.{{ section }}.hostapd_bss_options={{ s(raw) }}
-{%  endfor %}
-
 {% if (length(ssid.multi_psk)): %}
 set wireless.{{ section }}.reassociation_deadline=3000
 {% endif %}
 
 {% include("wmm.uc", { section }); %}
 
-
 add wireless wifi-vlan
 set wireless.@wifi-vlan[-1].iface={{ section }}
 set wireless.@wifi-vlan[-1].name='v#'
 set wireless.@wifi-vlan[-1].vid='*'
-{%     if (ssid.rate_limit && (ssid.rate_limit.ingress_rate || ssid.rate_limit.egress_rate)): %}
 
+{%     if (ssid.rate_limit && (ssid.rate_limit.ingress_rate || ssid.rate_limit.egress_rate)): %}
 add ratelimit rate
 set ratelimit.@rate[-1].ssid={{ s(ssid.ssid) }}
 set ratelimit.@rate[-1].ingress={{ ssid.rate_limit.ingress_rate }}

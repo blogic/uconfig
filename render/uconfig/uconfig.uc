@@ -9,10 +9,15 @@ import * as renderer from 'uconfig.renderer';
 import * as files from 'uconfig.files';
 import * as services from 'uconfig.services';
 
-function log_output(logs, batch) {
-	fs.stdout.write('Log messages:\n' + join('\n', logs) + '\n\n');
-	if (batch)
-		fs.stdout.write('UCI batch output:\n' + batch + '\n');
+function stdout(txt) {
+	fs.stdout.write('\-\-\- ' + txt + '\n');
+}
+
+function log_output(verbose, logs, batch) {
+	if (length(logs))
+		stdout('Log messages:\n' + join('\n', logs) + '\n');
+	if (verbose && batch)
+		stdout('UCI batch output:\n' + batch);
 }
 
 function generate(file, verbose, test, no_apply) {
@@ -32,15 +37,17 @@ function generate(file, verbose, test, no_apply) {
 		system(cmd);
 
 	/* validate the configuration */
+	stdout('validating config');
 	let state = reader.validate(cfgjson, logs);
 
 	/* die if the reader failed to validate the config */
 	if (!state) {
-		log_output(logs);
+		log_output(verbose, logs);
 		return -1;
 	}
 
 	/* generate the UCI batch sequence */
+	stdout('generating config');
 	let batch = renderer.generate(state, logs, { files, services });
 
 	if (state.strict && length(logs)) {
@@ -50,8 +57,7 @@ function generate(file, verbose, test, no_apply) {
 	}
 
 	/* print some debug output */
-	if (verbose)
-		log_output(logs, batch);
+	log_output(verbose, logs, batch);
 
 	files.write('/tmp/uconfig.logs', join('\n', logs));
 
@@ -71,12 +77,14 @@ function generate(file, verbose, test, no_apply) {
 		system(cmd);
 
 	/* import the UCI batch file */
-	files.popen('/sbin/uci -q -c /tmp/uconfig-shadow -C "" batch', batch);
+	stdout('writing config');
+	files.popen('/sbin/uci -q -c /tmp/uconfig-shadow -C "" batch' + (!verbose ? ' > /dev/null' : '') , batch);
 
 	/* write all dynamically generated files */
 	files.generate(logs);
 
 	/* disable all none used services */
+	stdout('stopping services');
 	services.stop(no_apply);
 
 	/* copy generated shadow config to /etc/config/ and reload the configuration */
@@ -85,10 +93,13 @@ function generate(file, verbose, test, no_apply) {
 			  'rm -rf /tmp/uconfig-shadow' ])
 		system(cmd);
 
-	if (!no_apply)
+	if (!no_apply) {
+		stdout('applying config');
 		system('reload_config');
+	}
 
 	/* enable all used services */
+	stdout('starting services');
 	services.start(no_apply);
 
 	return 0;

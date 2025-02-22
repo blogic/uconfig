@@ -1,6 +1,6 @@
 {%
 
-let wmm = state?.globals?.wireless_multimedia;
+let wmm = state?.configurations?.wireless_multimedia;
 
 if (!length(wmm))
 	return;

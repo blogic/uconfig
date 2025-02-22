@@ -571,6 +571,7 @@ let GeneratorProto = {
 			this.print(indent, '	' + line);
 
 		this.print(indent, '}\n');
+		this.print(indent, 'global.%s = %s;\n', functionName, functionName);
 	},
 
 	emit_include_validation_function: function(propertyName, valueSpec)

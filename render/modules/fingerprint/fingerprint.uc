@@ -10,6 +10,8 @@
 %}
 
 # DHCP Snooping configuration
+add dhcpsnoop snooping
+set dhcpsnoop.@snooping[-1].enable='1'
 {%
 	let names = [];
 	for (let interface in interfaces)

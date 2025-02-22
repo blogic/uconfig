@@ -14,12 +14,6 @@ properties:
     type: integer
   unit:
     $ref: "https://uconfig.org/schema/v1/unit/"
-  globals:
-    $ref: "https://uconfig.org/schema/v1/globals/"
-  configurations:
-    $ref: "https://uconfig.org/schema/v1/configurations/"
-  ethernet:
-    $ref: "https://uconfig.org/schema/v1/ethernet/"
   country-code:
     description:
       Specifies the country code, affects the available channels and
@@ -41,5 +35,9 @@ properties:
       ".+":
         $ref: "https://uconfig.org/schema/v1/interface/"
         additionalProperties: false
+  configurations:
+    $ref: "https://uconfig.org/schema/v1/configurations/"
+  ethernet:
+    $ref: "https://uconfig.org/schema/v1/ethernet/"
   services:
     $ref: "https://uconfig.org/schema/v1/service/"

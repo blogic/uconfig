@@ -25,19 +25,12 @@ properties:
     default: manual
   security:
     description:
-      The encryption strength used by this BSS.
+      The encryption strength used by this BSS when a template is selected.
     type: string
     enum:
     - compatibility
     - maximum
     default: maximum
-  ssid:
-    description:
-      The broadcasted SSID of the wireless network and for for managed mode
-      the SSID of the network you’re connecting to
-    type: string
-    maxLength: 32
-    minLength: 1
   wifi-radios:
     description:
       The list of radios hat the SSID should be broadcasted on. The configuration layer
@@ -57,6 +50,15 @@ properties:
     - wds-sta
     - wds-repeater
     default: ap
+  ssid:
+    description:
+      The broadcasted SSID of the wireless network and for for managed mode
+      the SSID of the network you’re connecting to
+    type: string
+    maxLength: 32
+    minLength: 1
+  encryption:
+    $ref: "https://uconfig.org/schema/v1/interface/ssid/encryption/"
   bssid:
     description:
       Override the BSSID of the network, only applicable in adhoc or sta mode.
@@ -75,35 +77,11 @@ properties:
     description:
       Convert multicast traffic to unicast on this BSS.
     type: boolean
-  services:
-    description:
-      The services that shall be offered on this logical interface. These are
-      just strings such as "wifi-steering"
-    type: array
-    items:
-      type: string
-      examples:
-      - wifi-steering
-  proxy-arp:
-    description:
-      Proxy ARP is the technique in which the host router, answers ARP requests
-      intended for another machine.
-    type: boolean
-    default: false
   vendor-elements:
     decription:
       This option allows embedding custom vendor specific IEs inside the beacons of
       a BSS in AP mode.
     type: string
-  fils-discovery-interval:
-    description:
-      The maximum interval for FILS discovery announcement frames. This is a condensed
-      beacon used in 6GHz channels for passive BSS discovery.
-    type: integer
-    default: 20
-    maximum: 20
-  encryption:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/encryption/"
   multi-psk:
     type: array
     items:
@@ -119,18 +97,3 @@ properties:
         type: boolean
   access-control-list:
     $ref: "https://uconfig.org/schema/v1/interface/ssid/acl/"
-  hostapd-bss-raw:
-    description:
-      This array allows passing raw hostapd.conf lines.
-    type: array
-    items:
-      type: string
-      examples:
-      - 'ap_table_expiration_time=3600'
-      - 'device_type=6-0050F204-1'
-      - 'ieee80211h=1'
-      - 'rssi_ignore_probe_request=-75'
-      - 'time_zone=EST5'
-      - 'uuid=12345678-9abc-def0-1234-56789abcdef0'
-      - 'venue_url=1:http://www.example.com/info-eng'
-      - 'wpa_deny_ptk0_rekey=0'

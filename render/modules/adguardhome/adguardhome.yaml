@@ -23,7 +23,9 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - 8.8.8.8
+{% for (let i = 1; ARGV[i]; i++): %}
+    - {{ ARGV[i] }}
+{% endfor %}
   upstream_dns_file: ""
   bootstrap_dns:
     - 9.9.9.10

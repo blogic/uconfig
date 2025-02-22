@@ -19,7 +19,6 @@ export function set_enabled(name, enable) {
 		services[name] = enable ? 'start' : 'stop';
 	else
 		services[name] = enable;
-//	warn('%.J\n', services);
 };
 
 export function is_present(name) {
@@ -103,6 +102,7 @@ function set_state(state, alt) {
 export function start(no_apply) {
 	for (let service, enable in services)
 		if (enable in [ 'start', 'reload', 'restart' ]) {
+			fs.stdout.write(`- enable ${service}\n`);
 			system(`/etc/init.d/${service} enable`);
 			if (!no_apply)
 				system(`/etc/init.d/${service} ${enable}`);
@@ -112,6 +112,7 @@ export function start(no_apply) {
 export function stop(no_apply) {
 	for (let service, disable in services)
 		if (disable in [ 'stop' ]) {
+			fs.stdout.write(`- disable ${service}\n`);
 			system(`/etc/init.d/${service} disable`);
 			if (!no_apply)
 				system(`/etc/init.d/${service} ${disable}`);

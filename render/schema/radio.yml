@@ -63,6 +63,7 @@ properties:
     - 40
     - 80
     - 160
+    - 320
     - 8080
     default: 80
   require-mode:
@@ -73,21 +74,6 @@ properties:
     - HT
     - VHT
     - HE
-  mimo:
-    description:
-      This option allows configuring the antenna pairs that shall be used.
-      This is just a hint for the AP. If the requested value is not supported
-      then the AP will use the highest common denominator.
-    type: string
-    enum:
-    - 1x1
-    - 2x2
-    - 3x3
-    - 4x4
-    - 5x5
-    - 6x6
-    - 7x7
-    - 8x8
   tx-power:
     description:
       This option specifies the transmission power in dBm
@@ -99,29 +85,16 @@ properties:
       Allow legacy 802.11b data rates.
     type: boolean
     default: false
-  beacon-interval:
-    description:
-      Beacon interval in kus (1.024 ms).
-    type: integer
-    default: 100
-    maximum: 65535
-    minimum: 15
-  dtim-period:
-    description:
-      Set the DTIM (delivery traffic information message) period. There will
-      be one DTIM per this many beacon frames. This may be set between 1 and
-      255. This option only has an effect on ap wifi-ifaces.
-    type: integer
-    default: 2
-    maximum: 255
-    minimum: 1
   maximum-clients:
     description:
       Set the maximum number of clients that may connect to this radio. This
       value is accumulative for all attached VAP interfaces.
     type: integer
     example: 64
+  he-multiple-bssid:
+    description:
+      Enabling this option will make the PHY broadcast its BSSs using the multiple BSSID beacon IE.
+    type: boolean
+    default: false
   rates:
     $ref: "https://uconfig.org/schema/v1/radio/rates/"
-  he-settings:
-    $ref: "https://uconfig.org/schema/v1/radio/he/"
