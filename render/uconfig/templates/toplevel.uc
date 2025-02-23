@@ -102,20 +102,26 @@
 	/* render the basic UCI setup */
 	include('base.uc');
 
+	/* setup default unit configuration */
+	state.unit ??= {
+		leds_active: true,
+		tty_login: false,
+	};
+
+	/* try loading the local static config */
+	let local = json(fs.readfile('/etc/uconfig/data/local.json') || '{}');
+	for (let k, v in local)
+		unit[k] = v;
+
 	/* render the unit configuration */
-	if (!state.unit)
-		state.unit = {
-			leds_active: true,
-			tty_login: false,
-			password: false,
-		};
 	include('unit.uc', { location: '/unit', unit: state.unit });
 
 	state.services ??= {};
 	for (let service in services.lookup_services())
 		tryinclude('services/' + service + '.uc', {
 			location: '/services/' + service,
-			[service]: state.services[service] || {}
+			[service]: state.services[service] || {},
+			state,
 		});
 
 	/* render the ethernet port configuration */

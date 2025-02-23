@@ -110,17 +110,6 @@ function instantiateUnit(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
 
-		function parseName(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "name")) {
-			obj.name = parseName(location + "/name", value["name"], errors);
-		}
-
 		function parseHostname(location, value, errors) {
 			if (type(value) == "string") {
 				if (!matchHostname(value))
@@ -136,17 +125,6 @@ function instantiateUnit(location, value, errors) {
 
 		if (exists(value, "hostname")) {
 			obj.hostname = parseHostname(location + "/hostname", value["hostname"], errors);
-		}
-
-		function parseLocation(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			return value;
-		}
-
-		if (exists(value, "location")) {
-			obj.location = parseLocation(location + "/location", value["location"], errors);
 		}
 
 		function parseTimezone(location, value, errors) {
@@ -175,59 +153,8 @@ function instantiateUnit(location, value, errors) {
 		}
 
 		function parsePassword(location, value, errors) {
-			function parseVariant0(location, value, errors) {
-				if (type(value) != "bool")
-					push(errors, [ location, "must be of type boolean" ]);
-
-				return value;
-			}
-
-			function parseVariant1(location, value, errors) {
-				if (type(value) != "string")
-					push(errors, [ location, "must be of type string" ]);
-
-				return value;
-			}
-
-			let success = 0, tryval, tryerr, vvalue = null, verrors = [];
-
-			tryerr = [];
-			tryval = parseVariant0(location, value, tryerr);
-			if (!length(tryerr)) {
-				if (type(vvalue) == "object" && type(tryval) == "object")
-					vvalue = { ...vvalue, ...tryval };
-				else
-					vvalue = tryval;
-
-				success++;
-			}
-			else {
-				push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
-			}
-
-			tryerr = [];
-			tryval = parseVariant1(location, value, tryerr);
-			if (!length(tryerr)) {
-				if (type(vvalue) == "object" && type(tryval) == "object")
-					vvalue = { ...vvalue, ...tryval };
-				else
-					vvalue = tryval;
-
-				success++;
-			}
-			else {
-				push(verrors, join(" and\n", map(tryerr, err => "\t - " + err[1])));
-			}
-
-			if (success != 1) {
-				if (length(verrors))
-					push(errors, [ location, "must match exactly one of the following constraints:\n" + join("\n- or -\n", verrors) ]);
-				else
-					push(errors, [ location, "must match only one variant" ]);
-				return null;
-			}
-
-			value = vvalue;
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
 
 			return value;
 		}
@@ -309,17 +236,6 @@ function instantiateRadioRates(location, value, errors) {
 function instantiateRadio(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
-
-		function parseDisable(location, value, errors) {
-			if (type(value) != "bool")
-				push(errors, [ location, "must be of type boolean" ]);
-
-			return value;
-		}
-
-		if (exists(value, "disable")) {
-			obj.disable = parseDisable(location + "/disable", value["disable"], errors);
-		}
 
 		function parseBand(location, value, errors) {
 			if (type(value) != "string")
@@ -409,6 +325,40 @@ function instantiateRadio(location, value, errors) {
 			obj.channel = parseChannel(location + "/channel", value["channel"], errors);
 		}
 
+		function parseChannelMode(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "HT", "VHT", "HE", "EHT" ]))
+				push(errors, [ location, "must be one of \"HT\", \"VHT\", \"HE\" or \"EHT\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "channel-mode")) {
+			obj.channel_mode = parseChannelMode(location + "/channel-mode", value["channel-mode"], errors);
+		}
+		else {
+			obj.channel_mode = "HE";
+		}
+
+		function parseChannelWidth(location, value, errors) {
+			if (type(value) != "int")
+				push(errors, [ location, "must be of type integer" ]);
+
+			if (!(value in [ 20, 40, 80, 160, 320, 8080 ]))
+				push(errors, [ location, "must be one of 20, 40, 80, 160, 320 or 8080" ]);
+
+			return value;
+		}
+
+		if (exists(value, "channel-width")) {
+			obj.channel_width = parseChannelWidth(location + "/channel-width", value["channel-width"], errors);
+		}
+		else {
+			obj.channel_width = 80;
+		}
+
 		function parseValidChannels(location, value, errors) {
 			if (type(value) == "array") {
 				function parseItem(location, value, errors) {
@@ -454,40 +404,6 @@ function instantiateRadio(location, value, errors) {
 			obj.allow_dfs = true;
 		}
 
-		function parseChannelMode(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			if (!(value in [ "HT", "VHT", "HE", "EHT" ]))
-				push(errors, [ location, "must be one of \"HT\", \"VHT\", \"HE\" or \"EHT\"" ]);
-
-			return value;
-		}
-
-		if (exists(value, "channel-mode")) {
-			obj.channel_mode = parseChannelMode(location + "/channel-mode", value["channel-mode"], errors);
-		}
-		else {
-			obj.channel_mode = "HE";
-		}
-
-		function parseChannelWidth(location, value, errors) {
-			if (type(value) != "int")
-				push(errors, [ location, "must be of type integer" ]);
-
-			if (!(value in [ 20, 40, 80, 160, 320, 8080 ]))
-				push(errors, [ location, "must be one of 20, 40, 80, 160, 320 or 8080" ]);
-
-			return value;
-		}
-
-		if (exists(value, "channel-width")) {
-			obj.channel_width = parseChannelWidth(location + "/channel-width", value["channel-width"], errors);
-		}
-		else {
-			obj.channel_width = 80;
-		}
-
 		function parseRequireMode(location, value, errors) {
 			if (type(value) != "string")
 				push(errors, [ location, "must be of type string" ]);
@@ -520,6 +436,10 @@ function instantiateRadio(location, value, errors) {
 
 		if (exists(value, "tx-power")) {
 			obj.tx_power = parseTxPower(location + "/tx-power", value["tx-power"], errors);
+		}
+
+		if (exists(value, "rates")) {
+			obj.rates = instantiateRadioRates(location + "/rates", value["rates"], errors);
 		}
 
 		function parseLegacyRates(location, value, errors) {
@@ -559,10 +479,6 @@ function instantiateRadio(location, value, errors) {
 		}
 		else {
 			obj.he_multiple_bssid = false;
-		}
-
-		if (exists(value, "rates")) {
-			obj.rates = instantiateRadioRates(location + "/rates", value["rates"], errors);
 		}
 
 		return obj;
@@ -1893,99 +1809,6 @@ function instantiateInterface(location, value, errors) {
 	return value;
 }
 
-function instantiateConfigurationsWirelessMultimediaProfile(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseProfile(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			if (!(value in [ "enterprise", "rfc8325", "3gpp" ]))
-				push(errors, [ location, "must be one of \"enterprise\", \"rfc8325\" or \"3gpp\"" ]);
-
-			return value;
-		}
-
-		if (exists(value, "profile")) {
-			obj.profile = parseProfile(location + "/profile", value["profile"], errors);
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
-function instantiateConfigurationsWirelessMultimediaClassSelector(location, value, errors) {
-	if (type(value) == "array") {
-		function parseItem(location, value, errors) {
-			if (type(value) != "string")
-				push(errors, [ location, "must be of type string" ]);
-
-			if (!(value in [ "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "DF", "EF", "VA", "LE" ]))
-				push(errors, [ location, "must be one of \"CS0\", \"CS1\", \"CS2\", \"CS3\", \"CS4\", \"CS5\", \"CS6\", \"CS7\", \"AF11\", \"AF12\", \"AF13\", \"AF21\", \"AF22\", \"AF23\", \"AF31\", \"AF32\", \"AF33\", \"AF41\", \"AF42\", \"AF43\", \"DF\", \"EF\", \"VA\" or \"LE\"" ]);
-
-			return value;
-		}
-
-		return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
-	}
-
-	if (type(value) != "array")
-		push(errors, [ location, "must be of type array" ]);
-
-	return value;
-}
-
-function instantiateConfigurationsWirelessMultimediaTable(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		if (exists(value, "UP0")) {
-			obj.UP0 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP0", value["UP0"], errors);
-		}
-
-		if (exists(value, "UP1")) {
-			obj.UP1 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP1", value["UP1"], errors);
-		}
-
-		if (exists(value, "UP2")) {
-			obj.UP2 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP2", value["UP2"], errors);
-		}
-
-		if (exists(value, "UP3")) {
-			obj.UP3 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP3", value["UP3"], errors);
-		}
-
-		if (exists(value, "UP4")) {
-			obj.UP4 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP4", value["UP4"], errors);
-		}
-
-		if (exists(value, "UP5")) {
-			obj.UP5 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP5", value["UP5"], errors);
-		}
-
-		if (exists(value, "UP6")) {
-			obj.UP6 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP6", value["UP6"], errors);
-		}
-
-		if (exists(value, "UP7")) {
-			obj.UP7 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP7", value["UP7"], errors);
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
 function instantiateConfigurationsRadiusServersLocalUser(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -2599,6 +2422,99 @@ function instantiateConfigurationsRadiusServers(location, value, errors) {
 	return value;
 }
 
+function instantiateConfigurationsWirelessMultimediaProfile(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		function parseProfile(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "enterprise", "rfc8325", "3gpp" ]))
+				push(errors, [ location, "must be one of \"enterprise\", \"rfc8325\" or \"3gpp\"" ]);
+
+			return value;
+		}
+
+		if (exists(value, "profile")) {
+			obj.profile = parseProfile(location + "/profile", value["profile"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
+function instantiateConfigurationsWirelessMultimediaClassSelector(location, value, errors) {
+	if (type(value) == "array") {
+		function parseItem(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			if (!(value in [ "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "DF", "EF", "VA", "LE" ]))
+				push(errors, [ location, "must be one of \"CS0\", \"CS1\", \"CS2\", \"CS3\", \"CS4\", \"CS5\", \"CS6\", \"CS7\", \"AF11\", \"AF12\", \"AF13\", \"AF21\", \"AF22\", \"AF23\", \"AF31\", \"AF32\", \"AF33\", \"AF41\", \"AF42\", \"AF43\", \"DF\", \"EF\", \"VA\" or \"LE\"" ]);
+
+			return value;
+		}
+
+		return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+	}
+
+	if (type(value) != "array")
+		push(errors, [ location, "must be of type array" ]);
+
+	return value;
+}
+
+function instantiateConfigurationsWirelessMultimediaTable(location, value, errors) {
+	if (type(value) == "object") {
+		let obj = {};
+
+		if (exists(value, "UP0")) {
+			obj.UP0 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP0", value["UP0"], errors);
+		}
+
+		if (exists(value, "UP1")) {
+			obj.UP1 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP1", value["UP1"], errors);
+		}
+
+		if (exists(value, "UP2")) {
+			obj.UP2 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP2", value["UP2"], errors);
+		}
+
+		if (exists(value, "UP3")) {
+			obj.UP3 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP3", value["UP3"], errors);
+		}
+
+		if (exists(value, "UP4")) {
+			obj.UP4 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP4", value["UP4"], errors);
+		}
+
+		if (exists(value, "UP5")) {
+			obj.UP5 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP5", value["UP5"], errors);
+		}
+
+		if (exists(value, "UP6")) {
+			obj.UP6 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP6", value["UP6"], errors);
+		}
+
+		if (exists(value, "UP7")) {
+			obj.UP7 = instantiateConfigurationsWirelessMultimediaClassSelector(location + "/UP7", value["UP7"], errors);
+		}
+
+		return obj;
+	}
+
+	if (type(value) != "object")
+		push(errors, [ location, "must be of type object" ]);
+
+	return value;
+}
+
 function instantiateConfigurations(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -2635,6 +2551,55 @@ function instantiateConfigurations(location, value, errors) {
 
 		if (exists(value, "ipv6-network")) {
 			obj.ipv6_network = parseIpv6Network(location + "/ipv6-network", value["ipv6-network"], errors);
+		}
+
+		function parseNtpServers(location, value, errors) {
+			if (type(value) == "array") {
+				function parseItem(location, value, errors) {
+					if (type(value) == "string") {
+						if (!matchUcHost(value))
+							push(errors, [ location, "must be a valid hostname or IP address" ]);
+
+					}
+
+					if (type(value) != "string")
+						push(errors, [ location, "must be of type string" ]);
+
+					return value;
+				}
+
+				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
+			}
+
+			if (type(value) != "array")
+				push(errors, [ location, "must be of type array" ]);
+
+			return value;
+		}
+
+		if (exists(value, "ntp-servers")) {
+			obj.ntp_servers = parseNtpServers(location + "/ntp-servers", value["ntp-servers"], errors);
+		}
+
+		function parseRadiusServers(location, value, errors) {
+			if (type(value) == "object") {
+				let obj = {};
+
+				for (let name, object in value)
+					if (match(name, regexp(name)))
+						obj[name] = instantiateConfigurationsRadiusServers(location + "/" + name, object, errors);
+
+				return obj;
+			}
+
+			if (type(value) != "object")
+				push(errors, [ location, "must be of type object" ]);
+
+			return value;
+		}
+
+		if (exists(value, "radius-servers")) {
+			obj.radius_servers = parseRadiusServers(location + "/radius-servers", value["radius-servers"], errors);
 		}
 
 		function parseWirelessMultimedia(location, value, errors) {
@@ -2695,27 +2660,6 @@ function instantiateConfigurations(location, value, errors) {
 
 		if (exists(value, "wireless-multimedia")) {
 			obj.wireless_multimedia = parseWirelessMultimedia(location + "/wireless-multimedia", value["wireless-multimedia"], errors);
-		}
-
-		function parseRadiusServers(location, value, errors) {
-			if (type(value) == "object") {
-				let obj = {};
-
-				for (let name, object in value)
-					if (match(name, regexp(name)))
-						obj[name] = instantiateConfigurationsRadiusServers(location + "/" + name, object, errors);
-
-				return obj;
-			}
-
-			if (type(value) != "object")
-				push(errors, [ location, "must be of type object" ]);
-
-			return value;
-		}
-
-		if (exists(value, "radius-servers")) {
-			obj.radius_servers = parseRadiusServers(location + "/radius-servers", value["radius-servers"], errors);
 		}
 
 		return obj;
@@ -2944,47 +2888,6 @@ function instantiateServiceMdns(location, value, errors) {
 	}
 }
 
-function instantiateServiceNtp(location, value, errors) {
-	if (type(value) == "object") {
-		let obj = {};
-
-		function parseServers(location, value, errors) {
-			if (type(value) == "array") {
-				function parseItem(location, value, errors) {
-					if (type(value) == "string") {
-						if (!matchUcHost(value))
-							push(errors, [ location, "must be a valid hostname or IP address" ]);
-
-					}
-
-					if (type(value) != "string")
-						push(errors, [ location, "must be of type string" ]);
-
-					return value;
-				}
-
-				return map(value, (item, i) => parseItem(location + "/" + i, item, errors));
-			}
-
-			if (type(value) != "array")
-				push(errors, [ location, "must be of type array" ]);
-
-			return value;
-		}
-
-		if (exists(value, "servers")) {
-			obj.servers = parseServers(location + "/servers", value["servers"], errors);
-		}
-
-		return obj;
-	}
-
-	if (type(value) != "object")
-		push(errors, [ location, "must be of type object" ]);
-
-	return value;
-}
-
 function instantiateServiceSsh(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -3054,15 +2957,6 @@ function instantiateServiceSsh(location, value, errors) {
 	return value;
 }
 
-function instantiateServiceWebui(location, value, errors) {
-	try {
-		let module = require('ureader.schemaServiceWebui');
-		return module.validate(location, value, errors);
-	} catch(e) {
-		push(errors, [ location, "is missing its module. Please install uconfig-mod-mdns."  ]);
-	}
-}
-
 function instantiateService(location, value, errors) {
 	if (type(value) == "object") {
 		let obj = {};
@@ -3087,16 +2981,8 @@ function instantiateService(location, value, errors) {
 			obj.mdns = instantiateServiceMdns(location + "/mdns", value["mdns"], errors);
 		}
 
-		if (exists(value, "ntp")) {
-			obj.ntp = instantiateServiceNtp(location + "/ntp", value["ntp"], errors);
-		}
-
 		if (exists(value, "ssh")) {
 			obj.ssh = instantiateServiceSsh(location + "/ssh", value["ssh"], errors);
-		}
-
-		if (exists(value, "webui")) {
-			obj.webui = instantiateServiceWebui(location + "/webui", value["webui"], errors);
 		}
 
 		return obj;

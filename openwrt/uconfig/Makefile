@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=uconfig
-PKG_RELEASE:=1
+PKG_RELEASE:=$(COMMITCOUNT)
 
 PKG_FILE_DEPENDS := $(CURDIR)/../../
 
@@ -91,10 +91,17 @@ define Build/Prepare
 	$(CP) $(CURDIR)/../../ $(PKG_BUILD_DIR)/
 endef
 
-define Build/Compile/Default
-
+define Build/Compile
+	$(PKG_BUILD_DIR)/render/generate.sh $(PKG_BUILD_DIR)/render/
 endef
-Build/Compile = $(Build/Compile/Default)
+
+define Package/uconfig/conffiles
+/etc/uconfig/uconfig.active
+/etc/uconfig/uconfig.prev
+/etc/uconfig/uconfig.cfg.*
+/etc/uconfig/uconfig/certificates/
+/etc/uconfig/uconfig/data/
+endef
 
 define Package/uconfig/install
 	$(INSTALL_DIR) $(1)/usr/share/ucode/ $(1)/usr/libexec/uconfig/ $(1)/etc/uconfig/data $(1)/sbin
@@ -171,9 +178,9 @@ endef
 $(eval $(call BuildPackage,uconfig))
 $(eval $(call BuildPackage,uconfig-cli))
 $(eval $(call BuildPackage,uconfig-websocket))
-$(eval $(call BuildPackage,uconfig-mod-mdns))
 $(eval $(call BuildPackage,uconfig-mod-adguardhome))
-$(eval $(call BuildPackage,uconfig-mod-lldp))
-$(eval $(call BuildPackage,uconfig-mod-ieee8021x))
 $(eval $(call BuildPackage,uconfig-mod-fingerprint))
+$(eval $(call BuildPackage,uconfig-mod-ieee8021x))
+$(eval $(call BuildPackage,uconfig-mod-lldp))
+$(eval $(call BuildPackage,uconfig-mod-mdns))
 $(eval $(call BuildPackage,uconfig-mod-mesh-batman))

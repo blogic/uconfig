@@ -4,18 +4,14 @@ description:
 type: object
 properties:
   adguardhome:
-    $ref: "https://uconfig.org/schema/v1/service/adguardhome/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/adguardhome/"
   ieee8021x:
-    $ref: "https://uconfig.org/schema/v1/service/ieee8021x/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/ieee8021x/"
   lldp:
-    $ref: "https://uconfig.org/schema/v1/service/lldp/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/lldp/"
   log:
-    $ref: "https://uconfig.org/schema/v1/service/log/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/log/"
   mdns:
-    $ref: "https://uconfig.org/schema/v1/service/mdns/"
-  ntp:
-    $ref: "https://uconfig.org/schema/v1/service/ntp/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/mdns/"
   ssh:
-    $ref: "https://uconfig.org/schema/v1/service/ssh/"
-  webui:
-    $ref: "https://uconfig.org/schema/v1/service/webui/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/service/ssh/"

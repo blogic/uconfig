@@ -12,29 +12,29 @@ properties:
     - upstream
     - downstream
   ipv4:
-    $ref: "https://uconfig.org/schema/v1/interface/ipv4/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ipv4/"
   ipv6:
-    $ref: "https://uconfig.org/schema/v1/interface/ipv6/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ipv6/"
   vlan:
-    $ref: "https://uconfig.org/schema/v1/interface/vlan/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/vlan/"
   ssids:
     type: object
     patternProperties:
       ".+":
-        $ref: "https://uconfig.org/schema/v1/interface/ssid/"
+        $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/"
         additionalProperties: false
   ports:
     type: object
     patternProperties:
       ".+":
-        $ref: "https://uconfig.org/schema/v1/interface/ports/"
+        $ref: "https://uconfig.openwrt.org/schema/v1/interface/ports/"
   ieee8021x-ports:
     description:
       The list of physical network devices that shall serve .1x for this interface.u
     type: object
     patternProperties:
       ".+":
-        $ref: "https://uconfig.org/schema/v1/interface/ports/"
+        $ref: "https://uconfig.openwrt.org/schema/v1/interface/ports/"
   isolate-hosts:
     description:
       This option makes sure that any traffic leaving this interface is isolated

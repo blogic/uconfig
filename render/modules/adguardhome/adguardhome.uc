@@ -9,7 +9,7 @@
 		return;
 	let servers = adguardhome.servers || [ '8.8.8.8' ];
 	if (!fs.stat('/etc/adguardhome.yaml'))
-		system(`ucode -T /usr/share/ucode/uconfig/adguardhome.yaml ${adguardhome?.webui_port || 3000} ${join(' ', servers) } > /etc/adguardhome.yaml`); 
+		system(`ucode -T /usr/share/ucode/uconfig/adguardhome.yaml ${adguardhome?.webui_port || 3000} ${adguardhome.password} ${join(' ', servers) } > /etc/adguardhome.yaml`); 
 %}
 
 # Configure Adguardhome

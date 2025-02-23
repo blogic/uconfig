@@ -6,18 +6,18 @@ type: object
 additionalProperties: false
 properties:
   UP0:
-    $ref: 'https://uconfig.org/schema/v1/configurations/wireless-multimedia/class-selector/'
+    $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/class-selector/'
   UP1:
-    $ref: 'https://uconfig.org/schema/v1/configurations/wireless-multimedia/class-selector/'
+    $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/class-selector/'
   UP2:
-    $ref: 'https://uconfig.org/schema/v1/configurations/wireless-multimedia/class-selector/'
+    $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/class-selector/'
   UP3:
-    $ref: 'https://uconfig.org/schema/v1/configurations/wireless-multimedia/class-selector/'
+    $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/class-selector/'
   UP4:
-    $ref: 'https://uconfig.org/schema/v1/configurations/wireless-multimedia/class-selector/'
+    $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/class-selector/'
   UP5:
-    $ref: 'https://uconfig.org/schema/v1/configurations/wireless-multimedia/class-selector/'
+    $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/class-selector/'
   UP6:
-    $ref: 'https://uconfig.org/schema/v1/configurations/wireless-multimedia/class-selector/'
+    $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/class-selector/'
   UP7:
-    $ref: 'https://uconfig.org/schema/v1/configurations/wireless-multimedia/class-selector/'
+    $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/class-selector/'

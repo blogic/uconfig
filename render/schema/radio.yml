@@ -3,10 +3,6 @@ description:
   They all share the same physical properties.
 type: object
 properties:
-  disable:
-    description:
-      Allow disabling the radio.
-    type: boolean
   band:
     description:
       Specifies the wireless band to configure the radio for. Available radio device
@@ -28,19 +24,6 @@ properties:
         minimum: 1
       - type: string
         const: auto
-  valid-channels:
-    description:
-      Pass a list of valid-channels that can be used during ACS.
-    type: array
-    items:
-      type: integer
-      maximum: 196
-      minimum: 1
-  allow-dfs:
-    description:
-      This property defines whether a radio may use DFS channels.
-    type: boolean
-    default: true
   channel-mode:
     description:
       Define the ideal channel mode that the radio shall use. This can be 802.11n, 802.11ac
@@ -66,6 +49,19 @@ properties:
     - 320
     - 8080
     default: 80
+  valid-channels:
+    description:
+      Pass a list of valid-channels that can be used during ACS.
+    type: array
+    items:
+      type: integer
+      maximum: 196
+      minimum: 1
+  allow-dfs:
+    description:
+      This property defines whether a radio may use DFS channels.
+    type: boolean
+    default: true
   require-mode:
     description:
       Stations that do no fulfill these HT modes will be rejected.
@@ -80,6 +76,8 @@ properties:
     type: integer
     maximum: 30
     minimum: 0
+  rates:
+    $ref: "https://uconfig.openwrt.org/schema/v1/radio/rates/"
   legacy-rates:
     description:
       Allow legacy 802.11b data rates.
@@ -96,5 +94,3 @@ properties:
       Enabling this option will make the PHY broadcast its BSSs using the multiple BSSID beacon IE.
     type: boolean
     default: false
-  rates:
-    $ref: "https://uconfig.org/schema/v1/radio/rates/"

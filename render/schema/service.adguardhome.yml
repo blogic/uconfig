@@ -21,3 +21,9 @@ properties:
     items:
       type: string
       format: uc-ip
+  password:
+    description:
+      The password hash used for admin login. The default password is 'abc123'.
+      The hash is generated using htpasswd - htpasswd -B -C 10 -n -b <USERNAME> <PASSWORD>
+    type: string
+    default: $2y$10$0wB5dH8ol.JGwwAnR9H.oeaqn3c.I7cTSeRLjNhm.AZNUz8U9oVsS

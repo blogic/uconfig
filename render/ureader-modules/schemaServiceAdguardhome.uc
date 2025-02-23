@@ -64,6 +64,20 @@ function moduleServiceAdguardhome(location, value, errors) {
 			obj.servers = parseServers(location + "/servers", value["servers"], errors);
 		}
 
+		function parsePassword(location, value, errors) {
+			if (type(value) != "string")
+				push(errors, [ location, "must be of type string" ]);
+
+			return value;
+		}
+
+		if (exists(value, "password")) {
+			obj.password = parsePassword(location + "/password", value["password"], errors);
+		}
+		else {
+			obj.password = "$2y$10$0wB5dH8ol.JGwwAnR9H.oeaqn3c.I7cTSeRLjNhm.AZNUz8U9oVsS";
+		}
+
 		return obj;
 	}
 

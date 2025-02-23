@@ -58,7 +58,7 @@ properties:
     maxLength: 32
     minLength: 1
   encryption:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/encryption/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/encryption/"
   bssid:
     description:
       Override the BSSID of the network, only applicable in adhoc or sta mode.
@@ -85,15 +85,15 @@ properties:
   multi-psk:
     type: array
     items:
-      $ref: "https://uconfig.org/schema/v1/interface/ssid/multi-psk/"
+      $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/multi-psk/"
   rate-limit:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/rate-limit/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/rate-limit/"
   roaming:
     anyOf:
-      - $ref: "https://uconfig.org/schema/v1/interface/ssid/roaming/"
+      - $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/roaming/"
       - description:
           Enable 802.11r Fast Roaming for this BSS. This will enable "auto" mode
           which will work for most scenarios.
         type: boolean
   access-control-list:
-    $ref: "https://uconfig.org/schema/v1/interface/ssid/acl/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/ssid/acl/"

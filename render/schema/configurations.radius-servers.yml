@@ -14,7 +14,7 @@ properties:
     type: boolean
     default: false
   local:
-    $ref: "https://uconfig.org/schema/v1/configurations/radius-servers/local/"
+    $ref: "https://uconfig.openwrt.org/schema/v1/configurations/radius-servers/local/"
   dynamic-authorization:
     description:
       Dynamic Authorization Extensions (DAE) is an extension to Radius.
@@ -43,7 +43,7 @@ properties:
         - secret
   authentication:
     allOf:
-      - $ref: "https://uconfig.org/schema/v1/configurations/radius-servers/server/"
+      - $ref: "https://uconfig.openwrt.org/schema/v1/configurations/radius-servers/server/"
       - type: object
         properties:
           port:
@@ -60,7 +60,7 @@ properties:
             default: false
   accounting:
     allOf:
-      - $ref: "https://uconfig.org/schema/v1/configurations/radius-servers/server/"
+      - $ref: "https://uconfig.openwrt.org/schema/v1/configurations/radius-servers/server/"
       - type: object
         properties:
           port:
