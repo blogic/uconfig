@@ -47,7 +47,7 @@ def schema_compile(input, output, definitions):
     return output
 
 def schema_generate():
-    with open("./schema-generated/" + sys.argv[3], 'w') as outfile:
+    with open(sys.argv[3], 'w') as outfile:
         defs = {}
         schema = schema_compile(schema_load(sys.argv[2]), {}, defs)
         schema["$defs"] = defs

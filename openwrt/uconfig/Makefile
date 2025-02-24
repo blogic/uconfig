@@ -13,8 +13,8 @@ PYTHON3_PKG_BUILD:=0
 HOST_PYTHON3_PACKAGE_BUILD_DEPENDS:=./host-pip-requirements.txt
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/cmake.mk
 include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 CMAKE_SOURCE_DIR:=$(PKG_BUILD_DIR)/src
 CMAKE_BINARY_DIR:=$(PKG_BUILD_DIR)/src
@@ -94,6 +94,11 @@ endef
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
 	$(CP) $(CURDIR)/../../ $(PKG_BUILD_DIR)/
+endef
+
+define Build/Configure
+        $(call Py3Build/InstallBuildDepends)
+	$(call Build/Configure/Default)
 endef
 
 define Build/Compile

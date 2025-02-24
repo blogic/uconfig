@@ -1,3 +1,4 @@
+
 # Configure QOSIFY
 add qosify defaults
 add_list qosify.@defaults[-1].defaults='/etc/qosify/*.conf'
@@ -25,17 +26,19 @@ set qosify.voice.bulk_trigger_pps='100'
 set qosify.voice.bulk_trigger_timeout='5'
 set qosify.voice.dscp_bulk='CS0'
 {%
+	let enable = false;
 	for (let name, iface in state.interfaces):
 		if (iface.role != 'upstream')
-			return;
-		if (!iface.qos?.bandwidth_up || !iface.qos?.bandwidth_down)
-			return;
+			continue;
+		if (!iface.quality_of_service?.bandwidth_up || !iface.quality_of_service?.bandwidth_down)
+			continue;
+		enable = true;
 %}
 
 set qosify.{{ name }}=interface
 set qosify.{{ name }}.name='{{ name }}'
-set qosify.{{ name }}.bandwidth_up='{{ iface.qos.bandwidth_up }}mbit'
-set qosify.{{ name }}.bandwidth_down='{{ iface.qos.bandwidth_down }}mbit'
+set qosify.{{ name }}.bandwidth_up='{{ iface.quality_of_service.bandwidth_up }}mbit'
+set qosify.{{ name }}.bandwidth_down='{{ iface.quality_of_service.bandwidth_down }}mbit'
 set qosify.{{ name }}.overhead_type='none'
 set qosify.{{ name }}.ingress='1'
 set qosify.{{ name }}.egress='1'
@@ -46,4 +49,6 @@ set qosify.{{ name }}.autorate_ingress='0'
 set qosify.{{ name }}.ingress_options=''
 set qosify.{{ name }}.egress_options=''
 set qosify.{{ name }}.options=''
-{% endfor %}
+{% endfor
+services.set_enabled('qosify', !!enable);
+%}

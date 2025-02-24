@@ -5,7 +5,7 @@
 	"interfaces": {
 		"wan": {
 			"role": "upstream",
-			"services": [ "ssh", "mdns", "webui" ],
+			"services": [ "ssh", "mdns" ],
 			"ports": {
 				"wan*": "auto"
 			},
@@ -18,7 +18,7 @@
 		},
 		"lan": {
 			"role": "downstream",
-			"services": [ "ssh", "mdns", "webui" ],
+			"services": [ "ssh", "mdns" ],
 			"ports": {
 				"lan*": "auto"
 			},
