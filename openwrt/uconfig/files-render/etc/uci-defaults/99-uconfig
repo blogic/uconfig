@@ -8,7 +8,7 @@ SHADOW=/etc/uconfig/shadow
 rm -rf $SHADOW
 mkdir -p $SHADOW
 
-touch $SHADOW/network $SHADOW/dhcpsnoop $SHADOW/ratelimit $SHADOW/ieee8021x $SHADOW/radius
+touch $SHADOW/network $SHADOW/dhcpsnoop $SHADOW/ratelimit $SHADOW/ieee8021x $SHADOW/radius $SHADOW/qosify
 
 section_del() {
         uci -c $SHADOW delete $2.$1

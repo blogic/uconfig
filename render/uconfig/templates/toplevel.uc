@@ -140,6 +140,8 @@
 		}
 	}
 
+	tryinclude('qos.uc', { location: '/qos/' });
+
 	iterate_interfaces("upstream");
 	iterate_interfaces("downstream");
 %}

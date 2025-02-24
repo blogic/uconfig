@@ -4,12 +4,10 @@
 
 	/* resolve zoneinfo name to TZ */
 	if (unit.timezone) {
-		if (zoneinfo[unit.timezone]) {
+		if (zoneinfo[unit.timezone])
 			unit.timezone = zoneinfo[unit.timezone];
-		} else {
+		else
 			warn('timezone is unknown');
-			delete unit.timezone;
-		}
 	}
 
 	/* set the password */

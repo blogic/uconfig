@@ -329,8 +329,6 @@ set wireless.{{ section }}.mobility_domain={{ ssid.roaming.domain_identifier }}
 set wireless.{{ section }}.reassociation_deadline=3000
 {% endif %}
 
-{% include("wmm.uc", { section }); %}
-
 add wireless wifi-vlan
 set wireless.@wifi-vlan[-1].iface={{ section }}
 set wireless.@wifi-vlan[-1].name='v#'

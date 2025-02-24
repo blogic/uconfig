@@ -1,0 +1,13 @@
+description:
+  This section describes the available upstream bandwidth in "mbit". Both values need
+  to be enabled for DSCP classification to get enabled.
+type: object
+properties:
+  bandwidth-up:
+    description:
+      The upstream bandwidth.
+    type: integer
+  bandwidth-down:
+    description:
+      The upstream bandwidth.
+    type: integer

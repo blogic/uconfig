@@ -34,7 +34,3 @@ properties:
     patternProperties:
       ".+":
         $ref: "https://uconfig.openwrt.org/schema/v1/configurations/radius-servers/"
-  wireless-multimedia:
-    anyOf:
-     - $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/profile/'
-     - $ref: 'https://uconfig.openwrt.org/schema/v1/configurations/wireless-multimedia/table/'

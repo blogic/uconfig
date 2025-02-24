@@ -41,6 +41,8 @@ properties:
       and all local IP ranges are blocked. It essentially enforces "guest network"
       firewall settings.
     type: boolean
+  quality-of-service:
+    $ref: "https://uconfig.openwrt.org/schema/v1/interface/quality-of-service/"
   services:
     description:
       The services that shall be offered on this logical interface. These are

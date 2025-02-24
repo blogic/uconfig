@@ -8,8 +8,13 @@ PKG_FILE_DEPENDS := $(CURDIR)/../../
 PKG_MAINTAINER:=John Crispin <john@phrozen.org>
 PKG_LICENSE:=ISC
 
+PKG_BUILD_DEPENDS:=python3/host
+PYTHON3_PKG_BUILD:=0
+HOST_PYTHON3_PACKAGE_BUILD_DEPENDS:=./host-pip-requirements.txt
+
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
+include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
 
 CMAKE_SOURCE_DIR:=$(PKG_BUILD_DIR)/src
 CMAKE_BINARY_DIR:=$(PKG_BUILD_DIR)/src
@@ -19,7 +24,7 @@ define Package/uconfig
   CATEGORY:=Utilities
   SUBMENU:=uConfig
   TITLE:=UCI renderer
-  DEPENDS=+ucode-mod-nl80211 +ucode-mod-rtnl +ucode-mod-ubus +ip-full +ip-bridge +ratelimit +pkgen
+  DEPENDS=+ucode-mod-nl80211 +ucode-mod-rtnl +ucode-mod-ubus +ip-full +ip-bridge +ratelimit +qosify +pkgen
 endef
 
 define Package/uconfig-cli
