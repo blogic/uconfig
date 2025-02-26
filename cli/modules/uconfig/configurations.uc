@@ -119,12 +119,27 @@ const configurations_editor = {
 
 	named_args: {
 		'ipv4-network': {
-			help: 'Define the IPv4 range that is delegatable to the downstream interfaces',
-			default: '172.16.128/17',
+			help: 'Define the IPv4 range that can be used by downstream interfaces',
 			args: {
 				type: 'cidr4',
 			}
 		},
+
+		'ipv6-network': {
+			help: 'Define the IPv6 range that can be used by downstream interfaces',
+			args: {
+				type: 'cidr6',
+			}
+		},
+
+		'ntp-servers': {
+			help: "Define which NTP servers shall be used.",
+			multiple: true,
+			args: {
+				type: 'ipv4',
+			}
+		},
+
 	},
 };
 

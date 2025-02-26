@@ -3,6 +3,9 @@ import * as editor from 'cli.object-editor';
 import * as state from 'uconfig.state';
 import { basename, glob } from 'fs';
 
+if (!uconfig.capabilities)
+	return;
+
 model.uconfig ??= {};
 uconfig.update_status();
 

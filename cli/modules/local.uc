@@ -19,6 +19,7 @@ const local_editor = {
 
 		timezone: {
 			help: 'The devices timezone',
+			prefix_separator: '/',
 			args: {
 				type: 'enum',
 				value: function(ctx) {
