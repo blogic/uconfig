@@ -89,12 +89,12 @@ const radius_editor = {
 	},
 };
 
-model.add_node('RadiusAuthentication', editor.new(auth_editor));
-model.add_node('RadiusAccounting', editor.new(acct_editor));
+uconfig.add_node('ucRadiusAuthentication', editor.new(auth_editor));
+uconfig.add_node('ucRadiusAccounting', editor.new(acct_editor));
 
-const RadiusServer = {
+const ucRadiusServer = {
 	authentication: {
-		select_node: 'RadiusAuthentication',
+		select_node: 'ucRadiusAuthentication',
 		select: function(ctx, argv) {
 			return ctx.set(null, {
 				edit: uconfig.lookup([ 'configurations', 'radius-servers', ctx.data.name, 'authentication' ]),
@@ -103,7 +103,7 @@ const RadiusServer = {
 	},
 
 	accounting: {
-		select_node: 'RadiusAccounting',
+		select_node: 'ucRadiusAccounting',
 		select: function(ctx, argv) {
 			return ctx.set(null, {
 				edit: uconfig.lookup([ 'configurations', 'radius-servers', ctx.data.name, 'accounting' ]),
@@ -111,8 +111,8 @@ const RadiusServer = {
 		}
 	},
 };
-editor.new(radius_editor, RadiusServer);
-model.add_node('RadiusServer', RadiusServer);
+editor.new(radius_editor, ucRadiusServer);
+uconfig.add_node('ucRadiusServer', ucRadiusServer);
 
 const configurations_editor = {
 	change_cb: uconfig.changed,
@@ -148,23 +148,23 @@ const edit_create_destroy = {
 	
 	types: {
 		radius: {
-			node_name: 'RadiusServer',
-			node: RadiusServer,
+			node_name: 'ucRadiusServer',
+			node: ucRadiusServer,
 			object: 'radius-servers',
 			add: (ctx, type, name) => { return {}; }
 		},
 	},
 };
 
-const Configurations = { };
-editor.new(configurations_editor, Configurations);
-editor.edit_create_destroy(edit_create_destroy, Configurations);
-model.add_node('Configurations', Configurations);
+const ucConfigurations = { };
+editor.new(configurations_editor, ucConfigurations);
+editor.edit_create_destroy(edit_create_destroy, ucConfigurations);
+uconfig.add_node('ucConfigurations', ucConfigurations);
 
-const Edit = {
+const ucEdit = {
 	configurations: {
 		help: 'Manage global configurations on the device',
-		select_node: 'Configurations',
+		select_node: 'ucConfigurations',
 		select: function(ctx, argv) {
 			return ctx.set(null, { 
 				edit: uconfig.lookup([ 'configurations' ]),
@@ -173,4 +173,4 @@ const Edit = {
 		},
 	},
 };
-model.add_node('Edit', Edit);
+uconfig.add_node('ucEdit', ucEdit);

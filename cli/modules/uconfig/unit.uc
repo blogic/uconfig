@@ -51,12 +51,12 @@ const unit_editor = {
 		},
 	}
 };
-let Unit = model.add_node('Unit', editor.new(unit_editor));
+let ucUnit = uconfig.add_node('ucUnit', editor.new(unit_editor));
 
-const Edit = {
+const ucEdit = {
 	unit: {
 		help: 'Configure unit settings',
-		select_node: 'Unit',
+		select_node: 'ucUnit',
 		select: function(ctx, argv) {
 			return ctx.set(null, {
 				edit: uconfig.lookup([ 'unit' ]),
@@ -64,4 +64,4 @@ const Edit = {
 		},
 	}
 };
-model.add_node('Edit', Edit);
+uconfig.add_node('ucEdit', ucEdit);

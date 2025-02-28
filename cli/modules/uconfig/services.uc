@@ -1,20 +1,22 @@
-const Services = {
+import * as uconfig from 'cli.uconfig';
+
+const ucServices = {
 	list: {
 		help: 'List all available services',
 		call: function(ctx, argv) {
-			return ctx.list('Services', sort(model.uconfig.services));
+			return ctx.list('ucServices', sort(model.uconfig.services));
 		}
 	},
 };
-model.add_node('Services', Services);
+uconfig.add_node('ucServices', ucServices);
 
-const Edit = {
+const ucEdit = {
 	services: {
 		help: 'Manage services running on the device',
-		select_node: 'Services'
+		select_node: 'ucServices'
 	},
 };
-model.add_node('Edit', Edit);
+uconfig.add_node('ucEdit', ucEdit);
 
 model.uconfig.services = [];
 

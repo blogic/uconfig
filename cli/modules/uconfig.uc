@@ -10,18 +10,6 @@ model.uconfig ??= {};
 uconfig.update_status();
 
 const uConfig = {
-	commit: {
-		help: 'Commit and apply pending changes',
-		call: function(ctx, argv) {
-			if (!model.uconfig.changed)
-				return ctx.error('NO_CHANGES', 'There are no pending changes\n');
-		
-			uconfig.commit(ctx);
-
-			return ctx.ok('Done');
-		}
-	},
-
 	disable: {
 		help: 'Disable uConfig based UCI generation',
 		call: function(ctx, argv) {
@@ -48,7 +36,7 @@ const uConfig = {
 
 	edit: {
 		help: 'Edit the active configuration',
-		select_node: 'Edit',
+		select_node: 'ucEdit',
 		select: function(ctx, argv) {
 			if (!model.uconfig.current_cfg) {
 				printf('FIXME: no config applied\n');
@@ -153,6 +141,6 @@ const Root = {
 		},
 	}
 };
-model.add_node('Root', Root);
+uconfig.add_node('Root', Root);
 
 model.add_modules('uconfig/*.uc');

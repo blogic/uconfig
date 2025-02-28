@@ -93,3 +93,20 @@ export function lookup(path) {
 
 	return cfg;
 };
+
+let commit_call = {
+	help: 'Commit and apply pending changes',
+	call: function(ctx, argv) {
+		if (!model.uconfig.changed)
+			return ctx.error('NO_CHANGES', 'There are no pending changes\n');
+	
+		uconfig.commit(ctx);
+
+		return ctx.ok('Done');
+	}
+};
+
+export function add_node(name, obj) {
+	obj.commit = commit_call;
+	model.add_node(name, obj);
+};

@@ -16,13 +16,13 @@ const examples_apply_args = [
 	}
 ];
 
-const Examples = {
+const ucExamples = {
 	list: {
 		help: 'List all example configurations',
 		call: function(ctx, argv) {
 			let examples = examples_get();
 
-			return ctx.list('Examples', examples);
+			return ctx.list('ucExamples', examples);
 		}
 	},
 
@@ -39,12 +39,12 @@ const Examples = {
 		}
 	},
 };
-model.add_node('Examples', Examples);
+model.add_node('ucExamples', ucExamples);
 
 const uConfig = {
 	examples: {
 		help: 'Try out some example configurations',
-		select_node: 'Examples',
+		select_node: 'ucExamples',
 	},
 };
-model.add_node('uConfig', uConfig);
+uconfig.add_node('uConfig', uConfig);

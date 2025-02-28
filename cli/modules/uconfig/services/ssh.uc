@@ -6,7 +6,7 @@ const ssh_editor = {
 
 	named_args: {
 		port: {
-			help: 'SSH port',
+			help: 'Network port',
 			default: 22,
 			required: true,
 			args: {
@@ -25,7 +25,7 @@ const ssh_editor = {
 		},
 
 		'authorized-keys': {
-			help: "string value",
+			help: "List of public keys that may connect",
 			multiple: true,
 			args: {
 				type: "string",
@@ -33,17 +33,17 @@ const ssh_editor = {
 		},
 	}
 };
-model.add_node('SSH', editor.new(ssh_editor));
+uconfig.add_node('ucSSH', editor.new(ssh_editor));
 
-const Services = {
+const ucServices = {
 	ssh: {
 		help: 'Edit the SSH servers settings',
-		select_node: 'SSH',
+		select_node: 'ucSSH',
 		select: function(ctx, argv) {
 			return ctx.set(null, { edit : uconfig.lookup([ 'services', 'ssh' ])});
 		},
 	},
 };
-model.add_node('Services', Services);
+uconfig.add_node('ucServices', ucServices);
 
 push(model.uconfig.services, 'ssh');

@@ -112,13 +112,13 @@ for (let phy in uconfig.capabilities.wifi) {
 	for (let k, v in phy.bands) {
 		Bands[k] = create_band(k, v);
 		push(model.uconfig.bands, k);
-		model.add_node(k, editor.new(radio_editor));
+		uconfig.add_node(k, editor.new(radio_editor));
 	}
 }
 
 model.uconfig.bands = sort(uniq(model.uconfig.bands));
 
-const Edit = {
+const ucEdit = {
 	radios: {
 		help: 'Manage the wireless radios on the device',
 
@@ -148,4 +148,4 @@ const Edit = {
 		},
 	},
 };
-model.add_node('Edit', Edit);
+uconfig.add_node('ucEdit', ucEdit);

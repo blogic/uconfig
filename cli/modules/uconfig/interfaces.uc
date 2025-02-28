@@ -44,7 +44,7 @@ const dhcp_pool_editor = {
 		},
 	}
 };
-const DHCPPool = model.add_node('DHCPPool', editor.new(dhcp_pool_editor));
+const ucDHCPPool = uconfig.add_node('ucDHCPPool', editor.new(dhcp_pool_editor));
 
 const dhcp_lease_editor = {
         change_cb: uconfig.changed,
@@ -85,15 +85,15 @@ const dhcp_lease_editor = {
 		},
 	}
 };
-const DHCPLease = model.add_node('DHCPLease', editor.new(dhcp_lease_editor));
+const ucDHCPLease = uconfig.add_node('ucDHCPLease', editor.new(dhcp_lease_editor));
 
 const dhcp_leases_edit_create_destroy = {
         change_cb: uconfig.changed,
 	
 	types: {
 		'dhcp-lease': {
-			node_name: 'DHCPLease',
-			node: DHCPLease,
+			node_name: 'ucDHCPLease',
+			node: ucDHCPLease,
 			object: 'dhcp-leases',
 		},
 	},
@@ -143,9 +143,9 @@ const ipv4_editor = {
 	}
 };
 
-const IPv4 = {
+const ucIPv4 = {
 	'dhcp-pool': {
-		select_node: 'DHCPPool',
+		select_node: 'ucDHCPPool',
 		select: function(ctx, argv) {
 			return ctx.set(null, {
 				edit: uconfig.lookup([ 'interfaces', ctx.data.name, 'ipv4', 'dhcp-pool' ]),
@@ -153,9 +153,9 @@ const IPv4 = {
 		}
 	},
 };
-editor.new(ipv4_editor, IPv4);
-editor.edit_create_destroy(dhcp_leases_edit_create_destroy, IPv4);
-model.add_node('IPv4', IPv4);
+editor.new(ipv4_editor, ucIPv4);
+editor.edit_create_destroy(dhcp_leases_edit_create_destroy, ucIPv4);
+uconfig.add_node('ucIPv4', ucIPv4);
 
 const interface_editor = {
         change_cb: uconfig.changed,
@@ -395,23 +395,23 @@ const ssid_editor = {
 		},
 	}
 };
-const SSID = model.add_node('SSID', editor.new(ssid_editor));
+const ucSSID = uconfig.add_node('ucSSID', editor.new(ssid_editor));
 
 const interface_edit_create_destroy = {
         change_cb: uconfig.changed,
 
 	types: {
 		ssid: {
-			node_name: 'SSID',
-			node: SSID,
+			node_name: 'ucSSID',
+			node: ucSSID,
 			object: 'ssids',
 		},
 	},
 };
 
-const Interface = {
+const ucInterface = {
 	ipv4: {
-		select_node: 'IPv4',
+		select_node: 'ucIPv4',
 		select: function(ctx, argv) {
 			return ctx.set(null, {
 				edit : uconfig.lookup([ 'interfaces', ctx.data.name, 'ipv4' ]),
@@ -420,17 +420,17 @@ const Interface = {
 		}
 	},
 };
-editor.new(interface_editor, Interface);
-editor.edit_create_destroy(interface_edit_create_destroy, Interface);
-model.add_node('Interface', Interface);
+editor.new(interface_editor, ucInterface);
+editor.edit_create_destroy(interface_edit_create_destroy, ucInterface);
+uconfig.add_node('ucInterface', ucInterface);
 
 const edit_create_destroy = {
         change_cb: uconfig.changed,
 	
 	types: {
 		interface: {
-			node_name: 'Interface',
-			node: Interface,
+			node_name: 'ucInterface',
+			node: ucInterface,
 			object: 'interfaces',
 			add: (ctx, type, name) => {
 				return {
@@ -440,4 +440,4 @@ const edit_create_destroy = {
 		},
 	},
 };
-model.add_node('Edit', editor.edit_create_destroy(edit_create_destroy));
+uconfig.add_node('ucEdit', editor.edit_create_destroy(edit_create_destroy));

@@ -29,7 +29,7 @@ function subscribe_events(ctx) {
 	return ctx.ok('Done');
 }
 
-const Event = {
+const ucEvent = {
 	log: {
 		help: 'List all example configurations',
 		call: function(ctx, argv) {
@@ -48,12 +48,12 @@ const Event = {
 		}
 	},
 };
-model.add_node('Event', Event);
+model.add_node('ucEvent', ucEvent);
 
 const uConfig = {
 	event: {
 		help: 'Look at system events and logs',
-		select_node: 'Event',
+		select_node: 'ucEvent',
 	},
 };
 model.add_node('uConfig', uConfig);
