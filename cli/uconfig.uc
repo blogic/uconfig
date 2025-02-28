@@ -108,5 +108,5 @@ let commit_call = {
 
 export function add_node(name, obj) {
 	obj.commit = commit_call;
-	model.add_node(name, obj);
+	return model.add_node(name, obj);
 };

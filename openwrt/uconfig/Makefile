@@ -91,6 +91,14 @@ define Package/uconfig-mod-fingerprint
   DEPENDS=uconfig +ufp +udhcpsnoop
 endef
 
+define Package/uconfig-mod-unetd
+  SECTION:=utils
+  CATEGORY:=Utilities
+  SUBMENU:=uConfig
+  TITLE:=UCI renderer (unetd plugin)
+  DEPENDS=uconfig +unetd
+endef
+
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
 	$(CP) $(CURDIR)/../../ $(PKG_BUILD_DIR)/
@@ -175,10 +183,15 @@ define Package/uconfig-mod-lldp/install
 endef
 
 define Package/uconfig-mod-ieee8021x/install
-	$(INSTALL_DIR) $(1)/etc/uci-defaults/ $(1)/usr/share/ucode/uconfig/templates/services/
-	$(INSTALL_DIR) $(1)/usr/share/ucode/ureader/
+	$(INSTALL_DIR) $(1)/usr/share/ucode/uconfig/templates/services/	$(INSTALL_DIR) $(1)/usr/share/ucode/ureader/
 	$(CP) $(PKG_BUILD_DIR)/render/ureader-modules/schemaServiceIeee8021x.uc $(1)/usr/share/ucode/ureader/
 	$(CP) $(PKG_BUILD_DIR)/render/modules/ieee8021x/* $(1)/usr/share/ucode/uconfig/templates/services/
+endef
+
+define Package/uconfig-mod-unetd/install
+	$(INSTALL_DIR) $(1)/usr/share/ucode/uconfig/templates/services/ $(INSTALL_DIR) $(1)/usr/share/ucode/cli/modules/uconfig/
+	$(CP) $(PKG_BUILD_DIR)/render/modules/unet/unet.uc $(1)/usr/share/ucode/uconfig/templates/services/
+	$(CP) $(PKG_BUILD_DIR)/render/modules/unet/cli-unet.uc $(1)/usr/share/ucode/cli/modules/uconfig/unet.uc
 endef
 
 define Package/uconfig-mod-mesh-batman/install
@@ -194,3 +207,4 @@ $(eval $(call BuildPackage,uconfig-mod-ieee8021x))
 $(eval $(call BuildPackage,uconfig-mod-lldp))
 $(eval $(call BuildPackage,uconfig-mod-mdns))
 $(eval $(call BuildPackage,uconfig-mod-mesh-batman))
+$(eval $(call BuildPackage,uconfig-mod-unetd))
