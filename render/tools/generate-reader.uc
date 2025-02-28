@@ -465,7 +465,6 @@ let GeneratorProto = {
 	read_schema: function(path)
 	{
 		let fd = fs.open(ARGV[0] + path, "r");
-
 		if (!fd)
 			return {};
 
@@ -624,7 +623,7 @@ let GeneratorProto = {
 
 		this.output = fs.open(ARGV[0] + `ureader/schema.uc`, 'w');
 
-		this.print(indent, '// Automatically ureader from %s - do not edit!', this.path);
+		this.print(indent, '// Automatically ureader from schema.json - do not edit!');
 		this.print(indent, '"use strict";\n');
 
 		for (let formatName, formatCode in this.format_validators)
@@ -671,7 +670,7 @@ function instantiateGenerator(path) {
 }
 
 ARGV[0] ??= '';
-let generator = instantiateGenerator(ARGV[0] + 'schema-generated/schema.json');
+let generator = instantiateGenerator('schema-generated/schema.json');
 generator.generate();
 for (let module in keys(modules)) {
 	generator.module(module);

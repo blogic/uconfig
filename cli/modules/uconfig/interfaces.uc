@@ -185,9 +185,25 @@ const interface_editor = {
 			}
 		},
 		
+		'vlan-trunks': {
+			help: 'Upstream interfaces can prOvide NAT for downstream interfaces that have a different VLAN Id',
+			attribute: 'trunks',
+			get_object: (ctx, param, obj, argv) => {
+				obj.vlan ??= {};
+				return obj.vlan;
+			},
+			multiple: true,
+			args: {
+				type: 'int',
+				min: 1,
+				max: 4095,
+			}
+		},
+
 		service: {
 			help: 'The services that shall be offered on this logical interface',
 			multiple: true,
+			attribute: 'services',
 			args: {
 				type: 'enum',
 				value: () => model.uconfig.services,
@@ -229,6 +245,11 @@ function is_psk_required(ctx, args, named) {
 function is_radius_required(ctx, args, named) {
 	let template = named.template || ctx.data.edit?.template;
 	return template in [ 'enterprise' ];
+} 
+
+function is_ap_mode(ctx, args, named) {
+	let bss_mode = named['bss-mode'] || ctx.data.edit?.['bss-mode'] || 'ap';
+	return bss_mode == 'ap';
 } 
 
 function get_encryption_object(ctx, param, obj, argv) {
@@ -306,10 +327,11 @@ const ssid_editor = {
 			}
 		},
 
-		'wifi-radios': {
+		'radio': {
 			help: 'The list of radios hat the SSID should be broadcasted on. The configuration layer will use the first matching phy/band',
 			multiple: true,
 			allow_duplicate: false,
+			attribute: 'wifi-radios',
 			required: true,
 			default: () => model.uconfig.bands,
 			args: {
@@ -318,9 +340,20 @@ const ssid_editor = {
 			}
 		},
 
-		'hidden-ssid': {
+		hidden: {
 			help: 'Disables the broadcasting of the ESSID inside beacon frames',
+			attribute: 'hidden-ssid',
+			available: is_ap_mode,
 			default: false,
+			args: {
+				type: 'bool',
+			}
+		},
+
+		roaming: {
+			help: 'Enable 802.11r Fast Roaming for this BSS.',
+			default: true,
+			available: is_ap_mode,
 			args: {
 				type: 'bool',
 			}
@@ -328,9 +361,36 @@ const ssid_editor = {
 
 		'isolate-clients': {
 			help: 'Isolates wireless clients from each other on this BSS',
+			available: is_ap_mode,
 			default: false,
 			args: {
 				type: 'bool'
+			}
+		},
+
+		'rate-limit-ingress': {
+			help: 'The ingress rate to which hosts will be shaped. Values are in Mbps',
+			attribute: 'ingress-rate',
+			available: is_ap_mode,
+			get_object: (ctx, param, obj, argv) => {
+				obj['rate-limit'] ??= {};
+				return obj['rate-limit'];
+			},
+			args: {
+				type: 'int',
+			}
+		},
+
+		'rate-limit-egress': {
+			help: 'The egress rate to which hosts will be shaped. Values are in Mbps',
+			attribute: 'egress-rate',
+			available: is_ap_mode,
+			get_object: (ctx, param, obj, argv) => {
+				obj['rate-limit'] ??= {};
+				return obj['rate-limit'];
+			},
+			args: {
+				type: 'int',
 			}
 		},
 	}

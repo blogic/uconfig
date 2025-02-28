@@ -41,12 +41,42 @@ const radio_editor = {
 				type: 'int',
 			}
 		},
+
+		'allow-dfs': {
+			help: 'This property defines whether a radio may use DFS channels.',
+			default: true,
+			available: function(ctx) {
+				return ctx.data.allow_dfs;
+			},
+			args: {
+				type: 'bool',
+			}
+		},
+
+		'maximum-clients': {
+			help: 'Set the maximum number of clients that may connect to this radio. This value is accumulative for all attached VAP interfaces.',
+			args: {
+				type: 'int',
+			}
+		},
+
+		'he-multiple-bssid': {
+			help: 'Enabling this option will make the PHY broadcast its BSSs using the multiple BSSID beacon IE.',
+			available: function(ctx) {
+				return ('HE' in ctx.data.channel_mode);
+			},
+			args: {
+				type: 'bool',
+			}
+			
+		},
 	}
 };
 
 let Bands = { };
 
 function create_band(band, values) {
+	let allow_dfs = (band == '5G');
 	let channel_mode = [];
 	let default_mode = [];
 	let channel_width = [];
@@ -72,6 +102,7 @@ function create_band(band, values) {
 		default_mode,
 		channel_width,
 		default_width,
+		allow_dfs,
 	};
 }
 

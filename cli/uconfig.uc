@@ -3,7 +3,9 @@ import * as libubus from 'ubus';
 
 export let ubus = libubus.connect();
 
-export let capabilities = json(readfile('/etc/uconfig/capabilities.json'));
+export let capabilities = readfile('/etc/uconfig/capabilities.json');
+if (capabilities)
+	capabilities = json(capabilities);
 
 export function service(cmd) {
 	return system([ '/etc/init.d/uconfig', cmd ]);

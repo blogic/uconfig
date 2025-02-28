@@ -32,11 +32,13 @@
 	
 	if (ssid.template != 'manual') {
 		let new = {
-			ssid: ssid.ssid,
-			wifi_radios: ssid.wifi_radios,
-			bss_mode: ssid.bss_mode,
 			encryption: {},
 		};
+
+		for (let key in [ 'ssid', 'bss_mode', 'wifi_radios', 'hidden_ssid', 'roaming', 'rate_limit', 'isolate_clients',
+				  'bssid', 'unicast_conversion', 'multi_psk', 'access_control_list' ])
+			if (ssid[key])
+				new[key] = ssid[key];
 
 		switch (ssid.template) {
 		case 'open':
@@ -46,12 +48,13 @@
 		case 'encrypted':
 			new.encryption.proto = (ssid.security == compatibility) ? 'sae-mixed' : 'sae';
 			new.encryption.key = ssid.encryption?.key;
-			new.ieee80211w = 'optional';
+			new.ieee80211w = (ssid.security == compatibility) ? 'optional' : 'required';
 			new.roaming = true;
 			break;
 
 		case 'enterprise':
 			new.encryption.proto = (ssid.security == compatibility) ? 'wpa3-mixed' : 'wpa3';
+			new.ieee80211w = (ssid.security == compatibility) ? 'optional' : 'required';
 			break;
 		
 		case 'batman':

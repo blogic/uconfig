@@ -10,7 +10,7 @@ def schema_filename(list):
     return file[0].replace("/", ".") + "yml"
 
 def entity_name(uri):
-    name = uri.replace("https://uconfig.openwrt.org/" + sys.argv[1] + "/v1/", "").rstrip("/")
+    name = uri.replace("https://uconfig.openwrt.org/schema/v1/", "").rstrip("/")
     return name.replace("/", ".")
 
 def schema_load(filename):

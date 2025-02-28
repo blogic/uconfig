@@ -3,17 +3,36 @@ import * as editor from 'cli.object-editor';
 import { readfile, writefile } from 'fs';
 
 let config = json(readfile('/etc/uconfig/data/dhcp.json') || '{}');
-config = {
-	lan: { },
-	wan: { },
-};
-
+config.lan ??= {};
+config.wan ??= {};
 model.dhcp = { };
 
 const dhcp_lease_editor = {
 	change_cb: () => model.dhcp.changed = true,
 
 	named_args: {
+		network: {
+			help: 'The network that the lease is active on',
+			required: true,
+			get: function(ctx) {
+				for (let net, data in config)
+					if (ctx.data.name in data)
+						return net;
+			},
+			set: function(ctx, val) {
+				let name = ctx.data.name;
+				let dest = config[val];
+				if (!dest)
+					return ctx.invalid_argument();
+				for (let net, data in config)
+					delete data[name];
+				dest[name] = ctx.data.edit;
+			},
+			args: {
+				type: 'enum',
+				value: () => keys(config),
+			}
+		},
 		macaddr: {
 			help: 'The MAC address of the host that this lease shall be used for',
 			required: true,
@@ -31,7 +50,7 @@ const dhcp_lease_editor = {
 		},
 
 		'lease-time': {
-			help: 'How long the lease is valid before a RENEW muss ne issued',
+			help: 'How long the lease is valid before a RENEW must be issued',
 			required: true,
 			args: {
 				type: 'string',
@@ -51,30 +70,33 @@ const dhcp_lease_editor = {
 };
 const dhcp_lease = model.add_node('dhcp_lease', editor.new(dhcp_lease_editor));
 
-let interfaces = {};
-for (let iface in keys(config))
-	interfaces[iface] = {
-		node_name: 'dhcp_lease',
-		node: dhcp_lease,
-		object: iface,
-	};
-
 const dhcp_leases_edit_create_destroy = {
 	change_cb: () => model.dhcp.changed = true,
-	
-	types: interfaces, 
-	/*{
-		'lan': {
-			node_name: 'dhcp_lease',
-			node: dhcp_lease,
-			object: 'lan',
+
+	type: {
+		name: 'lease',
+		node_name: 'dhcp_lease',
+		node: dhcp_lease,
+		get_object: function(ctx) {
+			let data = {};
+			for (let net, val in config)
+				data = { ...data, ...val };
+			return data;
 		},
-		'wan': {
-			node_name: 'dhcp_lease',
-			node: dhcp_lease,
-			object: 'wan',
+		insert: function(ctx, type, name, data, named) {
+			let dest = config[named.network];
+			if (!dest)
+				return;
+
+			dest[name] = data;
+			return true;
 		},
-	},*/
+		delete: function(ctx, type, name) {
+			for (let net, data in config)
+				delete data[name];
+			return true;
+		}
+	}
 };
 
 

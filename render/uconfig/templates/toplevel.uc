@@ -111,7 +111,7 @@
 	/* try loading the local static config */
 	let local = json(fs.readfile('/etc/uconfig/data/local.json') || '{}');
 	for (let k, v in local)
-		unit[k] = v;
+		state.unit[k] = v;
 
 	/* render the unit configuration */
 	include('unit.uc', { location: '/unit', unit: state.unit });
