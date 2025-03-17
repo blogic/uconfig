@@ -5,7 +5,7 @@
 	/* resolve zoneinfo name to TZ */
 	if (unit.timezone) {
 		if (zoneinfo[unit.timezone])
-			unit.timezone = zoneinfo[unit.timezone];
+			unit.timezone = zoneinfo[unit.timezone].iso2;
 		else
 			warn('timezone is unknown');
 	}
