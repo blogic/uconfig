@@ -213,7 +213,7 @@ let handlers = {
 		send(connection, [ 'result', id, ret ]);
 	},
 
-	'setup-wizard': function(connection, data) {
+	'setup-wizard': function(connection, data, cli) {
 		ulog(LOG_INFO, `${data[0]} completed setup wizard\n`);
 		
 		settings.configured = true;

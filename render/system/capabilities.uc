@@ -12,7 +12,12 @@ let capa = {
 
 let board = fs.readfile('/etc/board.json');
 board = json(board);
-let initial = fs.readfile('/etc/uconfig/examples/initial.json');
+
+let initial;
+if (fs.stat('/etc/uconfig/examples/webui-setup.json'))
+	initial = fs.readfile('/etc/uconfig/examples/webui-setup.json');
+else
+	initial = fs.readfile('/etc/uconfig/examples/initial.json');
 initial = json(initial);
 
 initial.uuid = time();
