@@ -3,9 +3,15 @@
 		return board.credentials?.ssh_authorized_keys && length(board.credentials.ssh_authorized_keys) > 0;
 	}
 
-	function normalize_ssh_config() {
-		ssh.authorized_keys ??= [];
+	ssh = {
+		port: 22,
+		cli_port: 2222,
+		password_authentication: true,
+		authorized_keys: [],
+		...ssh,
+	};
 
+	function normalize_ssh_config() {
 		if (has_board_ssh_keys()) {
 			for (let key in board.credentials.ssh_authorized_keys) {
 				push(ssh.authorized_keys, key);
@@ -38,13 +44,13 @@
 		return uci_output(output);
 	}
 
-	function generate_cli_dropbear_config(ssh_config, cli_port) {
+	function generate_cli_dropbear_config(ssh_config) {
 		let output = [];
 		let password_auth = ssh_config.password_authentication ? 'on' : 'off';
 
 		uci_comment(output, '### generate CLI-over-SSH dropbear configuration');
 		uci_named_section(output, 'dropbear.cli', 'dropbear');
-		uci_set_string(output, 'dropbear.cli.Port', cli_port);
+		uci_set_string(output, 'dropbear.cli.Port', ssh_config.cli_port);
 		uci_set_string(output, 'dropbear.cli.ForceCommand', '/usr/sbin/cli');
 		uci_set_string(output, 'dropbear.cli.PasswordAuth', password_auth);
 		uci_set_string(output, 'dropbear.cli.RootPasswordAuth', password_auth);
@@ -74,7 +80,7 @@
 		return uci_output(output);
 	}
 
-	function generate_cli_firewall_rules(interfaces, cli_port) {
+	function generate_cli_firewall_rules(ssh_config, interfaces) {
 		if (!length(interfaces))
 			return '';
 
@@ -88,7 +94,7 @@
 			uci_section(output, 'firewall rule');
 			uci_set_string(output, 'firewall.@rule[-1].name', `Allow-cli-${name}`);
 			uci_set_string(output, 'firewall.@rule[-1].src', name);
-			uci_set_string(output, 'firewall.@rule[-1].dest_port', cli_port);
+			uci_set_string(output, 'firewall.@rule[-1].dest_port', ssh_config.cli_port);
 			uci_set_string(output, 'firewall.@rule[-1].proto', 'tcp');
 			uci_set_string(output, 'firewall.@rule[-1].target', 'ACCEPT');
 		}
@@ -117,11 +123,11 @@
 	}
 
 	if (length(cli_interfaces)) {
-		conflict = port.claim('cli', cli_port, 'tcp', cli_interfaces);
+		conflict = port.claim('cli', ssh_config.cli_port, 'tcp', cli_interfaces);
 		if (conflict) {
 			state.strict = true;
 			error('service port conflict: cli port %d/tcp overlaps with %s on interface(s) %s',
-			      cli_port, conflict.service, join(', ', conflict.interfaces));
+			      ssh_config.cli_port, conflict.service, join(', ', conflict.interfaces));
 		}
 	}
 %}
@@ -130,7 +136,7 @@
 {{ generate_dropbear_config(ssh_config, length(ssh_interfaces) > 0) }}
 {{ generate_ssh_firewall_rules(ssh_interfaces, ssh_config.port) }}
 {% if (length(cli_interfaces) > 0): %}
-{{ generate_cli_dropbear_config(ssh_config, cli_port) }}
-{{ generate_cli_firewall_rules(cli_interfaces, cli_port) }}
+{{ generate_cli_dropbear_config(ssh_config) }}
+{{ generate_cli_firewall_rules(ssh_config, cli_interfaces) }}
 {% endif %}
 
