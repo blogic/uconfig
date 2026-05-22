@@ -121,6 +121,17 @@ export function generate_prefix(state, template, ipv6) {
 	return template;
 };
 
+export function address_at_offset(cidr, offset) {
+	let prefix = match(cidr, /^([0-9.]+)\/([0-9]+)$/);
+	if (!prefix)
+		return null;
+
+	let mask = convert_bits_to_mask(+prefix[2], false),
+	    base = apply_mask(iptoarr(prefix[1]), mask);
+
+	return arrtoip(add_amount(base, offset));
+};
+
 export function expand_wildcard_address(wcaddr, prefix) {
 	let addr = iptoarr(wcaddr),
 	cidr = match(prefix, /^([0-9a-fA-F:.]+)\/([0-9]+)$/);

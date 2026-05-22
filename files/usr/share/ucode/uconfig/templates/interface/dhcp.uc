@@ -167,13 +167,16 @@
 
 		uci_comment(output, '### generate DHCP static leases');
 		for (let host, lease in interface.ipv4.dhcp_leases) {
+			let lease_ip = (lease.lease_offset != null && interface.ipv4?.subnet)
+				? ipcalc.address_at_offset(interface.ipv4.subnet, lease.lease_offset)
+				: null;
+
 			uci_section(output, 'dhcp host');
 			uci_set_string(output, 'dhcp.@host[-1].name', host);
 			uci_set_string(output, 'dhcp.@host[-1].hostname', lease.hostname);
 			uci_set_string(output, 'dhcp.@host[-1].mac', lease.macaddr);
-			uci_set_string(output, 'dhcp.@host[-1].ip', lease.lease_offset);
+			uci_set_string(output, 'dhcp.@host[-1].ip', lease_ip);
 			uci_set_string(output, 'dhcp.@host[-1].leasetime', lease.lease_time);
-			uci_set_string(output, 'dhcp.@host[-1].instance', name);
 		}
 
 		return uci_output(output);
