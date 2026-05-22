@@ -2,7 +2,7 @@
 
 import * as rtnl from 'rtnl';
 import * as iwinfo from 'iwinfo';
-import { readfile, writefile, glob, popen, unlink } from 'fs';
+import { readfile, writefile, glob, popen, unlink, stat, mkdir } from 'fs';
 import * as ubus from 'ubus';
 
 let l3_devices = {};
@@ -156,6 +156,9 @@ function nlbwmon(devices) {
 }
 
 function load_devices() {
+	if (!stat('/etc/uconfig/devices'))
+		mkdir('/etc/uconfig/devices', 0755);
+
 	let files = glob('/etc/uconfig/devices/*');
 	for (let name in files) {
 		let data = readfile(name);

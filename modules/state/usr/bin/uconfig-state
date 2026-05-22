@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { readfile, writefile, glob, popen, unlink } from 'fs';
+import { readfile, writefile, glob, popen, unlink, stat, mkdir } from 'fs';
 import * as nl80211 from 'nl80211';
 import * as ubus from 'ubus';
 import * as uloop from 'uloop';
@@ -533,6 +533,9 @@ let ubus_methods = {
 		}
 	},
 };
+
+if (!stat('/etc/uconfig/devices'))
+	mkdir('/etc/uconfig/devices', 0755);
 
 load_devices_db();
 
