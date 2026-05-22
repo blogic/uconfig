@@ -29,11 +29,10 @@
 
 		uci_comment(output, '### generate umdns configuration');
 		uci_section(output, 'umdns umdns');
-		uci_set_boolean(output, 'umdns.@umdns[-1].enable', true);
+		uci_set_boolean(output, 'umdns.@umdns[-1].jail', true);
 
 		for (let interface in interfaces)
-			uci_list_string(output, 'umdns.@umdns[-1].network',
-				ethernet.calculate_name(interface));
+			uci_list_string(output, 'umdns.@umdns[-1].network', interface.name);
 
 		return uci_output(output);
 	}
