@@ -72,6 +72,13 @@
 	if (!enable)
 		return;
 
+	let conflict = port.claim('mdns', 5353, 'udp', interfaces);
+	if (conflict) {
+		state.strict = true;
+		error('service port conflict: mdns port 5353/udp overlaps with %s on interface(s) %s',
+		      conflict.service, join(', ', conflict.interfaces));
+	}
+
 	generate_hostname_file(mdns);
 %}
 
