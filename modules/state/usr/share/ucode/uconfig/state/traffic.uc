@@ -53,8 +53,14 @@ function traffic_record_delta(resolution_index, tx_bytes, rx_bytes) {
 }
 
 export function update() {
+	let wan_status = ubus.call('network.interface.wan', 'status');
+	let wan_device = wan_status?.l3_device;
+
+	if (!wan_device)
+		return;
+
 	let device_status = ubus.call('network.device', 'status');
-	let wan_stats = device_status?.['br-wan']?.statistics;
+	let wan_stats = device_status?.[wan_device]?.statistics;
 
 	if (!wan_stats)
 		return;

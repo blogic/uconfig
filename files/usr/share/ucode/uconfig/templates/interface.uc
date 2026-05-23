@@ -250,6 +250,10 @@
 		if (!interface.ports && length(interface.ssids) == 1 && !batman_result.batman_adv) {
 			// interfaces with a single ssid and no mesh do not need a bridge
 			netdev = '';
+		} else if (length(eth_ports) == 1 && !length(interface.ssids) &&
+		           !batman_result.batman_adv && !length(dot1x_ports) &&
+		           !interface.vlan?.id && !interface.broad_band?.type) {
+			netdev = keys(eth_ports)[0];
 		} else {
 			// anything else requires a bridge-vlan
 			include('interface/bridge-vlan.uc', {

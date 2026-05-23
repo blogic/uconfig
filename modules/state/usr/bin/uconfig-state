@@ -51,8 +51,14 @@ function traffic_update(statistics, index, interval) {
 }
 
 function traffic() {
+	let wan_status = ubus.call('network.interface.wan', 'status');
+	let wan_device = wan_status?.l3_device;
+
+	if (!wan_device)
+		return;
+
 	let status = ubus.call('network.device', 'status');
-	let statistics = status['br-wan']?.statistics;
+	let statistics = status[wan_device]?.statistics;
 
 	if (!statistics)
 		return;

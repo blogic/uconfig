@@ -12,10 +12,7 @@ function connectivity_status() {
 
 	let result = {};
 	for (let iface in iface_dump.interface) {
-		if (!iface.l3_device || !match(iface.l3_device, /v0$/))
-			continue;
-
-		if (!iface.route)
+		if (!iface.l3_device || !iface.route)
 			continue;
 
 		for (let route in iface.route) {
