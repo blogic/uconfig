@@ -114,11 +114,6 @@ function peers_dump() {
 	warn(`peers: ${sprintf('%.J', result)}\n`);
 }
 
-function venue_peers_reset(venue) {
-	for (let name in venue.peers)
-		venue.peers[name].state = 'pending';
-}
-
 function venue_announce_send(name, state, edit_data) {
 	let board = ubus.call('system', 'board');
 	let includes = include_list_get();
@@ -521,7 +516,14 @@ function venue_add(name, local_host) {
 		}
 	}, () => {
 		warn('peer list changed, sending announce\n');
-		venue_peers_reset(venue);
+		let unetd_info = ubus.call('unetd', 'network_get');
+		let active = unetd_info?.networks?.[name]?.peers ?? {};
+		for (let host in keys(venue.peers)) {
+			if (host == venue.local_host)
+				continue;
+			if (!active[host])
+				delete venue.peers[host];
+		}
 		venue_announce_send(name, 'connected');
 	});
 
