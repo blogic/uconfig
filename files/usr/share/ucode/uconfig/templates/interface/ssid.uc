@@ -150,7 +150,8 @@
 					ieee80211w: (ssid.template.security == 'compatibility') ? 'optional' : 'required'
 				};
 			}
-			ssid.roaming = true;
+			if (!exists(ssid, 'roaming'))
+				ssid.roaming = true;
 			break;
 
 		case 'enterprise':
@@ -183,10 +184,13 @@
 
 	function normalize_roaming_config() {
 		if (type(ssid.roaming) == 'bool') {
-			ssid.roaming = {
-				message_exchange: 'air',
-				generate_psk: false,
-			};
+			if (ssid.roaming)
+				ssid.roaming = {
+					message_exchange: 'air',
+					generate_psk: false,
+				};
+			else
+				delete ssid.roaming;
 		}
 
 		if (ssid.roaming && ssid.encryption.proto in ROAMING_INCOMPATIBLE_MODES) {
