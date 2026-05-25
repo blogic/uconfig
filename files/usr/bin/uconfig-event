@@ -65,8 +65,8 @@ function event(object, verb, payload) {
 	events[event_count % max_events] = event;
 	event_count++;
 
-	if (ubus_event)
-		ubus_event.notify('event', event);
+	if (ubus_event && ubus_event.subscribed())
+		ubus_event.notify({ type: 'event', data: event, timeout: 1000 });
 }
 
 let handlers;
