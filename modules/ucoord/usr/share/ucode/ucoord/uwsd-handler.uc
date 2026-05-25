@@ -182,10 +182,15 @@ function handle_sysupgrade(connection, id, params) {
 }
 
 function handle_include(connection, id, params) {
-	if (type(params) != 'object' || !params.venue || !params.action || !params.name)
+	if (type(params) != 'object' || !params.venue || !params.action)
 		return send_response(connection, response_error(id, ERROR_INVALID_PARAMS, 'Invalid params'));
 
-	let args = { venue: params.venue, action: params.action, name: params.name };
+	if (params.action != 'list' && !params.name)
+		return send_response(connection, response_error(id, ERROR_INVALID_PARAMS, 'Invalid params'));
+
+	let args = { venue: params.venue, action: params.action };
+	if (params.name)
+		args.name = params.name;
 	if (params.content)
 		args.content = params.content;
 	if (params.timeout)
@@ -205,8 +210,37 @@ function handle_system_info(connection, id, params) {
 	ubus_proxy(connection, id, 'info', args);
 }
 
+function handle_capabilities(connection, id, params) {
+	if (type(params) != 'object' || !params.venue || !params.peer)
+		return send_response(connection, response_error(id, ERROR_INVALID_PARAMS, 'Invalid params'));
+
+	let args = { venue: params.venue, peer: params.peer };
+	if (params.timeout)
+		args.timeout = params.timeout;
+
+	ubus_proxy(connection, id, 'capabilities', args);
+}
+
 function handle_reload(connection, id, params) {
 	ubus_proxy(connection, id, 'reload', {});
+}
+
+function handle_devices(connection, id, params) {
+	let devices = ubus.call('state', 'devices', { arp: true });
+
+	if (!devices)
+		return send_response(connection, response_error(id, ERROR_INTERNAL, 'Failed to retrieve device information'));
+
+	send_response(connection, response_success(id, devices));
+}
+
+function handle_traffic(connection, id, params) {
+	let traffic = ubus.call('state', 'traffic');
+
+	if (!traffic)
+		return send_response(connection, response_error(id, ERROR_INTERNAL, 'Failed to retrieve traffic information'));
+
+	send_response(connection, response_success(id, traffic));
 }
 
 let handlers = {
@@ -225,7 +259,10 @@ let handlers = {
 	'sysupgrade':      { handler: handle_sysupgrade,      auth_required: true },
 	'include':         { handler: handle_include,          auth_required: true },
 	'system-info':     { handler: handle_system_info,      auth_required: true },
+	'capabilities':    { handler: handle_capabilities,     auth_required: true },
 	'reload':          { handler: handle_reload,           auth_required: true },
+	'devices':         { handler: handle_devices,          auth_required: true },
+	'traffic':         { handler: handle_traffic,          auth_required: true },
 };
 
 function route_method(connection, request) {
