@@ -201,10 +201,13 @@
 
 	function normalize_rate_limit() {
 		if (type(ssid.rate_limit) == 'int') {
-			ssid.rate_limit = {
-				ingress_rate: ssid.rate_limit,
-				egress_rate: ssid.rate_limit,
-			};
+			if (ssid.rate_limit > 0)
+				ssid.rate_limit = {
+					ingress_rate: ssid.rate_limit,
+					egress_rate: ssid.rate_limit,
+				};
+			else
+				delete ssid.rate_limit;
 		}
 	}
 
