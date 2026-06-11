@@ -112,8 +112,6 @@ function build_phy_info(phy) {
 		wiphy: phy.wiphy,
 		path: board?.wlan?.[phy.wiphy_name]?.path,
 		bands: {},
-		antenna_rx: phy.wiphy_antenna_rx,
-		antenna_tx: phy.wiphy_antenna_tx,
 	};
 
 	for (let band_data in phy.wiphy_bands) {
