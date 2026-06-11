@@ -14,11 +14,18 @@ import {
 import { login, change_password } from 'uconfig.webui.uwsd.auth';
 import { register as register_ucoord } from 'uconfig.webui.uwsd.ucoord';
 import { register as register_local } from 'uconfig.webui.uwsd.local';
+import {
+	request_handle as upload_request_handle,
+	body_handle as upload_body_handle,
+	file_validate as upload_file_validate,
+	validation_event_send as upload_validation_event_send
+} from 'uconfig.webui.uwsd.upload';
 import * as ubus from 'ubus';
 import * as uloop from 'uloop';
 
 global.connections = {};
 global.shutdown = false;
+global.uploaded_files = {};
 
 function send_response(connection, response) {
 	let data = sprintf('%.J', response);
@@ -182,4 +189,18 @@ export function onData(connection, data, final) {
 		return send_response(connection, response_error(request.id, request.error, request.message));
 
 	route_method(connection, request);
+};
+
+export function onRequest(request, method, uri) {
+	let result = upload_request_handle(request, method, uri);
+	if (result)
+		return result;
+
+	return request.reply({ 'Status': '404 Not Found', 'Content-Type': 'text/plain' }, 'Not Found');
+};
+
+export function onBody(request, data) {
+	return upload_body_handle(request, data, upload_file_validate, (type, success, file_id, error) => {
+		upload_validation_event_send(global.connections, type, success, file_id, error);
+	}, global.uploaded_files);
 };

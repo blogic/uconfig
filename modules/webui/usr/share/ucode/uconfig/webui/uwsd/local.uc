@@ -1,6 +1,6 @@
 'use strict';
 
-import { readfile, writefile, unlink } from 'fs';
+import { readfile, writefile } from 'fs';
 import * as ubus from 'ubus';
 import * as uloop from 'uloop';
 import {
@@ -11,14 +11,15 @@ import {
 } from 'uconfig.webui.uwsd.jsonrpc';
 import * as wiphy from 'uconfig.wiphy';
 import * as board_json from 'uconfig.board_json';
+import { token_generate_for_type } from 'uconfig.webui.uwsd.upload';
 
 const ACTIVE_CONFIG_PATH = '/etc/uconfig/configs/uconfig.active';
 const PENDING_CONFIG_PATH = '/tmp/uconfig.pending';
 const APPLY_RESULT_PATH = '/tmp/uconfig/apply.json';
-const SYSUPGRADE_IMG = '/tmp/sysupgrade.img';
 const DEFER_MS = 1000;
 
 let send_response;
+let broadcast_event;
 
 let capabilities = {
 	compatible: board_json.compatible,
@@ -96,41 +97,53 @@ function handle_capabilities(connection, id, params) {
 
 function handle_reboot(connection, id, params) {
 	send_response(connection, response_success(id, { ok: true }));
+	broadcast_event?.('rebooting');
 	uloop.timer(DEFER_MS, () => system('reboot'));
 }
 
+function handle_factory_reset(connection, id, params) {
+	send_response(connection, response_success(id, { ok: true }));
+	broadcast_event?.('factory-reset');
+	uloop.timer(DEFER_MS, () => system('factoryreset -y -r'));
+}
+
+// Firmware is uploaded out-of-band via HTTP PUT /upload/<token> (see upload.uc):
+// 'token' hands out a one-shot upload URL, 'apply' flashes the validated image.
 function handle_sysupgrade(connection, id, params) {
-	if (type(params) != 'object' || !params.url)
-		return send_response(connection, response_error(id, ERROR_INVALID_PARAMS, 'Invalid params'));
+	let action = type(params) == 'object' ? params.action : null;
 
-	if (system(`uclient-fetch -q -o ${SYSUPGRADE_IMG} ${params.url}`) != 0) {
-		unlink(SYSUPGRADE_IMG);
-		return send_response(connection, response_error(id, ERROR_INTERNAL, 'download failed'));
+	if (action == 'token') {
+		let result = token_generate_for_type('sysupgrade');
+		if (result.error)
+			return send_response(connection, response_error(id, ERROR_INTERNAL, result.error));
+		return send_response(connection, response_success(id, result));
 	}
 
-	if (system(`sysupgrade -T ${SYSUPGRADE_IMG}`) != 0) {
-		unlink(SYSUPGRADE_IMG);
-		return send_response(connection, response_error(id, ERROR_INTERNAL, 'image validation failed'));
+	if (action == 'apply') {
+		let path = params.file_id ? global.uploaded_files?.[params.file_id] : null;
+		if (!path)
+			return send_response(connection, response_error(id, ERROR_INVALID_PARAMS, 'Invalid or missing file_id'));
+
+		let flags = params.keep_config ? '' : '-n';
+		send_response(connection, response_success(id, { ok: true, upgrade: true }));
+		broadcast_event?.('upgrading');
+		uloop.timer(DEFER_MS, () => system(`sysupgrade ${flags} ${path}`));
+		return;
 	}
 
-	if (params.action == 'test') {
-		unlink(SYSUPGRADE_IMG);
-		return send_response(connection, response_success(id, { ok: true }));
-	}
-
-	send_response(connection, response_success(id, { ok: true, upgrade: true }));
-
-	uloop.timer(DEFER_MS, () => system(`sysupgrade ${SYSUPGRADE_IMG}`));
+	send_response(connection, response_error(id, ERROR_INVALID_PARAMS, 'Invalid action'));
 }
 
 export function register(handlers, ctx) {
 	send_response = ctx.send_response;
+	broadcast_event = ctx.broadcast_event;
 
-	handlers['config-get']   = { handler: handle_config_get,   auth_required: true };
-	handlers['config-test']  = { handler: handle_config_test,  auth_required: true };
-	handlers['config-apply'] = { handler: handle_config_apply, auth_required: true };
-	handlers['system-info']  = { handler: handle_system_info,  auth_required: true };
-	handlers['capabilities'] = { handler: handle_capabilities, auth_required: true };
-	handlers['reboot']       = { handler: handle_reboot,       auth_required: true };
-	handlers['sysupgrade']   = { handler: handle_sysupgrade,   auth_required: true };
+	handlers['config-get']    = { handler: handle_config_get,    auth_required: true };
+	handlers['config-test']   = { handler: handle_config_test,   auth_required: true };
+	handlers['config-apply']  = { handler: handle_config_apply,  auth_required: true };
+	handlers['system-info']   = { handler: handle_system_info,   auth_required: true };
+	handlers['capabilities']  = { handler: handle_capabilities,  auth_required: true };
+	handlers['reboot']        = { handler: handle_reboot,        auth_required: true };
+	handlers['factory-reset'] = { handler: handle_factory_reset, auth_required: true };
+	handlers['sysupgrade']    = { handler: handle_sysupgrade,    auth_required: true };
 };
