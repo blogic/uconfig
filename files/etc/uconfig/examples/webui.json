@@ -57,36 +57,6 @@
 					]
 				}
 			}
-		},
-		"guest": {
-			"role": "upstream",
-			"disable": true,
-			"services": [ "mdns", "fingerprint" ],
-			"ports": {
-				"wan*": "auto",
-				"lan*": "auto"
-			},
-			"vlan": {
-				"id": 100
-			},
-			"ipv4": {
-				"addressing": "dynamic"
-			},
-			"ssids": {
-				"guest": {
-					"ssid": "Guest",
-					"template": {
-						"mode": "encrypted",
-						"security": "maximum",
-						"key": "aaaaaaaa"
-					},
-					"wifi-radios": [
-						"2G", "5G"
-					],
-					"isolate-clients": true,
-					"rate-limit": 0
-				}
-			}
 		}
 	},
 
