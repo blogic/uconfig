@@ -1,29 +1,59 @@
-# ucoord WebSocket Interface
+# uconfig WebSocket Interface
 
-JSON-RPC 2.0 protocol reference for the ucoord web UI.
+JSON-RPC 2.0 protocol reference for the uconfig web UI.
+
+The webui module (`uconfig-mod-ui`) provides the single websocket server. It is a thin
+JSON-RPC layer with one generic surface and two interchangeable backends, selected once
+at server start:
+
+- **standalone** (singleton): when the ucoord daemon is not present, the device methods
+  act directly on the local device. There is no venue/peer addressing.
+- **ucoord**: when the ucoord ubus daemon is present, the device methods are addressed to
+  a peer via `{venue, peer}` and additional coordination methods become available.
+
+`devices`/`traffic` always read local data via the `state` ubus object
+(package `uconfig-mod-state`).
 
 Sources:
-- modules/ucoord/usr/share/ucode/ucoord/uwsd-handler.uc
-- modules/ucoord/usr/share/ucode/ucoord/uwsd/jsonrpc.uc
-- modules/ucoord/usr/share/ucode/ucoord/uwsd/auth.uc
+- modules/webui/usr/share/ucode/uconfig/webui/uwsd-handler.uc (generic + mode selection)
+- modules/webui/usr/share/ucode/uconfig/webui/uwsd/local.uc (standalone backend)
+- modules/webui/usr/share/ucode/uconfig/webui/uwsd/ucoord.uc (ucoord backend)
+- modules/webui/usr/share/ucode/uconfig/webui/uwsd/jsonrpc.uc
+- modules/webui/usr/share/ucode/uconfig/webui/uwsd/auth.uc
 
 
 ## Connection
 
-- **Endpoint:** ws://$host:80/ucoord
+- **Endpoint:** ws://$host:80/uconfig
 - **Subprotocol:** ui (must be included in the WebSocket handshake;
   connections without this subprotocol are rejected with code 1003)
 - **Maximum message size:** 32 KB
 - **Idle timeout:** 120 seconds (configured in
-  modules/ucoord/etc/uwsd-ucoord-ui.conf)
+  modules/webui/etc/uwsd-uconfig-ui.conf)
 
 On connect, the server sends a login-required event after 200ms to
 prompt authentication.
 
 
+## Modes
+
+The server runs in one of two modes, fixed at start and reported in the login result
+as the `mode` field ("standalone" or "ucoord"):
+
+- **standalone** - the device methods (config-get, config-test, config-apply, system-info,
+  capabilities, reboot, sysupgrade) operate on the local device and take **no** venue/peer
+  parameters. The coordination methods (list, status, info, include, reload) are not
+  registered and return ERROR_METHOD_NOT_FOUND.
+- **ucoord** - the same device methods are addressed to a peer and require `{venue, peer}`
+  (plus `config` where applicable); the coordination methods are available.
+
+The method parameter tables below describe the **ucoord** form. In standalone mode, omit
+venue/peer; the target is always the local device.
+
+
 ## Authentication
 
-Credentials are stored in /etc/uconfig/ucoord/credentials as JSON:
+Credentials are stored in /etc/uconfig/webui/credentials as JSON:
 
 ```json
 {
@@ -89,7 +119,7 @@ Standard JSON-RPC 2.0 request:
 | -32600 | ERROR_INVALID_REQUEST | Missing jsonrpc: "2.0" or method field |
 | -32601 | ERROR_METHOD_NOT_FOUND | Unknown method name |
 | -32602 | ERROR_INVALID_PARAMS | Missing or invalid parameters |
-| -32603 | ERROR_INTERNAL | Internal error or ubus call failure |
+| -32603 | ERROR_INTERNAL | Internal error, ubus call failure, or backend not available |
 | -32001 | ERROR_LOGIN_REQUIRED | Method requires authentication |
 | -32000 | ERROR_INVALID_PASSWORD | Login failed |
 
@@ -110,6 +140,21 @@ Events are JSON-RPC notifications (no id field):
 | login-required | Immediately after connection | none |
 
 
+## Method Availability
+
+| Group | Methods | Modes |
+|-------|---------|-------|
+| Session | login, logout, change-password, ping | both |
+| Local state | devices, traffic | both (needs uconfig-mod-state) |
+| Device | config-get, config-test, config-apply, system-info, capabilities, reboot, sysupgrade | both (local execution in standalone; proxied to a peer in ucoord) |
+| Coordination | list, status, info, include, reload | ucoord only |
+
+All methods except login require prior authentication. Methods absent in the current
+mode return ERROR_METHOD_NOT_FOUND. In ucoord mode, device and coordination methods are
+proxied to the ucoord daemon; a proxy failure returns ERROR_INTERNAL ("Failed to call
+ucoord" or "ubus error: <status>").
+
+
 ## Methods
 
 ### login
@@ -119,7 +164,10 @@ require prior authentication.
 
 **Params:** { "password": "..." }
 
-**Result:** { "success": true }
+**Result:** { "success": true, "mode": "standalone" | "ucoord" }
+
+The mode field tells the client whether this is a standalone device or an
+ucoord-backed coordinator (see Modes).
 
 **Errors:** ERROR_INVALID_PASSWORD on wrong password,
 ERROR_INVALID_PARAMS if password is missing.
@@ -153,6 +201,28 @@ Connection keepalive.
 **Params:** none
 
 **Result:** { "success": true }
+
+
+### devices
+
+List known clients with ARP data for the local device.
+
+**Params:** none
+
+**Result:** Proxied from ubus state devices ({ arp: true }).
+
+**Errors:** ERROR_INTERNAL if the state backend is unavailable.
+
+
+### traffic
+
+Per-interface traffic statistics for the local device.
+
+**Params:** none
+
+**Result:** Proxied from ubus state traffic.
+
+**Errors:** ERROR_INTERNAL if the state backend is unavailable.
 
 
 ### list
@@ -194,9 +264,10 @@ load, memory).
 Alias for info - identical behaviour.
 
 
-### state
+### capabilities
 
-Query runtime state (ports, radios) from a remote peer.
+Query device capabilities (board, model, MAC addresses, radio PHYs)
+from a remote peer.
 
 **Params:**
 | Field | Type | Required | Description |
@@ -205,7 +276,8 @@ Query runtime state (ports, radios) from a remote peer.
 | peer | string | yes | Peer host name |
 | timeout | integer | no | Timeout in milliseconds |
 
-**Result:** Proxied from ucoord ubus state method.
+**Result:** Proxied from ucoord ubus capabilities method
+({ capabilities, wiphy }).
 
 
 ### config-get

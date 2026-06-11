@@ -2,28 +2,12 @@
 
 import * as fs from 'fs';
 import * as digest from 'digest';
-import * as utils from 'uconfig.utils';
-import * as math from 'math';
 
 const CREDENTIALS_FILE = '/etc/uconfig/webui/credentials';
-const MODULES_DIR = '/etc/uconfig/modules';
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 64;
 
 let users;
-
-math.srand(time());
-
-function random_string(len) {
-	let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-	let mod = length(chars) - 1;
-	let str = '';
-
-	for (let i = 0; i < len; i++)
-		str += substr(chars, math.rand() % mod, 1);
-
-	return str;
-}
 
 function load_credentials() {
 	let data = fs.readfile(CREDENTIALS_FILE);
@@ -45,22 +29,11 @@ function validate_password(username, password) {
 	return hash == users[username].hash;
 }
 
-function modules_load() {
-	let modules = fs.lsdir(MODULES_DIR);
-	if (!modules)
-		return [];
-
-	return modules;
-}
-
 function login(password) {
 	if (!validate_password('admin', password))
 		return null;
 
-	return {
-		success: true,
-		modules: modules_load()
-	};
+	return { success: true };
 }
 
 function change_password(new_password) {
@@ -77,7 +50,6 @@ function change_password(new_password) {
 		users.admin = {};
 
 	users.admin.hash = digest.sha512(new_password);
-	users.admin.htpasswd = utils.crypt(new_password, `$2y$10$${random_string(22)}`);
 	save_credentials();
 
 	return { success: true };

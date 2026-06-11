@@ -18,9 +18,11 @@ Three components:
 - **CLI module** (modules/ucoord/usr/share/ucode/cli/modules/ucoord.uc)
   - interactive management of venues, peers, includes, and remote
   configuration editing.
-- **WebSocket UI** (modules/ucoord/usr/share/ucode/ucoord/uwsd-handler.uc)
-  - JSON-RPC 2.0 interface served via uwsd for browser-based management.
-  See [UCOORD-webui.md](UCOORD-webui.md) for the full protocol reference.
+- **WebSocket UI** (the generic webui module, package uconfig-mod-ui:
+  modules/webui/usr/share/ucode/uconfig/webui/uwsd-handler.uc) - JSON-RPC 2.0
+  interface served via uwsd for browser-based management. The webui server proxies
+  the coordination methods to the ucoord ubus daemon when this package is installed.
+  See [WEBUI.md](WEBUI.md) for the full protocol reference.
 
 All inter-device communication happens over unetmsg pub/sub channels
 within unetd networks. See [UCOORD-unetmsg.md](UCOORD-unetmsg.md)

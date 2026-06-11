@@ -23,7 +23,7 @@
 
 	let interfaces = services.lookup_interfaces("ucoord-ui");
 	let enable = length(interfaces) > 0;
-	services.set_enabled("ucoord-ui", enable);
+	services.set_enabled("uconfig-ui", enable);
 
 	if (!enable)
 		return;
