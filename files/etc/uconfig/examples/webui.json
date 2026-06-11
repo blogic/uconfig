@@ -45,16 +45,6 @@
 					"encryption": {
 						"key": "aaaaaaaa"
 					}
-				},
-				"mesh": {
-					"disable": true,
-					"template": {
-						"mode": "batman-adv",
-						"key": "aaaaaaaa"
-					},
-					"wifi-radios": [
-						"5G"
-					]
 				}
 			}
 		}
