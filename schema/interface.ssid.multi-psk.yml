@@ -17,7 +17,8 @@ properties:
     minLength: 8
   vlan-id:
     type: integer
-    maximum: 4096
+    minimum: 1
+    maximum: 4094
     examples:
     - 3
     - 100

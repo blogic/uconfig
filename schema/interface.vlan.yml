@@ -8,13 +8,14 @@ properties:
       The individual physical network devices contained within the interface
       need to be told explicitly if egress traffic shall be tagged.
     type: integer
-    maximum: 4050
+    minimum: 1
+    maximum: 4094
   trunks:
     description:
       Upstream interfaces can prOvide NAT for downstream interfaces that have a
       different VLAN Id
     type: array
     items:
-      type: number
-      maximum: 4050
+      type: integer
       minimum: 1
+      maximum: 4094

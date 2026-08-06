@@ -410,7 +410,7 @@ const interface_editor = {
 			args: {
 				type: 'int',
 				min: 1,
-				max: 4095,
+				max: 4094,
 			}
 		},
 		
@@ -425,7 +425,7 @@ const interface_editor = {
 			args: {
 				type: 'int',
 				min: 1,
-				max: 4095,
+				max: 4094,
 			}
 		},
 
@@ -496,7 +496,7 @@ const multi_psk_editor = {
 			args: {
 				type: 'int',
 				min: 1,
-				max: 4095,
+				max: 4094,
 			}
 		},
 	}
