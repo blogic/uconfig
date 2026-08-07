@@ -7,6 +7,7 @@ properties:
     description:
       Allows disabling an SSID from the UI.
     type: boolean
+    default: false
   purpose:
     description:
       An SSID can have a special purpose such as the hidden on-boarding BSS.
@@ -89,14 +90,17 @@ properties:
       Disables the broadcasting of beacon frames if set to 1 and,in doing so,
       hides the ESSID.
     type: boolean
+    default: false
   isolate-clients:
     description:
       Isolates wireless clients from each other on this BSS.
     type: boolean
+    default: false
   unicast-conversion:
     description:
       Convert multicast traffic to unicast on this BSS.
     type: boolean
+    default: false
   vendor-elements:
     description:
       This option allows embedding custom vendor specific IEs inside the beacons of
