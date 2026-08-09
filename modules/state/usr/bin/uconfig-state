@@ -51,9 +51,26 @@ function traffic_update(statistics, index, interval) {
 	wan_traffic.interval[index] = interval;
 }
 
+// The device carrying the default route, which is the one worth counting bytes
+// on. Found rather than named: `network.interface.wan` only exists when the
+// config happens to call its uplink `wan`, and interface names are the config's
+// to choose. A baseline that named it something else reported no traffic at all
+// and said nothing about why.
+function uplink_device() {
+	let dump = ubus.call('network.interface', 'dump');
+
+	for (let iface in dump?.interface) {
+		if (!iface.up || !iface.l3_device)
+			continue;
+		for (let route in iface.route ?? []) {
+			if (route.target == '0.0.0.0' && route.mask == 0)
+				return iface.l3_device;
+		}
+	}
+}
+
 function traffic() {
-	let wan_status = ubus.call('network.interface.wan', 'status');
-	let wan_device = wan_status?.l3_device;
+	let wan_device = uplink_device();
 
 	if (!wan_device)
 		return;
