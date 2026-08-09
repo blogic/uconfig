@@ -1,11 +1,5 @@
 {%
-	// 1. Constants
-	const DUPLEX_MODES = {
-		full: true,
-		half: false
-	};
-
-	// 2. Helper functions
+	// 1. Helper functions
 
 	// has_ functions - check for existence/availability
 	function has_speed_config(ports) {
@@ -14,11 +8,6 @@
 
 	function has_wan_ports() {
 		return wan_ports && length(wan_ports) > 0;
-	}
-
-	// is_ functions - boolean checks/validation
-	function is_full_duplex(duplex) {
-		return duplex === 'full';
 	}
 
 	// normalize_ functions - data transformation

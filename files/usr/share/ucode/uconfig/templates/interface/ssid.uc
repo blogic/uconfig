@@ -73,13 +73,6 @@
 		return index(IEEE80211W_OPTIONS, ssid.encryption.ieee80211w);
 	}
 
-	function match_sae_pwe(phy) {
-		if (is_6g_band(phy))
-			return 1;
-
-		return '';
-	}
-
 	function match_wds() {
 		return index(WDS_MODES, ssid.bss_mode) >= 0;
 	}

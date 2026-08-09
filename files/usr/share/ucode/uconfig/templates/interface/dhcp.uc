@@ -6,11 +6,6 @@
 		stateless: 'stateless',
 		relay: 'relay'
 	};
-	const RA_MODES = {
-		server: 'server',
-		relay: 'relay',
-		disabled: 'disabled'
-	};
 
 	// is_ functions - boolean checks/validation
 	function is_downstream_interface(interface) {

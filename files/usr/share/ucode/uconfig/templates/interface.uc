@@ -2,10 +2,7 @@
 
 {%
 	// Constants
-	const EASYMESH_MODES = ['hybrid', 'controller', 'agent'];
 	const INTERFACE_ROLES = ['upstream', 'downstream'];
-	const ADDRESSING_MODES = ['static', 'dhcp', 'none'];
-	const BSS_MODES = ['sta', 'ap', 'mesh', 'wds-repeater', 'wds-sta', 'wds-ap'];
 	const BRIDGE_DEVICES = {
 		upstream: 'br-wan',
 		downstream: 'br-lan'

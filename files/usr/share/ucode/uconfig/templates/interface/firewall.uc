@@ -1,15 +1,5 @@
 {%
 	// Constants
-	const FIREWALL_ACTIONS = {
-		accept: 'ACCEPT',
-		reject: 'REJECT',
-		drop: 'DROP'
-	};
-	const IP_FAMILIES = {
-		ipv4: 'ipv4',
-		ipv6: 'ipv6',
-		any: 'any'
-	};
 	const DEFAULT_PRIVATE_SUBNETS = ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8'];
 	const ICMPV6_TYPES = [
 		'echo-request', 'echo-reply', 'destination-unreachable', 'packet-too-big',

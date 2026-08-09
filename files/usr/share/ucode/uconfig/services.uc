@@ -78,27 +78,6 @@ export function lookup_services() {
 	return rv;
 };
 
-export function lookup_metrics() {
-	let rv = [];
-
-	for (let incfile in fs.glob(topdir + '/templates/metric/*.uc')) {
-		let m = match(incfile, /^.+\/([^\/]+)\.uc$/);
-
-		if (m)
-			push(rv, m[1]);
-	}
-
-	return rv;
-};
-
-function set_state(state, alt) {
-	for (let service, enable in services) {
-		if (enable != state)
-			continue;
-		system(`/etc/init.d/${service} ${enable}`);
-	}
-};
-
 export function start(no_apply) {
 	for (let service, enable in services)
 		if (enable in [ 'start', 'reload', 'restart' ]) {

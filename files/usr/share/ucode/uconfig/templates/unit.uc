@@ -1,7 +1,6 @@
 {%
 	// 1. Constants
 	const ZONEINFO_PATH = '/usr/share/ucode/uconfig/zoneinfo.json';
-	const DEFAULT_ZONEINFO = {};
 
 	// 2. Helper functions
 

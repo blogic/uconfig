@@ -142,28 +142,6 @@ function print_table(headers, rows) {
 	printf('%s\n', sep);
 }
 
-function network_validate(ctx, name) {
-	let status = ubus.call('network.interface.' + name, 'status');
-	if (!status) {
-		ctx.invalid_argument(`Network interface '${name}' not found`);
-		return;
-	}
-
-	if (!status.up) {
-		ctx.invalid_argument(`Network interface '${name}' is not up`);
-		return;
-	}
-
-	let has_addr = length(status['ipv4-address']) > 0 ||
-		       length(status['ipv6-address']) > 0;
-	if (!has_addr) {
-		ctx.invalid_argument(`Network interface '${name}' has no IP address`);
-		return;
-	}
-
-	return true;
-}
-
 function local_network_derive(ctx, name) {
 	let suffixes = ['', '_4', '_6'];
 

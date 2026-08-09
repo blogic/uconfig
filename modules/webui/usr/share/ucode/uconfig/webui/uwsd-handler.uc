@@ -28,7 +28,6 @@ import * as uloop from 'uloop';
 const ACTIVE_CONFIG_PATH = '/etc/uconfig/configs/uconfig.active';
 
 global.connections = {};
-global.shutdown = false;
 global.uploaded_files = {};
 
 function send_response(connection, response) {
@@ -156,9 +155,6 @@ function route_method(connection, request) {
 }
 
 export function onConnect(connection, protocols) {
-	if (global.shutdown)
-		return connection.close(1001, 'Server shutting down');
-
 	if (!('uconfig' in protocols))
 		return connection.close(1003, 'Unsupported protocol requested');
 
