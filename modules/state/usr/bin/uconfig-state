@@ -5,6 +5,7 @@
 import { readfile, writefile, glob, popen, unlink, stat, mkdir } from 'fs';
 import * as nl80211 from 'nl80211';
 import * as ubus from 'ubus';
+import * as uci from 'uci';
 import * as uloop from 'uloop';
 import * as rtnl from 'rtnl';
 import * as wiphy from 'uconfig.wiphy';
@@ -135,8 +136,11 @@ function radios() {
 	for (let name, data in status) {
 		let radio = {
 			htmode: data.config.htmode,
-			channel: data.config.channel,
 		};
+		// A string throughout, matching active_channel: "0" is what the
+		// config writes for automatic channel selection.
+		if (data.config.channel != null)
+			radio.channel = '' + data.config.channel;
 		let modes = { HT: /HT.*/, VHT: /VHT.*/, HE: /HE.*/, EHT: /EHT.*/, };
 		for (let mode, mask in modes)
 			if (match(data.config.htmode, mask))
@@ -162,7 +166,7 @@ function radios() {
 				break;
 			}
 			let channels = [];
-			let phy = nl80211.request(nl80211.const.NL80211_CMD_GET_WIPHY, nl80211.const.NLM_F_DUMP, { split_wiphy_dump: true, wiphy: +substr(hapd.phy, 3, 1) });
+			let phy = nl80211.request(nl80211.const.NL80211_CMD_GET_WIPHY, nl80211.const.NLM_F_DUMP, { split_wiphy_dump: true, wiphy: +substr(hapd.phy, 3) });
 			for (let band in phy.wiphy_bands) {												 
 				for (let freq in band?.freqs) {									     
 					if (freq.disabled)										  
@@ -178,8 +182,10 @@ function radios() {
 				}
 			}
 			radio.channels = { 'b20': channels };
+			// No 6 GHz row in the table yet, so that band reports the b20 list
+			// from the wiphy dump and no per-width lists, rather than throwing.
 			for (let k, bw in radio.bandwidths) {
-				if (!bandwidths[data.config.band][bw])
+				if (!bandwidths[data.config.band]?.[bw])
 					continue;
 				radio.channels['b' + bw] = [];
 				for (let l, chan in bandwidths[data.config.band][bw])
@@ -189,7 +195,9 @@ function radios() {
 
 			break;
 		}
-		if (radio.channel)
+		// Keyed on the band rather than gated on the channel: a radio told to
+		// choose reports channel 0, which would otherwise drop it entirely.
+		if (data.config.band)
 			wifi[data.config.band] = radio;
 	}
 	return wifi;
@@ -447,6 +455,141 @@ function ports(args) {
 	return rv;
 }
 
+function ipv4_state(iface) {
+	let rv = {};
+	let has;
+
+	let addrs = iface['ipv4-address'] ?? [];
+	if (length(addrs)) {
+		rv.address = `${addrs[0].address}/${addrs[0].mask}`;
+		has = true;
+	}
+
+	for (let route in iface.route ?? []) {
+		if (route.target != '0.0.0.0' || route.mask != 0)
+			continue;
+		rv.gateway = route.nexthop;
+		has = true;
+		break;
+	}
+
+	// netifd reports both families in one dns-server list, so the v6 section
+	// would otherwise claim the v4 object and overwrite its proto.
+	let dns = [];
+	for (let server in iface['dns-server'] ?? [])
+		if (index(server, ':') < 0)
+			push(dns, server);
+	if (length(dns)) {
+		rv.dns = dns;
+		has = true;
+	}
+
+	if (iface.data?.dhcpserver) {
+		rv.lease = {
+			server: iface.data.dhcpserver,
+			time: iface.data.leasetime,
+		};
+		has = true;
+	}
+
+	if (!has)
+		return null;
+
+	let search = iface['dns-search'] ?? [];
+	if (length(search))
+		rv.search = search;
+
+	rv.proto = iface.proto;
+	return rv;
+}
+
+function ipv6_state(iface) {
+	let rv = {};
+	let has;
+
+	let addrs = iface['ipv6-address'] ?? [];
+	if (length(addrs)) {
+		rv.addresses = map(addrs, (a) => `${a.address}/${a.mask}`);
+		has = true;
+	}
+
+	let prefixes = iface['ipv6-prefix'] ?? [];
+	if (length(prefixes)) {
+		rv.prefix = `${prefixes[0].address}/${prefixes[0].mask}`;
+		has = true;
+	}
+
+	// What this interface put on the wire out of a delegation, as opposed to
+	// the prefix it was handed: a delegation that arrived but was never
+	// assigned is a different fault from one that never arrived.
+	let assigned = [];
+	for (let a in iface['ipv6-prefix-assignment'] ?? []) {
+		if (!a['local-address'])
+			continue;
+		push(assigned, `${a['local-address'].address}/${a['local-address'].mask}`);
+	}
+	if (length(assigned)) {
+		rv.assigned = assigned;
+		has = true;
+	}
+
+	if (!has)
+		return null;
+
+	rv.proto = iface.proto;
+	return rv;
+}
+
+function network() {
+	let dump = ubus.call('network.interface', 'dump');
+	if (!dump)
+		return {};
+
+	let cursor = uci.cursor();
+	if (!cursor)
+		return {};
+
+	// netifd splits one document interface into a section per address family
+	// and names none of them after the document, so the uconfig_name stamp
+	// written by templates/interface/common.uc is the only way back.
+	let owner = {};
+
+	cursor.foreach('network', 'interface', (s) => {
+		if (s.uconfig_name)
+			owner[s['.name']] = s.uconfig_name;
+	});
+
+	let rv = {};
+
+	for (let iface in dump.interface) {
+		let name = owner[iface.interface];
+		if (!name)
+			continue;
+
+		rv[name] ??= {};
+		let entry = rv[name];
+
+		// The section named after the document interface is the carrier: it
+		// owns the device and the uptime, while the per-family sections come
+		// and go with their leases.
+		if (iface.interface == name) {
+			entry.up = iface.up;
+			entry.uptime = iface.uptime;
+			entry.device = iface.l3_device ?? iface.device;
+		}
+
+		let v4 = ipv4_state(iface);
+		if (v4)
+			entry.ipv4 = { ...(entry.ipv4 ?? {}), ...v4 };
+
+		let v6 = ipv6_state(iface);
+		if (v6)
+			entry.ipv6 = { ...(entry.ipv6 ?? {}), ...v6 };
+	}
+
+	return rv;
+}
+
 let ubus_methods = {
 	devices: {
 		call: function(req) {
@@ -516,6 +659,13 @@ let ubus_methods = {
 	radios: {
 		call: function(req) {
 			return radios();
+		},
+		args: {
+		}
+	},
+	network: {
+		call: function(req) {
+			return network();
 		},
 		args: {
 		}
