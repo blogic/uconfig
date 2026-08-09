@@ -3,7 +3,6 @@
 import {
 	ERROR_METHOD_NOT_FOUND,
 	ERROR_INVALID_PARAMS,
-	ERROR_INTERNAL,
 	ERROR_LOGIN_REQUIRED,
 	ERROR_INVALID_PASSWORD,
 	parse_request,
@@ -12,6 +11,7 @@ import {
 } from 'uconfig.webui.uwsd.jsonrpc';
 
 import { login, change_password } from 'uconfig.webui.uwsd.auth';
+import { register as register_state } from 'uconfig.webui.uwsd.state';
 import { register as register_ucoord } from 'uconfig.webui.uwsd.ucoord';
 import { register as register_local } from 'uconfig.webui.uwsd.local';
 import {
@@ -92,31 +92,11 @@ function handle_change_password(connection, id, params) {
 	send_response(connection, response_success(id, result));
 }
 
-function handle_devices(connection, id, params) {
-	let devices = ubus.call('state', 'devices', { arp: true });
-
-	if (!devices)
-		return send_response(connection, response_error(id, ERROR_INTERNAL, 'Failed to retrieve device information'));
-
-	send_response(connection, response_success(id, devices));
-}
-
-function handle_traffic(connection, id, params) {
-	let traffic = ubus.call('state', 'traffic');
-
-	if (!traffic)
-		return send_response(connection, response_error(id, ERROR_INTERNAL, 'Failed to retrieve traffic information'));
-
-	send_response(connection, response_success(id, traffic));
-}
-
 let handlers = {
 	'ping':            { handler: handle_ping,            auth_required: true },
 	'login':           { handler: handle_login,           auth_required: false },
 	'logout':          { handler: handle_logout,          auth_required: true },
 	'change-password': { handler: handle_change_password, auth_required: true },
-	'devices':         { handler: handle_devices,         auth_required: true },
-	'traffic':         { handler: handle_traffic,         auth_required: true },
 };
 
 let ctx = {
@@ -125,6 +105,10 @@ let ctx = {
 	broadcast_event,
 	mode
 };
+
+// Live state is read from this device's own daemons either way, so it is
+// registered before the mode decides which configuration backend answers.
+register_state(handlers, ctx);
 
 if (mode == 'ucoord')
 	register_ucoord(handlers, ctx);
@@ -146,7 +130,7 @@ export function onConnect(connection, protocols) {
 	if (global.shutdown)
 		return connection.close(1001, 'Server shutting down');
 
-	if (!('ui' in protocols))
+	if (!('uconfig' in protocols))
 		return connection.close(1003, 'Unsupported protocol requested');
 
 	let ctx = {
@@ -162,7 +146,7 @@ export function onConnect(connection, protocols) {
 		send_event(connection, 'login-required');
 	});
 
-	return connection.accept('ui');
+	return connection.accept('uconfig');
 };
 
 export function onClose(connection, code, reason) {

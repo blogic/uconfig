@@ -17,6 +17,7 @@ const ACTIVE_CONFIG_PATH = '/etc/uconfig/configs/uconfig.active';
 const PENDING_CONFIG_PATH = '/tmp/uconfig.pending';
 const APPLY_RESULT_PATH = '/tmp/uconfig/apply.json';
 const DEFER_MS = 1000;
+const STANDALONE_VENUE = 'local';
 
 let send_response;
 let broadcast_event;
@@ -88,6 +89,28 @@ function handle_system_info(connection, id, params) {
 	send_response(connection, response_success(id, info));
 }
 
+// The client resolves the device it manages out of `status` before login
+// completes, so a standalone AP describes itself in the shape a coordinator
+// uses for a venue full of peers.
+function handle_status(connection, id, params) {
+	let board = ubus.call('system', 'board');
+	if (!board)
+		return send_response(connection, response_error(id, ERROR_INTERNAL, 'ubus call failed'));
+
+	let peers = {};
+	peers[board.hostname ?? capabilities.model] = {
+		state: 'connected',
+		ts: time(),
+		capabilities,
+		board,
+	};
+
+	let venues = {};
+	venues[STANDALONE_VENUE] = peers;
+
+	send_response(connection, response_success(id, { venues }));
+}
+
 function handle_capabilities(connection, id, params) {
 	if (!board_json.board)
 		return send_response(connection, response_error(id, ERROR_INTERNAL, 'capabilities not available'));
@@ -142,6 +165,8 @@ export function register(handlers, ctx) {
 	handlers['config-test']   = { handler: handle_config_test,   auth_required: true };
 	handlers['config-apply']  = { handler: handle_config_apply,  auth_required: true };
 	handlers['system-info']   = { handler: handle_system_info,   auth_required: true };
+	handlers['info']          = { handler: handle_system_info,   auth_required: true };
+	handlers['status']        = { handler: handle_status,        auth_required: true };
 	handlers['capabilities']  = { handler: handle_capabilities,  auth_required: true };
 	handlers['reboot']        = { handler: handle_reboot,        auth_required: true };
 	handlers['factory-reset'] = { handler: handle_factory_reset, auth_required: true };
