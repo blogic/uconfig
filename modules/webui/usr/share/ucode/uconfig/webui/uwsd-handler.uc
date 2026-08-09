@@ -20,8 +20,11 @@ import {
 	file_validate as upload_file_validate,
 	validation_event_send as upload_validation_event_send
 } from 'uconfig.webui.uwsd.upload';
+import { readfile } from 'fs';
 import * as ubus from 'ubus';
 import * as uloop from 'uloop';
+
+const ACTIVE_CONFIG_PATH = '/etc/uconfig/configs/uconfig.active';
 
 global.connections = {};
 global.shutdown = false;
@@ -59,6 +62,28 @@ function ucoord_present() {
 }
 
 const mode = ucoord_present() ? 'ucoord' : 'standalone';
+
+// A config carrying no top-level webui object has never been through the setup
+// wizard. Such a device has no password to ask for yet, so the wizard runs in
+// place of a login and the methods it needs answer without one. Re-read per
+// call rather than latched at connect: the moment the wizard applies a config,
+// the device is set up and the session logs in like any other. Standalone only,
+// since the wizard configures the local device, which is not a coordinator's job.
+function setup_required() {
+	if (mode != 'standalone')
+		return false;
+
+	let content = readfile(ACTIVE_CONFIG_PATH);
+	if (!content)
+		return true;
+
+	try {
+		let config = json(content);
+		return type(config) != 'object' || config.webui == null;
+	} catch (e) {
+		return true;
+	}
+}
 
 function handle_ping(connection, id, params) {
 	send_response(connection, response_success(id, { success: true }));
@@ -120,7 +145,7 @@ function route_method(connection, request) {
 	if (!method)
 		return send_response(connection, response_error(request.id, ERROR_METHOD_NOT_FOUND, 'Method not found'));
 
-	if (method.auth_required && !connection.data().authenticated)
+	if (method.auth_required && !connection.data().authenticated && !setup_required())
 		return send_response(connection, response_error(request.id, ERROR_LOGIN_REQUIRED, 'login-required'));
 
 	method.handler(connection, request.id, request.params);
@@ -143,7 +168,7 @@ export function onConnect(connection, protocols) {
 	global.connections[name] = connection;
 
 	uloop.timer(200, () => {
-		send_event(connection, 'login-required');
+		send_event(connection, setup_required() ? 'setup-required' : 'login-required');
 	});
 
 	return connection.accept('uconfig');

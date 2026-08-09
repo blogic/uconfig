@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import * as digest from 'digest';
 
 const CREDENTIALS_FILE = '/etc/uconfig/webui/credentials';
-const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 64;
 
 let users;
@@ -40,8 +39,8 @@ function change_password(new_password) {
 	if (type(new_password) != 'string')
 		return { error: 'Password must be a string' };
 
-	if (length(new_password) < MIN_PASSWORD_LENGTH)
-		return { error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` };
+	if (!length(new_password))
+		return { error: 'Password must not be empty' };
 
 	if (length(new_password) > MAX_PASSWORD_LENGTH)
 		return { error: `Password must not exceed ${MAX_PASSWORD_LENGTH} characters` };
