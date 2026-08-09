@@ -11,6 +11,7 @@ import {
 } from 'uconfig.webui.uwsd.jsonrpc';
 import * as wiphy from 'uconfig.wiphy';
 import * as board_json from 'uconfig.board_json';
+import { source_store, source_fetch } from 'uconfig.includes';
 import { token_generate_for_type } from 'uconfig.webui.uwsd.upload';
 
 const ACTIVE_CONFIG_PATH = '/etc/uconfig/configs/uconfig.active';
@@ -43,6 +44,41 @@ function config_test_run() {
 	return system(`uconfig-apply -t ${PENDING_CONFIG_PATH}`);
 }
 
+// The document only points at a file per include name, while a client sends the
+// contents, so each fragment is stored where the document says it lives. This
+// has to happen before the config is rendered: resolving an include reads the
+// file back, and a test run against a fragment that is not on disk yet fails.
+function includes_store(config, fragments) {
+	if (type(fragments) != 'object')
+		return null;
+
+	for (let name, fragment in fragments) {
+		if (type(fragment) != 'object')
+			return `include '${name}' is not an object`;
+
+		let source = config.includes?.[name];
+		if (!source)
+			return `include '${name}' is not declared by the config`;
+
+		if (!source_store(source, fragment))
+			return `include '${name}' could not be stored`;
+	}
+
+	return null;
+}
+
+function includes_fetch(config) {
+	let rv = {};
+
+	for (let name, source in config.includes ?? {}) {
+		let fragment = source_fetch(name, source);
+		if (fragment)
+			rv[name] = fragment;
+	}
+
+	return rv;
+}
+
 function handle_config_get(connection, id, params) {
 	let content = readfile(ACTIVE_CONFIG_PATH);
 	if (!content)
@@ -52,12 +88,19 @@ function handle_config_get(connection, id, params) {
 	if (!config)
 		return send_response(connection, response_error(id, ERROR_INTERNAL, 'failed to parse active config'));
 
-	send_response(connection, response_success(id, config));
+	// The fragments come back with the document: a client that edited one has no
+	// other way to read it, and one that saves without them would send an empty
+	// set for something it never saw.
+	send_response(connection, response_success(id, { config, includes: includes_fetch(config) }));
 }
 
 function handle_config_test(connection, id, params) {
 	if (type(params) != 'object' || !params.config)
 		return send_response(connection, response_error(id, ERROR_INVALID_PARAMS, 'Invalid params'));
+
+	let failed = includes_store(params.config, params.includes);
+	if (failed)
+		return send_response(connection, response_error(id, ERROR_INVALID_PARAMS, failed));
 
 	writefile(PENDING_CONFIG_PATH, sprintf('%.J', params.config));
 
@@ -70,6 +113,10 @@ function handle_config_test(connection, id, params) {
 function handle_config_apply(connection, id, params) {
 	if (type(params) != 'object' || !params.config)
 		return send_response(connection, response_error(id, ERROR_INVALID_PARAMS, 'Invalid params'));
+
+	let failed = includes_store(params.config, params.includes);
+	if (failed)
+		return send_response(connection, response_error(id, ERROR_INVALID_PARAMS, failed));
 
 	writefile(PENDING_CONFIG_PATH, sprintf('%.J', params.config));
 

@@ -4,20 +4,28 @@ import * as fs from 'fs';
 
 let include_sources = {};
 
-function source_path_resolve(source) {
+const INCLUDE_DIRS = {
+	ucoord: '/etc/ucoord/configs',
+	local: '/etc/uconfig',
+};
+
+function source_parts(source) {
 	let parts = split(source, ':');
 	if (length(parts) != 2)
 		return null;
 
-	let prefix = parts[0];
-	let name = parts[1];
+	let dir = INCLUDE_DIRS[parts[0]];
 
-	if (prefix == 'ucoord')
-		return `/etc/ucoord/configs/${name}.json`;
-	if (prefix == 'local')
-		return `/etc/uconfig/${name}.json`;
+	// The name becomes a path, so keep it to something that cannot climb out of
+	// the directory the prefix chose.
+	if (!dir || !match(parts[1], /^[A-Za-z0-9._-]+$/))
+		return null;
 
-	return null;
+	return { dir, path: `${dir}/${parts[1]}.json` };
+}
+
+function source_path_resolve(source) {
+	return source_parts(source)?.path;
 }
 
 function source_load(name, source, logs) {
@@ -35,7 +43,13 @@ function source_load(name, source, logs) {
 		return null;
 	}
 
-	let data = json(content);
+	let data;
+	try {
+		data = json(content);
+	} catch (e) {
+		data = null;
+	}
+
 	if (!data) {
 		if (logs)
 			push(logs, `Include source '${name}' invalid JSON: ${path}`);
@@ -50,6 +64,38 @@ function source_load(name, source, logs) {
 
 	return data;
 }
+
+function dir_create(path) {
+	let current = '';
+
+	for (let part in split(path, '/')) {
+		if (part == '')
+			continue;
+		current += `/${part}`;
+		if (!fs.access(current, 'r'))
+			fs.mkdir(current, 0755);
+	}
+}
+
+// A client sends fragment contents while the document only points at a file, so
+// storing one resolves the same way the loader reads it back.
+export function source_store(source, fragment) {
+	let parts = source_parts(source);
+	if (!parts)
+		return false;
+
+	// source_load rejects a fragment without one, and ucoord compares them to
+	// decide which copy of a venue-wide overlay is the newer.
+	fragment.uuid ??= time();
+
+	dir_create(parts.dir);
+
+	return fs.writefile(parts.path, sprintf('%.J', fragment)) != null;
+};
+
+export function source_fetch(name, source) {
+	return source_load(name, source, null);
+};
 
 function path_resolve(data, path) {
 	let parts = split(path, '.');

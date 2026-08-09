@@ -372,7 +372,10 @@ Retrieve the active configuration from a remote peer.
 | peer | string | yes | Peer host name |
 | timeout | integer | no | Timeout in milliseconds |
 
-**Result:** The peer's active uconfig JSON document.
+**Result:** In ucoord mode, the peer's active uconfig JSON document. In standalone
+mode, the envelope { "config": <document>, "includes": { "<name>": <fragment> } },
+carrying the contents of every include the document declares so a client can edit
+a fragment and save it back without having seen it as a file.
 
 
 ### config-test
@@ -385,9 +388,17 @@ Validate a configuration on a remote peer without applying it.
 | venue | string | yes | Venue name |
 | peer | string | yes | Peer host name |
 | config | object | yes | Full uconfig JSON document |
+| includes | object | no | Standalone only: fragment contents keyed by include name |
 | timeout | integer | no | Timeout in milliseconds |
 
 **Result:** Validation result from uconfig-apply -t.
+
+In standalone mode each fragment is written before the config is rendered, to the
+file the document's own top-level `includes` map resolves it to (`local:<name>` ->
+/etc/uconfig/<name>.json, `ucoord:<name>` -> /etc/ucoord/configs/<name>.json). A
+fragment with no `uuid` is stamped with one, since the loader rejects it otherwise.
+A fragment whose name the document does not declare is an ERROR_INVALID_PARAMS.
+Fragments the client omits are left alone rather than deleted.
 
 
 ### config-apply
@@ -400,10 +411,11 @@ Push and apply a configuration on a remote peer.
 | venue | string | yes | Venue name |
 | peer | string | yes | Peer host name |
 | config | object | yes | Full uconfig JSON document |
+| includes | object | no | Standalone only: fragment contents keyed by include name |
 | timeout | integer | no | Timeout in milliseconds |
 
 **Result:** Validation result. The peer applies the config
-asynchronously after responding.
+asynchronously after responding. `includes` is handled exactly as for config-test.
 
 
 ### reboot
