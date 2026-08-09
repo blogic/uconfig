@@ -214,16 +214,19 @@ setup when clients associate.
 
 ### uconfig-state
 
-files/usr/bin/uconfig-state
+modules/state/usr/bin/uconfig-state
 
 Publishes runtime device state over ubus as the state object.
 
 | Method | Returns |
 |--------|---------|
 | devices | Connected devices per network: fingerprint, hostname, IP addresses, traffic statistics |
+| device_hostname, device_ignore, device_delete | Maintain the per-MAC device records |
 | ports | Physical port status per role: carrier, speed, MAC, traffic counters |
 | radios | Per-band radio status: channel, frequency, airtime utilisation, available channels per bandwidth |
-| traffic | WAN traffic rolling averages (12-minute, hourly, daily, weekly) |
+| network | Addressing per document interface, grouped out of netifd by the uconfig_name stamp |
+| traffic | WAN traffic rolling averages (2-minute, hourly, daily, weekly) |
+| fingerprint_update | Refresh the fingerprint cache |
 
 Device metadata (custom hostnames, ignore flags) is persisted in
 /etc/uconfig/devices/ as per-MAC JSON files.
@@ -239,7 +242,7 @@ Example configurations live under files/etc/uconfig/examples/.
 | dumb-ap.json | Single-interface access point with DHCP upstream |
 | fingerprint.json | Adds device fingerprinting service to default setup |
 | ieee8021x.json | 802.1X port authentication with RADIUS |
-| initial.json | Minimal wired-only bootstrap with CLI, WebUI, mDNS, SSH |
+| initial.json | Minimal wired-only bootstrap with SSH and CLI |
 | lldp.json | LLDP network discovery service |
 | mesh-batman.json | Batman-adv mesh with dedicated mesh + AP SSIDs |
 | multi-psk.json | Multiple pre-shared keys per SSID with MAC and VLAN assignment |
@@ -250,5 +253,9 @@ Example configurations live under files/etc/uconfig/examples/.
 | vlan.json | VLAN-tagged secondary interface |
 | wds-ap.json | WDS access point mode (5G HE) |
 | wds-repeater.json | WDS repeater mode (5G) |
-| webui.json | Multi-service setup with WebUI, guest network isolation |
+| webui.json | Single-interface AP offering the web UI, seeded on first boot when uconfig-mod-ui is installed |
 | wifi-7.json | WiFi 7 (EHT) tri-band configuration (2G/5G/6G) |
+| pppoe.json | PPPoE upstream |
+| qos.json | Quality-of-service classification |
+| tailscale.json | Tailscale service |
+| wwan.json | WWAN/modem upstream |

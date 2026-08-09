@@ -23,6 +23,7 @@ Sources:
 - modules/webui/usr/share/ucode/uconfig/webui/uwsd/ucoord.uc (ucoord backend)
 - modules/webui/usr/share/ucode/uconfig/webui/uwsd/jsonrpc.uc
 - modules/webui/usr/share/ucode/uconfig/webui/uwsd/auth.uc
+- modules/webui/usr/share/ucode/uconfig/webui/uwsd/upload.uc (HTTP PUT /upload/&lt;token&gt;)
 
 
 ## Connection
@@ -34,8 +35,10 @@ Sources:
 - **Idle timeout:** 120 seconds (configured in
   modules/webui/etc/uwsd-uconfig-ui.conf)
 
-On connect, the server sends a login-required event after 200ms to
-prompt authentication.
+On connect, the server sends an event after 200ms: setup-required when the active
+config carries no top-level `webui` object, login-required otherwise. A device in
+the setup state has no password yet, so it also answers authenticated methods
+without a login until a config with the marker is applied (standalone only).
 
 
 ## Modes
@@ -44,8 +47,9 @@ The server runs in one of two modes, fixed at start and reported in the login re
 as the `mode` field ("standalone" or "ucoord"):
 
 - **standalone** - the device methods (config-get, config-test, config-apply, system-info,
-  capabilities, reboot, sysupgrade) operate on the local device and take **no** venue/peer
-  parameters. `status` and `info` are registered and describe this device as the single
+  capabilities, reboot, factory-reset, sysupgrade) operate on the local device and take
+  **no** venue/peer parameters. `sysupgrade` takes the two-phase token/upload/apply form
+  described below rather than a `url`. `status` and `info` are registered and describe this device as the single
   peer of the venue `local`; the remaining coordination methods (list, include, reload)
   are not registered and return ERROR_METHOD_NOT_FOUND.
 - **ucoord** - the same device methods are addressed to a peer and require `{venue, peer}`
@@ -72,7 +76,7 @@ against the stored hash. Authentication state is per-connection;
 there are no tokens or sessions.
 
 Password constraints (enforced by change-password):
-- Minimum length: 8 characters
+- Must not be empty
 - Maximum length: 64 characters
 
 
@@ -141,7 +145,13 @@ Events are JSON-RPC notifications (no id field):
 
 | Event | When | Params |
 |-------|------|--------|
-| login-required | Immediately after connection | none |
+| login-required | 200ms after connection, on a configured device | none |
+| setup-required | 200ms after connection, when the config has no top-level `webui` object | none |
+| rebooting | reboot accepted, before the device goes down | none |
+| factory-reset | factory-reset accepted | none |
+| upgrading | sysupgrade apply accepted | none |
+| sysupgrade-validation-success | uploaded image passed `sysupgrade --test` | { file_id } |
+| sysupgrade-validation-failed | uploaded image failed validation | { error } |
 
 
 ## Method Availability
@@ -151,6 +161,7 @@ Events are JSON-RPC notifications (no id field):
 | Session | login, logout, change-password, ping | both |
 | Live state | devices, traffic, radios, ports, network, event-log, memory | both, always the local device (needs uconfig-mod-state; memory needs umemd) |
 | Device | config-get, config-test, config-apply, system-info, capabilities, reboot, sysupgrade | both (local execution in standalone; proxied to a peer in ucoord) |
+| Device | factory-reset | standalone only |
 | Coordination | status, info | both (self-described in standalone; proxied in ucoord) |
 | Coordination | list, include, reload | ucoord only |
 
@@ -434,15 +445,28 @@ Reboot a remote peer.
 
 ### sysupgrade
 
-Upgrade firmware on a remote peer.
+Upgrade firmware. The two modes take entirely different parameters.
 
-**Params:**
+**Params (ucoord), the peer fetches the image itself:**
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | venue | string | yes | Venue name |
 | peer | string | yes | Peer host name |
 | url | string | yes | Firmware image URL |
 | timeout | integer | no | Timeout in milliseconds |
+
+**Params (standalone), two phases around an out-of-band upload:**
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| action | string | yes | `token` or `apply` |
+| file_id | string | for apply | Identifier returned by the upload |
+| keep_config | boolean | no | Keep configuration across the flash (apply only) |
+
+`action: 'token'` returns { token, upload_url, max_size, expires_in }. The image is
+then sent as an HTTP `PUT` to `upload_url` on the same host, which validates it with
+`sysupgrade --test`, emits sysupgrade-validation-success or -failed, and answers 201
+with a `file_id`. `action: 'apply'` flashes that file. Tokens are single use and
+expire after 600 seconds; the image cap is 50 MB.
 
 **Result:** Proxied from ucoord ubus sysupgrade method.
 
