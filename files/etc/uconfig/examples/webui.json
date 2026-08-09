@@ -1,50 +1,41 @@
 {
 	"unit": {
-                "timezone": "Europe/Berlin",
-		"hostname": "ap",
-        	"leds-active": true
-	},
-
-	"radios": {
-		"2G": {
-			"channel-mode": "HE",
-			"channel-width": 20
-		},
-		"5G": {
-			"channel-mode": "HE",
-			"channel-width": 80,
-			"channel": 36
-		}
+		"hostname": "OpenWrt"
 	},
 
 	"interfaces": {
-		"main": {
+		"wan": {
 			"role": "upstream",
-			"services": [ "mdns", "ssh", "cli", "uconfig-ui", "fingerprint", "unet" ],
+			"services": [ "ssh", "uconfig-ui" ],
 			"ports": {
-				"wan*": "auto",
-				"lan*": "auto"
+				"wan*": "auto"
 			},
 			"ipv4": {
 				"addressing": "dynamic"
 			},
 			"ipv6": {
 				"addressing": "dynamic"
+			}
+		},
+		"lan": {
+			"role": "downstream",
+			"services": [ "ssh", "uconfig-ui" ],
+			"ports": {
+				"lan*": "auto"
 			},
-			"ssids": {
-				"main": {
-					"ssid": "OpenWrt",
-					"template": {
-						"mode": "encrypted",
-						"security": "maximum",
-						"key": "aaaaaaaa"
-					},
-					"wifi-radios": [
-						"2G", "5G"
-					],
-					"encryption": {
-						"key": "aaaaaaaa"
-					}
+			"ipv4": {
+				"addressing": "static",
+				"subnet": "192.168.1.1/24",
+				"dhcp-pool": {
+					"lease-first": 10,
+					"lease-count": 100,
+					"lease-time": "6h"
+				}
+			},
+			"ipv6": {
+				"addressing": "static",
+				"dhcpv6": {
+					"mode": "hybrid"
 				}
 			}
 		}

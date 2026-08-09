@@ -209,13 +209,33 @@ function add_mac(stations, mac) {
 	};
 }
 
+// Which document interface a client seen on a given L3 device belongs to.
+//
+// Read from the uconfig_name stamp rather than a list of interface names: the
+// names come from the config, and a device whose networks are not called main
+// and guest still has clients. Same join network() makes. A station this leaves
+// unattributed is dropped from the reply entirely, so an interface missing here
+// is an empty client list, not a mislabelled one.
 function network_interfaces() {
 	let ifaces = ubus.call('network.interface', 'dump');
 	l3_devices = {};
+	if (!ifaces?.interface)
+		return;
+
+	let cursor = uci.cursor();
+	if (!cursor)
+		return;
+
+	let owner = {};
+	cursor.foreach('network', 'interface', (s) => {
+		if (s.uconfig_name)
+			owner[s['.name']] = s.uconfig_name;
+	});
 
 	for (let iface in ifaces.interface) {
-		if (iface.interface in ['main', 'guest'])
-			l3_devices[iface.l3_device] = iface.interface;
+		let name = owner[iface.interface];
+		if (name && iface.l3_device)
+			l3_devices[iface.l3_device] = name;
 	}
 }
 
