@@ -179,6 +179,11 @@
 	function normalize_country_code() {
 		// Country code is set from timezone lookup in unit.uc
 		// Only fall back to board default if not already set
+		// If no wlan config available then default to global
+		if (!board.wlan) {
+			warn('unknown board default. setting country code to 00\n');
+			state.country_code = "00";
+		}
 		if (!state.country_code && board.wlan.defaults?.country) {
 			warn('using board default country code\n');
 			state.country_code = board.wlan.defaults.country;
