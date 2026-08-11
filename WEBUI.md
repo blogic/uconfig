@@ -160,6 +160,7 @@ Events are JSON-RPC notifications (no id field):
 |-------|---------|-------|
 | Session | login, logout, change-password, ping | both |
 | Live state | devices, traffic, cpu, thermal, radios, ports, network, event-log, memory | both, always the local device (needs uconfig-mod-state; memory needs umemd) |
+| Wi-Fi | wifi-dynamic | both, always the local device (needs the wifi-dynamic package) |
 | Device | config-get, config-test, config-apply, system-info, capabilities, reboot, sysupgrade | both (local execution in standalone; proxied to a peer in ucoord) |
 | Device | factory-reset | standalone only |
 | Coordination | status, info | both (self-described in standalone; proxied in ucoord) |
@@ -289,6 +290,50 @@ No thresholds are reported, so a consumer cannot tell from this call what this b
 considers hot.
 
 **Errors:** ERROR_INTERNAL if the state backend is unavailable.
+
+
+### wifi-dynamic
+
+Temporary AP interfaces, spawned and torn down at runtime without touching the stored
+configuration. One method, dispatched on `action`.
+
+**Params:** `{ "action": "list" | "status" | "add" | "remove" | "update", ... }`
+
+| action | further params | result |
+|--------|----------------|--------|
+| list   | none | `{ "networks": [ <entry>, ... ] }` |
+| status | network | `<entry>`, or `{ network, "active": false }` |
+| add    | network, ssid, key, encryption, bands, and optionally timeout | `{ "success": true }` |
+| remove | network | `{ "success": true }` |
+| update | network, timeout | `{ "success": true }` |
+
+An entry is:
+
+```json
+{ "network": "guest", "active": true, "ssid": "Guest", "key": "hunter2hunter2",
+  "encryption": "sae", "bands": [ "2g", "5g" ], "remaining": 3540 }
+```
+
+`bands` selects which radios carry it, matched against each radio's configured band, so a
+network is spawned on every up radio that matches. `timeout` is seconds; without one the
+network persists until removed. `remaining` is seconds left and is absent on a network
+that has no expiry.
+
+`key` is the plaintext PSK. It is returned deliberately: the session is already
+authenticated and can read every wifi key through config-get, so withholding it here
+would only stop a client displaying a password it just set.
+
+Nothing here is persistent. The daemon holds its networks in memory, so a restart of it
+drops every dynamic network, and none of this is written to the stored configuration.
+
+**Errors:**
+- ERROR_METHOD_NOT_FOUND when the wifi-dynamic package is absent.
+- ERROR_INVALID_PARAMS for an unknown action, a missing required parameter, a network
+  with no dynamic wifi on it (remove, update), a network that already carries one (add),
+  or a value the daemon rejects. The daemon owns the value rules: ssid 1 to 32 characters,
+  key 8 to 63, and the network must already exist in netifd. `update` also rejects a
+  network that was created without a timeout, since it has no timer to retime.
+- ERROR_INTERNAL for any other ubus failure, carrying the status in `data.status`.
 
 
 ### radios
