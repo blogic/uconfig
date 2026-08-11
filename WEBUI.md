@@ -159,7 +159,7 @@ Events are JSON-RPC notifications (no id field):
 | Group | Methods | Modes |
 |-------|---------|-------|
 | Session | login, logout, change-password, ping | both |
-| Live state | devices, traffic, cpu, radios, ports, network, event-log, memory | both, always the local device (needs uconfig-mod-state; memory needs umemd) |
+| Live state | devices, traffic, cpu, thermal, radios, ports, network, event-log, memory | both, always the local device (needs uconfig-mod-state; memory needs umemd) |
 | Device | config-get, config-test, config-apply, system-info, capabilities, reboot, sysupgrade | both (local execution in standalone; proxied to a peer in ucoord) |
 | Device | factory-reset | standalone only |
 | Coordination | status, info | both (self-described in standalone; proxied in ucoord) |
@@ -259,6 +259,34 @@ excludes uninterruptible sleep, and it carries no smoothing between samples.
 that length after a restart, rather than being padded, so a short array means the daemon
 has not been running ten minutes yet rather than that the CPU was idle. A sample is
 dropped, leaving a gap in wall-clock coverage, when the counters go backwards.
+
+**Errors:** ERROR_INTERNAL if the state backend is unavailable.
+
+
+### thermal
+
+Board temperatures over the last hour.
+
+**Params:** none
+
+**Result:** Proxied verbatim from ubus state thermal:
+{ "interval_s": 30, "samples": 120, "sensors": [ { "name": "cpu-thermal",
+"temp_c": 66.2, "history": [ 66.1, 66.2, ... ] } ] }
+
+One entry per sensor, ordered by name, each carrying degrees Celsius to a tenth.
+`temp_c` is the newest entry of `history` rather than a fresh read, so every figure in the
+reply shares one clock. `history` is oldest first and, like `cpu`, grows to `samples`
+rather than starting padded.
+
+Sensors are whatever the board exposes, so the set differs per device and the names come
+from the kernel: a thermal zone's `type` (`cpu-thermal`), or a hwmon's `name`
+(`mt7915_phy0`), suffixed with the kernel's label or input number where one hwmon carries
+several. A hwmon owned by a thermal zone is reported once, under the zone, since the two
+interfaces are the same part. A sensor that appears late, as a radio's does when its phy
+registers, joins with a shorter history; one that disappears is dropped.
+
+No thresholds are reported, so a consumer cannot tell from this call what this board
+considers hot.
 
 **Errors:** ERROR_INTERNAL if the state backend is unavailable.
 

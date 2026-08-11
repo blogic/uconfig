@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { readfile, writefile, glob, popen, unlink, stat, mkdir } from 'fs';
+import { readfile, writefile, glob, realpath, popen, unlink, stat, mkdir } from 'fs';
 import * as nl80211 from 'nl80211';
 import * as ubus from 'ubus';
 import * as uci from 'uci';
@@ -16,11 +16,20 @@ let l3_devices;
 const CPU_INTERVAL_MS = 5 * 1000;
 const CPU_SAMPLES = 10 * 60 * 1000 / CPU_INTERVAL_MS;
 
+// Slower and longer than the CPU ring: board temperature drifts over minutes,
+// and five consecutive reads of this SoC spanned 0.15C, so ten minutes of it
+// would be a flat line. An hour shows the warm-up after boot and a slow climb
+// under load.
+const THERMAL_INTERVAL_MS = 30 * 1000;
+const THERMAL_SAMPLES = 60 * 60 * 1000 / THERMAL_INTERVAL_MS;
+
 let fingerprints = {};
 let devices_db = {};
 
 let cpu_usage = [];
 let cpu_prev;
+
+let thermal_history = {};
 
 let wan_traffic = {
 	up: [ [], [], [], [], ],
@@ -146,6 +155,97 @@ function cpu_poll() {
 	push(cpu_usage, int((total_delta - idle_delta) * 100.0 / total_delta + 0.5));
 	if (length(cpu_usage) > CPU_SAMPLES)
 		shift(cpu_usage);
+}
+
+function sysfs_string_read(path) {
+	return trim(readfile(path) ?? '');
+}
+
+// A hwmon node with more than one input needs telling apart. The kernel's own
+// label wins where the driver supplies one; otherwise the input number is all
+// there is to distinguish them by.
+function hwmon_sensor_name(base, input, count) {
+	let label = sysfs_string_read(replace(input, '_input', '_label'));
+	if (label)
+		return label;
+	if (count < 2)
+		return base;
+
+	let m = match(input, /temp([0-9]+)_input/);
+	return m ? `${base} ${m[1]}` : base;
+}
+
+// Rediscovered on every sample rather than cached: a radio's hwmon appears when
+// its phy registers, which can be after this daemon starts, and a cached list
+// would miss it for the lifetime of the process.
+function thermal_sensors_find() {
+	let sensors = [];
+
+	for (let zone in glob('/sys/class/thermal/thermal_zone*')) {
+		let name = sysfs_string_read(`${zone}/type`);
+		if (name)
+			push(sensors, { name, path: `${zone}/temp` });
+	}
+
+	for (let hwmon in glob('/sys/class/hwmon/hwmon*')) {
+		// A hwmon owned by a thermal zone is that same sensor behind a second
+		// interface; reporting both would show one part twice, at two readings.
+		let real = realpath(hwmon) ?? '';
+		if (index(real, '/thermal/thermal_zone') >= 0)
+			continue;
+
+		let base = sysfs_string_read(`${hwmon}/name`);
+		if (!base)
+			continue;
+
+		let inputs = glob(`${hwmon}/temp*_input`);
+		for (let input in inputs)
+			push(sensors, { name: hwmon_sensor_name(base, input, length(inputs)), path: input });
+	}
+
+	return sensors;
+}
+
+// sysfs reports millidegrees; the wire carries degrees, rounded to a tenth,
+// because the caller should not have to know the kernel's unit.
+function thermal_poll() {
+	let seen = {};
+
+	for (let sensor in thermal_sensors_find()) {
+		let milli = sysfs_string_read(sensor.path);
+		if (!match(milli, /^-?[0-9]+$/))
+			continue;
+
+		seen[sensor.name] = true;
+		thermal_history[sensor.name] ??= [];
+
+		push(thermal_history[sensor.name], int(int(milli) / 100.0 + 0.5) / 10.0);
+		if (length(thermal_history[sensor.name]) > THERMAL_SAMPLES)
+			shift(thermal_history[sensor.name]);
+	}
+
+	for (let name in keys(thermal_history))
+		if (!seen[name])
+			delete thermal_history[name];
+}
+
+function thermal_state() {
+	let sensors = [];
+
+	for (let name in sort(keys(thermal_history))) {
+		let history = thermal_history[name];
+		push(sensors, {
+			name,
+			temp_c: history[-1],
+			history,
+		});
+	}
+
+	return {
+		interval_s: THERMAL_INTERVAL_MS / 1000,
+		samples: THERMAL_SAMPLES,
+		sensors,
+	};
 }
 
 function check_mac(mac) {
@@ -793,6 +893,15 @@ let ubus_methods = {
 		args: {
 		}
 	},
+	// `temp_c` is the newest entry of `history`, not a fresh read, so every
+	// figure in the reply shares one clock.
+	thermal: {
+		call: function() {
+			return thermal_state();
+		},
+		args: {
+		}
+	},
 };
 
 if (!stat('/etc/uconfig/devices'))
@@ -814,6 +923,9 @@ uloop.interval(10 * 1000, () => {
 
 cpu_poll();
 uloop.interval(CPU_INTERVAL_MS, cpu_poll);
+
+thermal_poll();
+uloop.interval(THERMAL_INTERVAL_MS, thermal_poll);
 
 uloop.run();
 uloop.done();
