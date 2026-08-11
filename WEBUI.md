@@ -161,6 +161,7 @@ Events are JSON-RPC notifications (no id field):
 | Session | login, logout, change-password, ping | both |
 | Live state | devices, traffic, cpu, thermal, radios, ports, network, event-log, memory | both, always the local device (needs uconfig-mod-state; memory needs umemd) |
 | Wi-Fi | wifi-dynamic | both, always the local device (needs the wifi-dynamic package) |
+| Storage | storage, storage-share | both, always the local device (needs blockd; sharing needs samba4) |
 | Device | config-get, config-test, config-apply, system-info, capabilities, reboot, sysupgrade | both (local execution in standalone; proxied to a peer in ucoord) |
 | Device | factory-reset | standalone only |
 | Coordination | status, info | both (self-described in standalone; proxied in ucoord) |
@@ -406,6 +407,63 @@ lists are resampled hourly, so the two halves are not the same age.
 
 **Errors:** ERROR_METHOD_NOT_FOUND when the memory object is absent, which means the
 umemd package is not installed rather than that the call failed.
+
+
+### storage
+
+What is plugged into the device, and whether it is being offered over SMB.
+
+**Params:** none
+
+**Result:** { "ready": true, "devices": [ <device>, ... ] }, where a device is:
+
+```json
+{ "name": "sda1", "device": "/dev/sda1", "type": "vfat", "version": "FAT32",
+  "uuid": "D894-11EE", "label": "stick", "size_bytes": 61530423296,
+  "model": "SanDisk Ultra Trek", "removable": true, "mounted": false,
+  "mount_point": null, "share_name": "stick", "target": "/mnt/sda1",
+  "shared": false }
+```
+
+`ready` is blockd's own flag. Only storage someone attached is listed: squashfs, ubifs and
+jffs2 filesystems are excluded, as is anything mounted at /rom or /overlay, since those are
+the firmware rather than a disk.
+
+`size_bytes` is the partition's own size in bytes, not the whole disk it sits on, and a
+number rather than a formatted string because a string chosen here would arrive
+untranslated. `share_name` is the label where there is one and the device name otherwise;
+`target` is where the share would be mounted, which for a disk block-mount already knows
+about is the path it already chose. `shared` reports whether the fstab entry is enabled.
+
+**Errors:** ERROR_METHOD_NOT_FOUND when the block object is absent, which means blockd is
+not installed rather than that the call failed, the same way memory treats umemd.
+
+
+### storage-share
+
+Offer a disk over SMB, or stop offering it.
+
+**Params:** { "device": "sda1", "shared": true }
+
+**Result:** { "success": true }
+
+`shared` is the state wanted, not a toggle: a client that retries a request whose reply it
+lost cannot turn a share back off by accident.
+
+One call writes both halves, because a share pointing at a path nothing mounts is a share
+that never works. It writes an fstab mount entry keyed on the device's uuid, or its label
+when it has no uuid, so the entry survives the disk moving to another port; a device name
+would not. It then adds or removes the samba4 share, commits both configurations, mounts or
+unmounts, and restarts samba4 so the change takes effect without a reboot.
+
+An existing mount target is kept rather than moved, so a disk block-mount already placed
+stays where anything else referring to it expects. Shares are guest readable and writable by
+anyone who can reach the network: there are no accounts, which is why file sharing belongs
+on the local network only.
+
+**Errors:** ERROR_INVALID_PARAMS when `device` is not a string or `shared` is not a boolean.
+ERROR_INTERNAL when the device is unknown, when it carries neither a uuid nor a label to key
+a mount on, or when the configuration cannot be written.
 
 
 ### list
