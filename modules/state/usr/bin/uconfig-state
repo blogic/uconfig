@@ -13,8 +13,14 @@ import * as board_json from 'uconfig.board_json';
 let pending = false;
 let l3_devices;
 
+const CPU_INTERVAL_MS = 5 * 1000;
+const CPU_SAMPLES = 10 * 60 * 1000 / CPU_INTERVAL_MS;
+
 let fingerprints = {};
 let devices_db = {};
+
+let cpu_usage = [];
+let cpu_prev;
 
 let wan_traffic = {
 	up: [ [], [], [], [], ],
@@ -91,6 +97,55 @@ function traffic() {
 			continue;
 		traffic_update(statistics, i, interval);
 	}
+}
+
+// Utilisation, not load average. loadavg counts uninterruptible sleep alongside
+// runnable tasks, so a device blocked on flash reports load with an idle CPU,
+// and its 1/5/15 minute time constants cannot resolve a 5 second sample in any
+// case. Jiffy deltas are the utilisation by definition.
+//
+// guest and guest_nice are left out of the total: the kernel already counts them
+// inside user and nice, so summing all ten fields would count them twice.
+function cpu_stat_read() {
+	let content = readfile('/proc/stat');
+	if (!content)
+		return null;
+
+	let fields = filter(split(split(content, '\n')[0], ' '), f => f != '');
+	if (fields[0] != 'cpu')
+		return null;
+
+	let total = 0;
+	let last = min(9, length(fields));
+	for (let i = 1; i < last; i++)
+		total += int(fields[i]);
+
+	return { total, idle: int(fields[4] ?? 0) + int(fields[5] ?? 0) };
+}
+
+function cpu_poll() {
+	let cur = cpu_stat_read();
+	if (!cur)
+		return;
+
+	let prev = cpu_prev;
+	cpu_prev = cur;
+
+	if (!prev)
+		return;
+
+	let total_delta = cur.total - prev.total;
+	let idle_delta = cur.idle - prev.idle;
+
+	// A counter reset drops the sample rather than recording a figure that
+	// never happened.
+	if (total_delta <= 0 || idle_delta < 0)
+		return;
+
+	// Scale before dividing: integer division would truncate every sample to 0.
+	push(cpu_usage, int((total_delta - idle_delta) * 100.0 / total_delta + 0.5));
+	if (length(cpu_usage) > CPU_SAMPLES)
+		shift(cpu_usage);
 }
 
 function check_mac(mac) {
@@ -725,6 +780,19 @@ let ubus_methods = {
 		args: {
 		}
 	},
+	// `usage` fills up to `samples` rather than starting padded, so a short
+	// series says "not running that long yet" instead of claiming an idle CPU.
+	cpu: {
+		call: function() {
+			return {
+				interval_s: CPU_INTERVAL_MS / 1000,
+				samples: CPU_SAMPLES,
+				usage: cpu_usage,
+			};
+		},
+		args: {
+		}
+	},
 };
 
 if (!stat('/etc/uconfig/devices'))
@@ -743,6 +811,9 @@ update_fingerprintInterval = uloop.interval(5 * 60 * 1000, () => {
 uloop.interval(10 * 1000, () => {
 	traffic();
 });
+
+cpu_poll();
+uloop.interval(CPU_INTERVAL_MS, cpu_poll);
 
 uloop.run();
 uloop.done();

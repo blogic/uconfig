@@ -159,7 +159,7 @@ Events are JSON-RPC notifications (no id field):
 | Group | Methods | Modes |
 |-------|---------|-------|
 | Session | login, logout, change-password, ping | both |
-| Live state | devices, traffic, radios, ports, network, event-log, memory | both, always the local device (needs uconfig-mod-state; memory needs umemd) |
+| Live state | devices, traffic, cpu, radios, ports, network, event-log, memory | both, always the local device (needs uconfig-mod-state; memory needs umemd) |
 | Device | config-get, config-test, config-apply, system-info, capabilities, reboot, sysupgrade | both (local execution in standalone; proxied to a peer in ucoord) |
 | Device | factory-reset | standalone only |
 | Coordination | status, info | both (self-described in standalone; proxied in ucoord) |
@@ -237,6 +237,28 @@ Per-interface traffic statistics for the local device.
 **Params:** none
 
 **Result:** Proxied from ubus state traffic.
+
+**Errors:** ERROR_INTERNAL if the state backend is unavailable.
+
+
+### cpu
+
+CPU utilisation over the last ten minutes.
+
+**Params:** none
+
+**Result:** Proxied verbatim from ubus state cpu:
+{ "interval_s": 5, "samples": 120, "usage": [ 12, 14, 9, ... ] }
+
+`usage` is whole-percent busy time per sample, oldest first, aggregated across all cores.
+Each entry is the true average over its own `interval_s` window, computed from /proc/stat
+jiffy deltas, so it is utilisation and not a load average: it is bounded by 0 and 100, it
+excludes uninterruptible sleep, and it carries no smoothing between samples.
+
+`samples` is the capacity of the ring, not its current length. `usage` grows from empty to
+that length after a restart, rather than being padded, so a short array means the daemon
+has not been running ten minutes yet rather than that the CPU was idle. A sample is
+dropped, leaving a gap in wall-clock coverage, when the counters go backwards.
 
 **Errors:** ERROR_INTERNAL if the state backend is unavailable.
 

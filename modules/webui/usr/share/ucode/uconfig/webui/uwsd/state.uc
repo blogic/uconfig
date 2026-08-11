@@ -29,6 +29,15 @@ function handle_traffic(connection, id, params) {
 	send_response(connection, response_success(id, traffic));
 }
 
+function handle_cpu(connection, id, params) {
+	let cpu = ubus.call('state', 'cpu');
+
+	if (!cpu)
+		return send_response(connection, response_error(id, ERROR_INTERNAL, 'Failed to retrieve CPU information'));
+
+	send_response(connection, response_success(id, cpu));
+}
+
 function handle_radios(connection, id, params) {
 	let radios = ubus.call('state', 'radios');
 
@@ -179,6 +188,7 @@ export function register(handlers, ctx) {
 
 	handlers['devices']   = { handler: handle_devices,   auth_required: true };
 	handlers['traffic']   = { handler: handle_traffic,   auth_required: true };
+	handlers['cpu']       = { handler: handle_cpu,       auth_required: true };
 	handlers['radios']    = { handler: handle_radios,    auth_required: true };
 	handlers['ports']     = { handler: handle_ports,     auth_required: true };
 	handlers['network']   = { handler: handle_network,   auth_required: true };
