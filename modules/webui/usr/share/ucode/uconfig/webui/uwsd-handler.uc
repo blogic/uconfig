@@ -12,6 +12,7 @@ import {
 
 import { login, change_password } from 'uconfig.webui.uwsd.auth';
 import { register as register_state } from 'uconfig.webui.uwsd.state';
+import { register as register_storage } from 'uconfig.webui.uwsd.storage';
 import { register as register_ucoord } from 'uconfig.webui.uwsd.ucoord';
 import { register as register_local } from 'uconfig.webui.uwsd.local';
 import {
@@ -133,7 +134,10 @@ let ctx = {
 
 // Live state is read from this device's own daemons either way, so it is
 // registered before the mode decides which configuration backend answers.
+// Storage is the same: what is plugged into this device is this device's
+// business whether or not a coordinator owns its configuration.
 register_state(handlers, ctx);
+register_storage(handlers, ctx);
 
 if (mode == 'ucoord')
 	register_ucoord(handlers, ctx);
