@@ -7,7 +7,7 @@ properties:
     description:
       Automatically start the Tailscale tunnel when the device boots
     type: boolean
-    default: false
+    default: true
   exit-node:
     description:
       Advertise this device as an exit node for the Tailnet
