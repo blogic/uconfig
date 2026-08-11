@@ -41,6 +41,11 @@ function error_response(id, status) {
 	if (status == ubus.STATUS_PERMISSION_DENIED)
 		return response_error(id, ERROR_INVALID_PARAMS, 'That network already carries a dynamic wifi');
 
+	// Removing or retiming a network learned from a peer would only stand until
+	// the next announcement put it back, so it has to be done where it began.
+	if (status == ubus.STATUS_NOT_SUPPORTED)
+		return response_error(id, ERROR_INVALID_PARAMS, 'That dynamic wifi belongs to another node');
+
 	if (status == ubus.STATUS_INVALID_ARGUMENT)
 		return response_error(id, ERROR_INVALID_PARAMS, 'Invalid params', { status });
 
@@ -54,6 +59,10 @@ function network_entry(name, entry) {
 	let rv = {
 		network: name,
 		active: true,
+		// Which node the network was asked for on. Absent in the daemon's map
+		// means this one, which is also the only one that can remove or retime
+		// it.
+		origin: entry?.origin ?? 'local',
 		ssid: entry?.config?.ssid,
 		key: entry?.config?.key,
 		encryption: entry?.config?.encryption,
