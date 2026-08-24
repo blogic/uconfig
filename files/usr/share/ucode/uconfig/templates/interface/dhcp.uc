@@ -59,6 +59,7 @@
 		uci_comment(output, '### generate DHCP pool configuration');
 		uci_named_section(output, `dhcp.${name}`, 'dhcp');
 		uci_set_string(output, `dhcp.${name}.interface`, ethernet.calculate_ipv4_name(interface));
+		uci_set_string(output, `dhcp.${name}.dhcpv4`, 'server');
 		uci_set_number(output, `dhcp.${name}.start`, dhcp.lease_first);
 		uci_set_number(output, `dhcp.${name}.limit`, dhcp.lease_count);
 		uci_set_string(output, `dhcp.${name}.leasetime`, dhcp.lease_time);
