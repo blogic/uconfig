@@ -594,11 +594,14 @@
 	}
 
 	let phys = [];
+	let seen = {};
 
 	for (let band in ssid.wifi_radios)
 		for (let phy in wiphy.lookup(band))
-			if (phy.section)
+			if (phy.section && !seen[phy.section]) {
+				seen[phy.section] = true;
 				push(phys, phy);
+			}
 
 	if (!length(phys)) {
 		warn('Cannot find any suitable radio phy for SSID "%s" settings', ssid.ssid);
