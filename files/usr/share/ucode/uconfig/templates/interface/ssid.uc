@@ -87,6 +87,24 @@
 	}
 
 	function normalize_radius_config() {
+		if (!ssid.encryption)
+			return;
+
+		if (!ssid.encryption?.radius_server)
+			return;
+
+		let radius_config = radius.lookup(
+			ssid.encryption.radius_server,
+			state.definitions
+		);
+
+		if (!radius_config) {
+			warn('RADIUS server not found: ' + ssid.encryption.radius_server);
+			return;
+		}
+
+		ssid.radius = radius_config;
+
 		if (!ssid.encryption?.radius_server)
 			return;
 
@@ -150,7 +168,7 @@
 		case 'enterprise':
 			ssid.encryption = {
 				proto: (ssid.template.security == 'compatibility') ? 'wpa3-mixed' : 'wpa3',
-				radius_server: ssid.template['radius-server'],
+				radius_server: ssid.template.radius_server,
 				ieee80211w: (ssid.template.security == 'compatibility') ? 'optional' : 'required'
 			};
 			break;
@@ -607,9 +625,9 @@
 	}
 
 	// Main normalisation pipeline
-	normalize_radius_config();
 	normalize_system_defaults();
 	normalize_template_config();
+	normalize_radius_config();
 	normalize_roaming_config();
 	normalize_rate_limit();
 	setup_multi_psk();
