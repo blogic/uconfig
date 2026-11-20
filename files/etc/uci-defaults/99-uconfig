@@ -74,6 +74,4 @@ uci -c $SHADOW commit
 	/usr/bin/pkgen -s CN=$cn,O=OpenWrt cert /etc/uconfig/certificates/ca.pem /etc/uconfig/certificates/cert.pem
 }
 
-uconfig-apply -n /etc/uconfig/uconfig.active
-
 exit 0
